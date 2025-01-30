@@ -1,0 +1,250 @@
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Scheduling | Business Flow</title>
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #004080;
+        }
+        .step {
+            margin-bottom: 40px;
+        }
+        .form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .form input, .form textarea, .form button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        .form textarea {
+            resize: none;
+        }
+        #addAppointment {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 4px;
+            border: 1px solid #0056b3;
+        }
+        #addAppointment:hover {
+            background-color: #0056b3;
+        }
+        #openCalendar {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 4px;
+            border: 1px solid #0056b3;
+        }
+        #openCalendar:hover {
+            background-color: #0056b3;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .modal-header h2 {
+            margin: 0;
+        }
+        .modal-close {
+            background-color: #f44336;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .modal-close:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+
+
+    <div class="container">
+        <h1>Business Appointment Scheduler</h1>
+
+        <!-- Step 1: Schedule an Appointment -->
+        <div class="step">
+            <h2>Step 1: Schedule an Appointment</h2>
+            <p>Instructions: Fill out the appointment details below to create a new event.</p>
+            <div class="form">
+                <div class="form-container">
+                    <label for="appointmentTitle">Appointment Title:</label>
+                    <input type="text" id="appointmentTitle" placeholder="Appointment Title">
+                </div>
+                <div class="form-container">
+                    <label for="appointmentDate">Appointment Scheduled Time:</label>
+                    <input type="datetime-local" id="appointmentDate">
+                </div>
+                <div class="form-container">
+                    <label for="appointmentLocation">Location:</label>
+                    <input type="text" id="appointmentLocation" placeholder="Location">
+                </div>
+                <div class="form-container">
+                    <label for="contactName">Contact Name:</label>
+                    <input type="text" id="contactName" placeholder="Contact Name">
+                </div>
+                <div class="form-container">
+                    <label for="contactPhoneNumber">Contact Phone Number:</label>
+                    <input type="text" id="contactPhoneNumber" placeholder="Contact Phone Number">
+                </div>
+                <div class="form-container">
+                    <label for="contactEmail">Contact Email Address:</label>
+                    <input type="email" id="contactEmail" placeholder="Contact Email Address">
+                </div>
+                <div class="form-container">
+                    <label for="scheduledBy">Scheduled By:</label>
+                    <input type="text" id="scheduledBy" placeholder="Scheduled By">
+                </div>
+                <div class="form-container">
+                    <label for="appointmentNotes">Appointment Notes:</label>
+                    <textarea id="appointmentNotes" placeholder="Appointment Notes"></textarea>
+                </div>
+                <div class="form-container" style="text-align: center;">
+                    <button id="addAppointment">Add Appointment</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: View Scheduled Appointments -->
+        <div class="step">
+            <h2>Step 2: View Scheduled Appointments</h2>
+            <p>Instructions: Click the button below to view your appointments in a calendar view.</p>
+            <div style="text-align: center;"> <!-- Center-align the View Calendar button -->
+                <button id="openCalendar">View Calendar</button>
+            </div>
+        </div>
+
+        <!-- Modal for Calendar -->
+        <div id="calendarModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Scheduled Appointments</h2>
+                    <button id="closeCalendar" class="modal-close">Close</button>
+                </div>
+                <div id="modalCalendar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FullCalendar JS -->
+    <script></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('calendarModal');
+            const openCalendarBtn = document.getElementById('openCalendar');
+            const closeCalendarBtn = document.getElementById('closeCalendar');
+            const modalCalendarEl = document.getElementById('modalCalendar');
+            const addAppointmentButton = document.getElementById('addAppointment');
+
+            const modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: []
+            });
+
+            // Open Modal and render the calendar
+            openCalendarBtn.addEventListener('click', () => {
+                modal.style.display = 'flex';
+                modalCalendar.render();
+            });
+
+            // Close Modal
+            closeCalendarBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            // Add Appointment to Calendar
+            addAppointmentButton.addEventListener('click', () => {
+                const title = document.getElementById('appointmentTitle').value.trim();
+                const date = document.getElementById('appointmentDate').value;
+                const location = document.getElementById('appointmentLocation').value.trim();
+                const contactName = document.getElementById('contactName').value.trim();
+                const contactPhone = document.getElementById('contactPhoneNumber').value.trim();
+                const contactEmail = document.getElementById('contactEmail').value.trim();
+                const scheduledBy = document.getElementById('scheduledBy').value.trim();
+                const notes = document.getElementById('appointmentNotes').value.trim();
+
+                if (!title || !date || !location || !contactName || !contactPhone || !contactEmail || !scheduledBy) {
+                    alert('Please fill out all required fields.');
+                    return;
+                }
+
+                modalCalendar.addEvent({
+                    title: title,
+                    start: date,
+                    extendedProps: {
+                        location,
+                        contactName,
+                        contactPhone,
+                        contactEmail,
+                        scheduledBy,
+                        notes
+                    }
+                });
+
+                alert('Appointment added successfully!');
+            });
+        });
+    </script>
+
+
