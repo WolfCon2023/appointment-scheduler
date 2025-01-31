@@ -5,9 +5,9 @@ const path = require("path");
 const { Pool } = require("pg");
 
 const app = express();
-const API_BASE_URL = "https://vital-backoffice-apps-production.up.railway.app/api";
+const PORT = process.env.PORT || 80;  // Use Railway's assigned port
 
-// ✅ PostgreSQL Connection
+// ✅ PostgreSQL Database Connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
@@ -16,12 +16,7 @@ const pool = new Pool({
 // ✅ Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public"));
-
-// ✅ Serve index.html for non-API routes
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
+app.use(express.static("public")); // Serves frontend
 
 // ✅ API Route to Save an Appointment (POST)
 app.post("/api/appointments", async (req, res) => {
@@ -50,13 +45,17 @@ app.get("/api/appointments", async (req, res) => {
   }
 });
 
-// ✅ Catch-All Route (Redirect all unknown routes to frontend)
+// ✅ Serve index.html for non-API routes (Prevents 404 for frontend routes)
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// ✅ Catch-All Route: Redirect unknown requests to frontend
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// ✅ Start Server
-const PORT = process.env.PORT || 80;  // Default to 80 if no PORT is set
+// ✅ Start Express Server
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
 });
