@@ -56,7 +56,7 @@ app.get("*", (req, res) => {
 });
 
 // ✅ Start Server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 80;  // Default to 80 if no PORT is set
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
 });
