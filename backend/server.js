@@ -6,12 +6,13 @@ const { Pool } = require("pg");
 
 const app = express();
 const port = process.env.PORT || 3000;
-const API_BASE_URL = "https://vital-backoffice-apps-production.up.railway.app";
+const API_BASE_URL = "https://vital-backoffice-apps-production.up.railway.app/api";
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
+app.use("/api", appointmentRoutes)
 
 // PostgreSQL Connection
 const pool = new Pool({
