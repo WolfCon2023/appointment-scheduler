@@ -1,4 +1,7 @@
- <meta charset="UTF-8">
+<!DOCTYPE html>
+<html lang="en"> <!-- Added lang attribute for screen readers -->
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application Menu</title>
     <style>
@@ -66,37 +69,51 @@
         .nav-button:hover {
             background-color: #5a6268; /* Darker gray on hover */
         }
+
+        /* Responsive Improvements */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            .section-title {
+                font-size: 1.2em;
+            }
+            .app-button {
+                width: 150px;
+                font-size: 0.9em;
+            }
+        }
     </style>
-
-
+</head>
+<body>
     <div class="container">
         <h1>Vital Office Applications Menu</h1>
 
         <!-- Back Office Applications Section -->
         <h2 class="section-title">Back Office Applications</h2>
         <div class="application-list" id="applicationList">
-		<a href="appointment-scheduler.html" class="app-button">Appointment Scheduler</a>
-		<a href="https://app2.example.com" class="app-button">Application 2</a>
-		<a href="https://app3.example.com" class="app-button">Application 3</a>
-		<a href="https://app4.example.com" class="app-button">Application 4</a>
-		<a href="https://app5.example.com" class="app-button">Application 5</a>
-		<a href="https://app6.example.com" class="app-button">Application 6</a>
-		<a href="https://app7.example.com" class="app-button">Application 7</a>
-		<a href="https://app8.example.com" class="app-button">Application 8</a>
-		<a href="https://app9.example.com" class="app-button">Application 9</a>
-		<a href="https://app10.example.com" class="app-button">Application 10</a>
-		<a href="https://app11.example.com" class="app-button">Application 11</a>
+            <a href="appointment-scheduler.html" class="app-button" aria-label="Click to open Appointment Scheduler">Appointment Scheduler</a>
+            <a href="https://app2.example.com" class="app-button" aria-label="Click to open Application 2">Application 2</a>
+            <a href="https://app3.example.com" class="app-button" aria-label="Click to open Application 3">Application 3</a>
+            <a href="https://app4.example.com" class="app-button" aria-label="Click to open Application 4">Application 4</a>
+            <a href="https://app5.example.com" class="app-button" aria-label="Click to open Application 5">Application 5</a>
+            <a href="https://app6.example.com" class="app-button" aria-label="Click to open Application 6">Application 6</a>
+            <a href="https://app7.example.com" class="app-button" aria-label="Click to open Application 7">Application 7</a>
+            <a href="https://app8.example.com" class="app-button" aria-label="Click to open Application 8">Application 8</a>
+            <a href="https://app9.example.com" class="app-button" aria-label="Click to open Application 9">Application 9</a>
+            <a href="https://app10.example.com" class="app-button" aria-label="Click to open Application 10">Application 10</a>
+            <a href="https://app11.example.com" class="app-button" aria-label="Click to open Application 11">Application 11</a>
         </div>
 
         <!-- External Tools Section -->
         <h2 class="section-title">Communications Tools</h2>
         <div class="application-list">
-            <a href="https://mail.vitalinc.net/" class="app-button" target="_blank" onclick="window.open('https://mail.vitalinc.net/', '_blank'); return false;">Email (Zimbra)</a>
+            <a href="https://mail.vitalinc.net/" class="app-button" target="_blank" onclick="window.open('https://mail.vitalinc.net/', '_blank'); return false;" aria-label="Click to open Email (Zimbra)">Email (Zimbra)</a>
         </div>
 
         <!-- Navigation Buttons -->
         <div class="navigation-buttons">
-            <button class="nav-button" onclick="window.history.back();">← Go Back</button>
+            <button class="nav-button" onclick="window.history.back();" aria-label="Go back to the previous page">← Go Back</button>
         </div>
     </div>
 
@@ -105,3 +122,5 @@
             window.history.back();
         }
     </script>
+</body>
+</html>
