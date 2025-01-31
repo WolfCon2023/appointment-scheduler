@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config();  // Make sure to load environment variables from .env file
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
@@ -9,8 +9,8 @@ const PORT = process.env.PORT || 80;  // Ensure it runs on the correct port
 
 // ✅ PostgreSQL Database Connection
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
+  connectionString: process.env.DATABASE_URL,  // Get connection string from .env
+  ssl: { rejectUnauthorized: false },  // Ensure SSL is used for connection
 });
 
 // ✅ Middleware
