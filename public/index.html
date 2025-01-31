@@ -51,13 +51,23 @@
             background-color: #0056b3; /* Darker blue for hover/focus */
             outline: 2px solid #004080; /* Outline for focus state */
         }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            p {
+                font-size: 1em;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Your Company's Back Office Suite</h1>
         <p>Powered by <strong>Vital Inc.</strong></p>
-        <a href="application-menu-page.html" class="cta-button">Get Started</a>
+        <a href="application-menu-page.html" class="cta-button" aria-label="Click to start the application">Get Started</a>
     </div>
 </body>
 </html>
