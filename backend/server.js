@@ -5,7 +5,7 @@ const path = require("path");
 const { Pool } = require("pg");
 
 const app = express();
-const PORT = process.env.PORT || 80;  // Use Railway's assigned port
+const PORT = process.env.PORT || 80;  // Ensure it runs on the correct port
 
 // ✅ PostgreSQL Database Connection
 const pool = new Pool({
@@ -16,9 +16,8 @@ const pool = new Pool({
 // ✅ Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public")); // Serves frontend
 
-// ✅ API Route to Save an Appointment (POST)
+// ✅ API Routes (DEFINE BEFORE SERVING STATIC FILES)
 app.post("/api/appointments", async (req, res) => {
   const { title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes } = req.body;
 
@@ -34,7 +33,6 @@ app.post("/api/appointments", async (req, res) => {
   }
 });
 
-// ✅ API Route to Fetch All Appointments (GET)
 app.get("/api/appointments", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM appointments ORDER BY date ASC");
@@ -45,12 +43,10 @@ app.get("/api/appointments", async (req, res) => {
   }
 });
 
-// ✅ Serve index.html for non-API routes (Prevents 404 for frontend routes)
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
+// ✅ Serve static frontend files (Only after API routes)
+app.use(express.static("public"));
 
-// ✅ Catch-All Route: Redirect unknown requests to frontend
+// ✅ Catch-All Route (Redirect all unknown requests to index.html)
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
