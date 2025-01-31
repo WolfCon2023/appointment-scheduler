@@ -5,28 +5,26 @@ const path = require("path");
 const { Pool } = require("pg");
 
 const app = express();
-const port = process.env.PORT || 3000;
 const API_BASE_URL = "https://vital-backoffice-apps-production.up.railway.app/api";
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.static("public"));
-app.use("/api", require("./routes/appointments"));
-
-// PostgreSQL Connection
+// ✅ PostgreSQL Connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 });
 
-// Route to serve index.html by default
+// ✅ Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.static("public"));
+
+// ✅ Serve index.html for non-API routes
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// API Route to Save an Appointment
-app.post("/appointments", async (req, res) => {
+// ✅ API Route to Save an Appointment (POST)
+app.post("/api/appointments", async (req, res) => {
   const { title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes } = req.body;
 
   try {
@@ -41,15 +39,24 @@ app.post("/appointments", async (req, res) => {
   }
 });
 
-// API Route to Fetch Appointments
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
+// ✅ API Route to Fetch All Appointments (GET)
+app.get("/api/appointments", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM appointments ORDER BY date ASC");
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Database error" });
   }
 });
 
-// Use Railway-assigned PORT
+// ✅ Catch-All Route (Redirect all unknown routes to frontend)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// ✅ Start Server
 const PORT = process.env.PORT || 3000;
-app.listen(port, () => {
+app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
 });
