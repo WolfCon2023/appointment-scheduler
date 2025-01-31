@@ -12,7 +12,7 @@ const API_BASE_URL = "https://vital-backoffice-apps-production.up.railway.app/ap
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
-app.use("/api", appointmentRoutes)
+app.use("/api", require("./routes/appointments"));
 
 // PostgreSQL Connection
 const pool = new Pool({
@@ -42,13 +42,9 @@ app.post("/appointments", async (req, res) => {
 });
 
 // API Route to Fetch Appointments
-app.get("/appointments", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM appointments ORDER BY date ASC");
-    res.status(200).json(result.rows);
-  } catch (error) {
-    console.error("Database error:", error);
-    res.status(500).json({ error: "Database error" });
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
   }
 });
 
