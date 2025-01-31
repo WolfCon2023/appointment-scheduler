@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home | Your Company's Back Office Suite</title>
-    
-    <!-- FullCalendar CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
-    
     <style>
         /* WCAG and ADA Compliant Styles */
         body {
@@ -63,101 +59,5 @@
         <p>Powered by <strong>Vital Inc.</strong></p>
         <a href="/application-menu-page.html" class="cta-button">Get Started</a>
     </div>
-
-    <!-- FullCalendar Modal Container -->
-    <div id="calendarModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Scheduled Appointments</h2>
-                <button id="closeCalendar" class="modal-close">Close</button>
-            </div>
-            <div id="modalCalendar"></div>
-        </div>
-    </div>
-
-    <!-- FullCalendar JS -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-
-    <!-- JavaScript for Appointment Scheduling and Calendar -->
-    <script>
-        document.getElementById("addAppointment")?.addEventListener("click", async () => {
-            const title = document.getElementById("appointmentTitle").value.trim();
-            const date = document.getElementById("appointmentDate").value;
-            const location = document.getElementById("appointmentLocation").value.trim();
-            const contactName = document.getElementById("contactName").value.trim();
-            const contactPhone = document.getElementById("contactPhoneNumber").value.trim();
-            const contactEmail = document.getElementById("contactEmail").value.trim();
-            const scheduledBy = document.getElementById("scheduledBy").value.trim();
-            const notes = document.getElementById("appointmentNotes").value.trim();
-
-            if (!title || !date || !location || !contactName || !contactPhone || !contactEmail || !scheduledBy) {
-                alert("Please fill out all required fields.");
-                return;
-            }
-
-            try {
-                const response = await fetch("https://your-railway-app-url.com/appointments", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes })
-                });
-
-                if (response.ok) {
-                    alert("Appointment added successfully!");
-                } else {
-                    alert("Failed to add appointment.");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Error adding appointment.");
-            }
-        });
-
-        // Calendar Integration
-        document.addEventListener("DOMContentLoaded", function () {
-            const modalCalendarEl = document.getElementById("modalCalendar");
-
-            const modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
-                initialView: "dayGridMonth",
-                headerToolbar: {
-                    left: "prev,next today",
-                    center: "title",
-                    right: "dayGridMonth,timeGridWeek,timeGridDay"
-                },
-                events: async function(fetchInfo, successCallback, failureCallback) {
-                    try {
-                        const response = await fetch("https://your-railway-app-url.com/appointments");
-                        const events = await response.json();
-                        successCallback(events.map(event => ({
-                            title: event.title,
-                            start: event.date,
-                            extendedProps: {
-                                location: event.location,
-                                contactName: event.contact_name,
-                                contactPhone: event.contact_phone,
-                                contactEmail: event.contact_email,
-                                scheduledBy: event.scheduled_by,
-                                notes: event.notes
-                            }
-                        })));
-                    } catch (error) {
-                        console.error("Error fetching appointments:", error);
-                        failureCallback(error);
-                    }
-                }
-            });
-
-            // Open Calendar Modal
-            document.getElementById("openCalendar")?.addEventListener("click", () => {
-                document.getElementById("calendarModal").style.display = "flex";
-                modalCalendar.render();
-            });
-
-            // Close Calendar Modal
-            document.getElementById("closeCalendar")?.addEventListener("click", () => {
-                document.getElementById("calendarModal").style.display = "none";
-            });
-        });
-    </script>
 </body>
 </html>
