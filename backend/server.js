@@ -6,21 +6,33 @@ const { Pool } = require("pg");
 
 const app = express();
 const port = process.env.PORT || 3000;
-
-// Database Connection Using Environment Variables
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-});
+const API_BASE_URL = "/api"; // Base API path
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
+// Route to serve index.html by default
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// PostgreSQL Connection
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});
+
 // API Route to Save an Appointment
 app.post("/api/appointments", async (req, res) => {
+  console.log("Received POST /api/appointments");
+
   const { title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes } = req.body;
+  
+  if (!title || !date || !location || !contactName || !contactPhone || !contactEmail || !scheduledBy) {
+      return res.status(400).json({ error: "Missing required fields." });
+  }
 
   try {
     const result = await pool.query(
@@ -36,8 +48,10 @@ app.post("/api/appointments", async (req, res) => {
 
 // API Route to Fetch Appointments
 app.get("/api/appointments", async (req, res) => {
+  console.log("Received GET /api/appointments");
+
   try {
-    const result = await pool.query("SELECT * FROM appointments ORDER BY date DESC");
+    const result = await pool.query("SELECT * FROM appointments ORDER BY date ASC");
     res.json(result.rows);
   } catch (error) {
     console.error("Database error:", error);
@@ -45,7 +59,12 @@ app.get("/api/appointments", async (req, res) => {
   }
 });
 
-// Start Server on Correct Port
+// Catch-All Route to Serve `index.html`
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// Start Server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
