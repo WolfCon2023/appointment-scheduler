@@ -26,25 +26,6 @@
             text-align: center;
             color: #004080;
         }
-        .form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-        }
-        .form-container {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            width: 100%;
-            max-width: 300px;
-        }
-        .form input, .form textarea, .form button {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1em;
-        }
         .modal {
             display: none;
             position: fixed;
@@ -89,42 +70,41 @@
     <!-- Step 1: Schedule an Appointment -->
     <div class="step">
         <h2>Schedule an Appointment</h2>
-        <p>Fill out the details below.</p>
         <div class="form">
             <div class="form-container">
                 <label for="appointmentTitle">Title:</label>
-                <input type="text" id="appointmentTitle" placeholder="Title" aria-label="Appointment Title">
+                <input type="text" id="appointmentTitle" placeholder="Title">
             </div>
             <div class="form-container">
                 <label for="appointmentDate">Time:</label>
-                <input type="datetime-local" id="appointmentDate" aria-label="Appointment Date and Time">
+                <input type="datetime-local" id="appointmentDate">
             </div>
             <div class="form-container">
                 <label for="appointmentLocation">Location:</label>
-                <input type="text" id="appointmentLocation" placeholder="Location" aria-label="Appointment Location">
+                <input type="text" id="appointmentLocation" placeholder="Location">
             </div>
             <div class="form-container">
                 <label for="contactName">Contact Name:</label>
-                <input type="text" id="contactName" placeholder="Name" aria-label="Contact Name">
+                <input type="text" id="contactName" placeholder="Name">
             </div>
             <div class="form-container">
                 <label for="contactPhoneNumber">Phone:</label>
-                <input type="text" id="contactPhoneNumber" placeholder="Phone" aria-label="Contact Phone Number">
+                <input type="text" id="contactPhoneNumber" placeholder="Phone">
             </div>
             <div class="form-container">
                 <label for="contactEmail">Email:</label>
-                <input type="email" id="contactEmail" placeholder="Email" aria-label="Contact Email">
+                <input type="email" id="contactEmail" placeholder="Email">
             </div>
             <div class="form-container">
                 <label for="scheduledBy">Scheduled By:</label>
-                <input type="text" id="scheduledBy" placeholder="Your Name" aria-label="Name of person scheduling">
+                <input type="text" id="scheduledBy" placeholder="Your Name">
             </div>
             <div class="form-container">
                 <label for="appointmentNotes">Notes:</label>
-                <textarea id="appointmentNotes" placeholder="Notes" aria-label="Additional Notes"></textarea>
+                <textarea id="appointmentNotes" placeholder="Notes"></textarea>
             </div>
             <div class="form-container" style="text-align: center;">
-                <button id="addAppointment" aria-label="Add Appointment">Add Appointment</button>
+                <button id="addAppointment">Add Appointment</button>
             </div>
         </div>
     </div>
@@ -132,9 +112,8 @@
     <!-- Step 2: View Scheduled Appointments -->
     <div class="step">
         <h2>View Scheduled Appointments</h2>
-        <p>Click below to view your calendar.</p>
         <div style="text-align: center;">
-            <button id="openCalendar" aria-label="Open Appointment Calendar">View Calendar</button>
+            <button id="openCalendar">View Calendar</button>
         </div>
     </div>
 
@@ -143,7 +122,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Scheduled Appointments</h2>
-                <button id="closeCalendar" class="modal-close" aria-label="Close Calendar">Close</button>
+                <button id="closeCalendar" class="modal-close">Close</button>
             </div>
             <div id="modalCalendar"></div>
         </div>
@@ -169,8 +148,38 @@
             return;
         }
 
+        let modalCalendar;
+
         openCalendarBtn.addEventListener('click', () => {
             console.log("Opening calendar...");
+
+            if (!modalCalendar) {
+                modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
+                    initialView: "dayGridMonth",
+                    headerToolbar: {
+                        left: "prev,next today",
+                        center: "title",
+                        right: "dayGridMonth,timeGridWeek,timeGridDay"
+                    },
+                    events: async function(fetchInfo, successCallback, failureCallback) {
+                        try {
+                            const response = await fetch(`${API_BASE_URL}/appointments`);
+                            const events = await response.json();
+                            console.log("📅 Fetched Events:", events);
+                            successCallback(events.map(event => ({
+                                title: event.title,
+                                start: event.date
+                            })));
+                        } catch (error) {
+                            console.error("Error fetching appointments:", error);
+                            failureCallback(error);
+                        }
+                    }
+                });
+
+                modalCalendar.render();
+            }
+
             modal.style.display = 'flex';
         });
 
@@ -207,6 +216,7 @@
 
                 if (response.ok) {
                     alert("Appointment added successfully!");
+                    modalCalendar.refetchEvents();
                 } else {
                     alert("Failed to add appointment.");
                 }
