@@ -84,27 +84,6 @@
         button:hover {
             background-color: #0056b3;
         }
-
-        /* Appointment Details Modal */
-        #appointmentDetailsModal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .details-content {
-            width: 90%;
-            max-width: 500px;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #fff;
-        }
     </style>
 </head>
 <body>
@@ -172,63 +151,55 @@
             <div id="modalCalendar"></div>
         </div>
     </div>
-
-    <!-- Appointment Details Modal -->
-    <div id="appointmentDetailsModal" class="modal">
-        <div class="details-content">
-            <h2>Appointment Details</h2>
-            <p id="detailsContent"></p>
-            <button id="closeDetails">Close</button>
-        </div>
-    </div>
 </div>
 
+<!-- FullCalendar JS -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
 <script>
     const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
 
     document.addEventListener('DOMContentLoaded', function () {
+        console.log("DOM Loaded");
+
         const modal = document.getElementById('calendarModal');
         const openCalendarBtn = document.getElementById('openCalendar');
         const closeCalendarBtn = document.getElementById('closeCalendar');
         const modalCalendarEl = document.getElementById('modalCalendar');
         const addAppointmentButton = document.getElementById('addAppointment');
-        const appointmentDetailsModal = document.getElementById('appointmentDetailsModal');
-        const detailsContent = document.getElementById('detailsContent');
-        const closeDetailsBtn = document.getElementById('closeDetails');
 
         let modalCalendar;
+
+        // Fetch Appointments from API
+        async function fetchAppointments() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/appointments`);
+                const appointments = await response.json();
+
+                return appointments.map(appt => ({
+                    title: appt.title,
+                    start: appt.date,
+                    url: `/appointment-details?id=${appt.id}`
+                }));
+            } catch (error) {
+                console.error("Error fetching appointments:", error);
+                return [];
+            }
+        }
 
         openCalendarBtn.addEventListener('click', async () => {
             modal.style.display = 'flex';
 
             if (!modalCalendar) {
+                const events = await fetchAppointments();
+
                 modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
                     initialView: "dayGridMonth",
-                    events: async function(fetchInfo, successCallback, failureCallback) {
-                        try {
-                            const response = await fetch(`${API_BASE_URL}/appointments`);
-                            const appointments = await response.json();
-
-                            successCallback(appointments.map(appt => ({
-                                id: appt.id,
-                                title: appt.title,
-                                start: appt.date
-                            })));
-                        } catch (error) {
-                            failureCallback(error);
-                        }
+                    headerToolbar: {
+                        left: "prev,next today",
+                        center: "title",
+                        right: "dayGridMonth,timeGridWeek,timeGridDay"
                     },
-                    eventClick: async function(info) {
-                        const response = await fetch(`${API_BASE_URL}/appointments/${info.event.id}`);
-                        const data = await response.json();
-                        detailsContent.innerHTML = `
-                            <strong>Title:</strong> ${data.title}<br>
-                            <strong>Date:</strong> ${data.date}<br>
-                            <strong>Location:</strong> ${data.location}<br>
-                        `;
-                        appointmentDetailsModal.style.display = 'flex';
-                    }
+                    events: events
                 });
 
                 modalCalendar.render();
@@ -237,8 +208,43 @@
             }
         });
 
-        closeCalendarBtn.addEventListener('click', () => modal.style.display = 'none');
-        closeDetailsBtn.addEventListener('click', () => appointmentDetailsModal.style.display = 'none');
+        closeCalendarBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        addAppointmentButton.addEventListener('click', async () => {
+            const title = document.getElementById('appointmentTitle').value.trim();
+            const date = document.getElementById('appointmentDate').value;
+            const location = document.getElementById('appointmentLocation').value.trim();
+            const contactName = document.getElementById('contactName').value.trim();
+            const contactPhone = document.getElementById('contactPhoneNumber').value.trim();
+            const contactEmail = document.getElementById('contactEmail').value.trim();
+            const scheduledBy = document.getElementById('scheduledBy').value.trim();
+            const notes = document.getElementById('appointmentNotes').value.trim();
+
+            if (!title || !date || !location || !contactName || !contactPhone || !contactEmail || !scheduledBy) {
+                alert("Please fill out all required fields.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/appointments`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes })
+                });
+
+                if (response.ok) {
+                    alert("Appointment added successfully!");
+                    modalCalendar.refetchEvents();
+                } else {
+                    alert("Failed to add appointment.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error adding appointment.");
+            }
+        });
     });
 </script>
 </body>
