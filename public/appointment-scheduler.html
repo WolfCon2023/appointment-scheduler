@@ -204,10 +204,18 @@
                     eventClick: function(info) {  
                         info.jsEvent.preventDefault();
                         const data = appointmentData[info.event.id];
+
                         document.getElementById('detailsContent').innerHTML = `
                             <strong>Title:</strong> ${data.title}<br>
                             <strong>Date:</strong> ${new Date(data.date).toLocaleString()}<br>
+                            <strong>Location:</strong> ${data.location}<br>
+                            <strong>Contact Name:</strong> ${data.contactName}<br>
+                            <strong>Phone:</strong> ${data.contactPhone}<br>
+                            <strong>Email:</strong> ${data.contactEmail}<br>
+                            <strong>Scheduled By:</strong> ${data.scheduledBy}<br>
+                            <strong>Notes:</strong> ${data.notes}<br>
                         `;
+
                         document.getElementById('appointmentDetailsModal').style.display = 'flex';
                     }
                 });
