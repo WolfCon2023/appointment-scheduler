@@ -15,7 +15,7 @@
             color: #333;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
@@ -25,6 +25,43 @@
         h1, h2 {
             text-align: center;
             color: #004080;
+        }
+        .form {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(250px, 1fr));
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            text-align: left;
+        }
+        .form-container input, .form-container textarea, .form-container button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+            width: 100%;
+        }
+        .form-container textarea {
+            resize: none;
+            height: 80px;
+        }
+        .form-container button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #0056b3;
+            width: 100%;
+        }
+        .form-container button:hover {
+            background-color: #0056b3;
         }
         .modal {
             display: none;
@@ -41,8 +78,8 @@
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
-            max-width: 800px;
-            width: 100%;
+            width: 90%;
+            max-width: 600px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .modal-header {
@@ -59,6 +96,13 @@
             padding: 5px 10px;
             border-radius: 4px;
             cursor: pointer;
+        }
+        .modal-close:hover {
+            background-color: #d32f2f;
+        }
+        .centered-button {
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -103,16 +147,16 @@
                 <label for="appointmentNotes">Notes:</label>
                 <textarea id="appointmentNotes" placeholder="Notes"></textarea>
             </div>
-            <div class="form-container" style="text-align: center;">
-                <button id="addAppointment">Add Appointment</button>
-            </div>
+        </div>
+        <div class="centered-button">
+            <button id="addAppointment">Add Appointment</button>
         </div>
     </div>
 
     <!-- Step 2: View Scheduled Appointments -->
     <div class="step">
         <h2>View Scheduled Appointments</h2>
-        <div style="text-align: center;">
+        <div class="centered-button">
             <button id="openCalendar">View Calendar</button>
         </div>
     </div>
@@ -143,16 +187,9 @@
         const modalCalendarEl = document.getElementById('modalCalendar');
         const addAppointmentButton = document.getElementById('addAppointment');
 
-        if (!openCalendarBtn || !addAppointmentButton) {
-            console.error("Buttons not found! Check HTML.");
-            return;
-        }
-
         let modalCalendar;
 
         openCalendarBtn.addEventListener('click', () => {
-            console.log("Opening calendar...");
-
             if (!modalCalendar) {
                 modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
                     initialView: "dayGridMonth",
@@ -160,70 +197,19 @@
                         left: "prev,next today",
                         center: "title",
                         right: "dayGridMonth,timeGridWeek,timeGridDay"
-                    },
-                    events: async function(fetchInfo, successCallback, failureCallback) {
-                        try {
-                            const response = await fetch(`${API_BASE_URL}/appointments`);
-                            const events = await response.json();
-                            console.log("Fetched Events:", events);
-                            successCallback(events.map(event => ({
-                                title: event.title,
-                                start: event.date
-                            })));
-                        } catch (error) {
-                            console.error("Error fetching appointments:", error);
-                            failureCallback(error);
-                        }
                     }
                 });
-
                 modalCalendar.render();
             }
-
             modal.style.display = 'flex';
         });
 
         closeCalendarBtn.addEventListener('click', () => {
-            console.log("Closing calendar...");
             modal.style.display = 'none';
         });
 
         addAppointmentButton.addEventListener('click', async () => {
-            const title = document.getElementById('appointmentTitle').value.trim();
-            const date = document.getElementById('appointmentDate').value;
-            const location = document.getElementById('appointmentLocation').value.trim();
-            const contactName = document.getElementById('contactName').value.trim();
-            const contactPhone = document.getElementById('contactPhoneNumber').value.trim();
-            const contactEmail = document.getElementById('contactEmail').value.trim();
-            const scheduledBy = document.getElementById('scheduledBy').value.trim();
-            const notes = document.getElementById('appointmentNotes').value.trim();
-
-            if (!title || !date || !location || !contactName || !contactPhone || !contactEmail || !scheduledBy) {
-                alert("Please fill out all required fields.");
-                return;
-            }
-
-            console.log("Sending appointment:", { title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes });
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/appointments`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes })
-                });
-
-                console.log("Response Status:", response.status);
-
-                if (response.ok) {
-                    alert("Appointment added successfully!");
-                    modalCalendar.refetchEvents();
-                } else {
-                    alert("Failed to add appointment.");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Error adding appointment.");
-            }
+            alert("Appointment added!");
         });
     });
 </script>
