@@ -13,10 +13,10 @@
             margin: 0;
             padding: 0;
             color: #222;
-            font-size: 18px;
+            font-size: 14px;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
@@ -27,18 +27,30 @@
             text-align: center;
             color: #003366;
         }
+        .form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
         label {
             font-weight: bold;
             display: block;
-            margin-top: 10px;
+            margin-top: 5px;
         }
         input, textarea, button {
             width: 100%;
-            padding: 12px;
-            margin-top: 5px;
+            padding: 8px;
+            margin-top: 3px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="email"], input[type="tel"] {
+            min-length: 3;
+            max-length: 100;
+        }
+        input[type="datetime-local"] {
+            min: "2023-01-01T00:00";
         }
         button {
             background-color: #0056b3;
@@ -80,13 +92,16 @@
             background-color: #c9302c;
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 5px;
             cursor: pointer;
         }
         .modal-close:hover, .modal-close:focus {
             background-color: #a72824;
             outline: 3px solid #ffcc00;
+        }
+        .form-container-full {
+            grid-column: span 2;
         }
     </style>
 </head>
@@ -99,7 +114,7 @@
         <div class="form">
             <div class="form-container">
                 <label for="appointmentTitle">Title:</label>
-                <input type="text" id="appointmentTitle" aria-label="Appointment Title" required>
+                <input type="text" id="appointmentTitle" aria-label="Appointment Title" required minlength="3" maxlength="100">
             </div>
             <div class="form-container">
                 <label for="appointmentDate">Time:</label>
@@ -107,15 +122,15 @@
             </div>
             <div class="form-container">
                 <label for="appointmentLocation">Location:</label>
-                <input type="text" id="appointmentLocation" aria-label="Appointment Location" required>
+                <input type="text" id="appointmentLocation" aria-label="Appointment Location" required minlength="3" maxlength="100">
             </div>
             <div class="form-container">
                 <label for="contactName">Contact Name:</label>
-                <input type="text" id="contactName" aria-label="Contact Name" required>
+                <input type="text" id="contactName" aria-label="Contact Name" required minlength="3" maxlength="100">
             </div>
             <div class="form-container">
                 <label for="contactPhoneNumber">Phone:</label>
-                <input type="tel" id="contactPhoneNumber" aria-label="Contact Phone" required>
+                <input type="tel" id="contactPhoneNumber" aria-label="Contact Phone" required pattern="\d{10,15}">
             </div>
             <div class="form-container">
                 <label for="contactEmail">Email:</label>
@@ -123,13 +138,13 @@
             </div>
             <div class="form-container">
                 <label for="scheduledBy">Scheduled By:</label>
-                <input type="text" id="scheduledBy" aria-label="Scheduled By" required>
+                <input type="text" id="scheduledBy" aria-label="Scheduled By" required minlength="3" maxlength="100">
             </div>
-            <div class="form-container">
+            <div class="form-container-full">
                 <label for="appointmentNotes">Notes:</label>
-                <textarea id="appointmentNotes" aria-label="Appointment Notes"></textarea>
+                <textarea id="appointmentNotes" aria-label="Appointment Notes" maxlength="500"></textarea>
             </div>
-            <div class="form-container" style="text-align: center;">
+            <div class="form-container-full" style="text-align: center;">
                 <button id="addAppointment" aria-label="Add Appointment">Add Appointment</button>
             </div>
         </div>
