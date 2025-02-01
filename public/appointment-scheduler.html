@@ -132,7 +132,7 @@
 <!-- FullCalendar JS -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
 <script>
-    const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
+    const API_BASE_URL = "https://vital-backoffice-apps-production.up.railway.app/api";
 
     document.addEventListener('DOMContentLoaded', function () {
         console.log("DOM Loaded");
@@ -163,61 +163,9 @@
                     },
                     events: async function(fetchInfo, successCallback, failureCallback) {
                         try {
-                            const response = await fetch(getElementById('calendarModal');
-        const openCalendarBtn = document.getElementById('openCalendar');
-        const closeCalendarBtn = document.getElementById('closeCalendar');
-        const modalCalendarEl = document.getElementById('modalCalendar');
-        const addAppointmentButton = document.getElementById('addAppointment');
-
-        if (!openCalendarBtn || !addAppointmentButton) {
-            console.error("Buttons not found! Check HTML.");
-            return;
-        }
-
-        let modalCalendar;
-
-        openCalendarBtn.addEventListener('click', () => {
-            console.log("Opening calendar...");
-
-            if (!modalCalendar) {
-                modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
-                    initialView: "dayGridMonth",
-                    headerToolbar: {
-                        left: "prev,next today",
-                        center: "title",
-                        right: "dayGridMonth,timeGridWeek,timeGridDay"
-                    },
-                    events: async function(fetchInfo, successCallback, failureCallback) {
-                        try {
-                            const response = await fetch(getElementById('calendarModal');
-        const openCalendarBtn = document.getElementById('openCalendar');
-        const closeCalendarBtn = document.getElementById('closeCalendar');
-        const modalCalendarEl = document.getElementById('modalCalendar');
-        const addAppointmentButton = document.getElementById('addAppointment');
-
-        if (!openCalendarBtn || !addAppointmentButton) {
-            console.error("Buttons not found! Check HTML.");
-            return;
-        }
-
-        let modalCalendar;
-
-        openCalendarBtn.addEventListener('click', () => {
-            console.log("Opening calendar...");
-
-            if (!modalCalendar) {
-                modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
-                    initialView: "dayGridMonth",
-                    headerToolbar: {
-                        left: "prev,next today",
-                        center: "title",
-                        right: "dayGridMonth,timeGridWeek,timeGridDay"
-                    },
-                    events: async function(fetchInfo, successCallback, failureCallback) {
-                        try {
-                            const response = await fetch(${API_BASE_URL}/appointments);
+                            const response = await fetch(`${API_BASE_URL}/appointments`);
                             const events = await response.json();
-                            console.log("📅 Fetched Events:", events);
+                            console.log("Fetched Events:", events);
                             successCallback(events.map(event => ({
                                 title: event.title,
                                 start: event.date
@@ -258,7 +206,7 @@
             console.log("Sending appointment:", { title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes });
 
             try {
-                const response = await fetch(${API_BASE_URL}/appointments, {
+                const response = await fetch(`${API_BASE_URL}/appointments`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes })
@@ -273,7 +221,7 @@
                     alert("Failed to add appointment.");
                 }
             } catch (error) {
-                console.error("Error:",error);
+                console.error("Error:", error);
                 alert("Error adding appointment.");
             }
         });
