@@ -178,7 +178,7 @@
                 return appointments.map(appt => ({
                     title: appt.title,
                     start: appt.date,
-                    url: `appointment-details?id=${appt.id}`
+                    url: `/appointment-details?id=${appt.id}`
                 }));
             } catch (error) {
                 console.error("Error fetching appointments:", error);
