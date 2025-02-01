@@ -25,13 +25,13 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
-            padding: 5px; /* Slightly reduced padding */
+            padding: 5px;
         }
 
         h1 { 
             color: #004080; 
             text-align: center; 
-            margin: 10px 0; /* Adds spacing at the top */
+            margin: 10px 0;
         }
 
         #calendar {
@@ -42,22 +42,23 @@
 
         /* Increase calendar day box size */
         .fc-daygrid-day {
-            min-height: 120px !important; /* 🆙 Increased cell height */
-            padding: 5px; /* 🆙 Better spacing */
+            min-height: 120px !important; /* Increased cell height */
+            padding: 5px;
         }
 
-        /* Ensures appointment display format: "Appt. HH:MM AM/PM" */
+        /* Ensure appointment format: "Appt. HH:MM AM/PM" */
         .fc-event-title {
-            font-size: 16px !important; /* 🆙 Increased font size */
-            font-weight: bold !important; /* 🔹 Bold text */
-            white-space: nowrap !important; /* Prevents unnecessary wrapping */
+            font-size: 16px !important; /* Bigger font */
+            font-weight: bold !important; /* Bold text */
+            color: black !important; /* 🔹 Set text to black */
+            white-space: nowrap !important; /* Prevents wrapping */
             overflow: hidden;
         }
 
         .fc-event-time {
             font-size: 16px !important;
-            font-weight: bold !important; /* 🔹 Bold time text */
-            color: #fff; /* Ensures visibility */
+            font-weight: bold !important; /* Bold time text */
+            color: black !important; /* 🔹 Set time to black */
         }
 
         /* Modal Styling */
@@ -78,7 +79,7 @@
             max-width: 600px; 
             padding: 20px; 
             border-radius: 8px; 
-            background-color: #fff; /* Fully opaque */
+            background-color: #fff;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             display: flex; 
             flex-direction: column; 
