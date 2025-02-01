@@ -6,7 +6,7 @@
     <title>Main Calendar | Business & Events</title>
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <style>
-        /* Adjusted Calendar Size for Visibility */
+        /* Full Page Layout */
         html, body { 
             height: 100%; 
             margin: 0; 
@@ -19,13 +19,13 @@
         }
 
         .container { 
-            width: 100%; 
-            height: 95vh; /* Slightly smaller to allow bottom visibility */
+            width: 98%; /* Increased width for better readability */
+            height: 95vh; /* Maximized height while keeping bottom visible */
             display: flex; 
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
-            padding: 10px; /* Added padding for better spacing */
+            padding: 5px; /* Slightly reduced padding */
         }
 
         h1 { 
@@ -35,9 +35,20 @@
         }
 
         #calendar {
-            flex-grow: 1; /* Allows calendar to fill remaining space */
-            width: 95%; /* Slightly smaller than full width */
-            height: 90vh; /* Adjusted height for visibility */
+            flex-grow: 1; 
+            width: 100%; /* Fully utilizes available space */
+            height: 92vh; /* Slightly increased to fit more events */
+        }
+
+        /* Ensures event title & time are readable */
+        .fc-event-title {
+            white-space: normal !important; /* Allows text wrapping */
+            overflow: visible !important;
+            font-size: 14px !important; /* Increases font size */
+        }
+
+        .fc-event-time {
+            font-weight: bold !important; /* Highlights time */
         }
 
         /* Modal Styling */
@@ -50,7 +61,7 @@
             backdrop-filter: blur(4px); /* Blurred Background */
             justify-content: center; 
             align-items: center;
-            z-index: 9999; /* Ensures it's above other content */
+            z-index: 9999;
         }
 
         .modal-content { 
@@ -58,12 +69,12 @@
             max-width: 600px; 
             padding: 20px; 
             border-radius: 8px; 
-            background-color: #fff; /* Ensure it's fully opaque */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Better visibility */
+            background-color: #fff; /* Fully opaque */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             display: flex; 
             flex-direction: column; 
             align-items: center;
-            z-index: 10000; /* Ensures it's above modal background */
+            z-index: 10000;
         }
 
         button { 
@@ -130,7 +141,7 @@
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            height: "90vh", /* Adjusted height to make bottom visible */
+            height: "92vh", /* Adjusted height to improve visibility */
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
             events: fetchAllEvents,
             eventClick: function(info) {
