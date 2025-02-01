@@ -13,7 +13,6 @@
             margin: 0;
             padding: 0;
             color: #333;
-            font-size: 18px;
         }
         .container {
             max-width: 1200px;
@@ -21,11 +20,11 @@
             padding: 20px;
             background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         h1, h2 {
             text-align: center;
-            color: #003366;
+            color: #004080;
         }
         .modal {
             display: none;
@@ -34,7 +33,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.5);
             justify-content: center;
             align-items: center;
         }
@@ -42,10 +41,9 @@
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
-            max-width: 100%;
-            width: 90%;
-            height: 90%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .modal-header {
             display: flex;
@@ -55,66 +53,179 @@
             margin-bottom: 15px;
         }
         .modal-close {
-            background-color: #c9302c;
-            color: white;
+            background-color: #f44336;
+            color: #fff;
             border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
             cursor: pointer;
-        }
-        .modal-close:hover, .modal-close:focus {
-            background-color: #a72824;
-            outline: 3px solid #ffcc00;
-        }
-        .form-container-full {
-            grid-column: span 2;
         }
     </style>
 </head>
 <body>
+
 <div class="container">
     <h1>Business Appointment Scheduler</h1>
 
+    <!-- Step 1: Schedule an Appointment -->
     <div class="step">
         <h2>Schedule an Appointment</h2>
         <div class="form">
             <div class="form-container">
                 <label for="appointmentTitle">Title:</label>
-                <input type="text" id="appointmentTitle" placeholder="Title" required minlength="3" maxlength="100">
+                <input type="text" id="appointmentTitle" placeholder="Title">
             </div>
             <div class="form-container">
                 <label for="appointmentDate">Time:</label>
-                <input type="datetime-local" id="appointmentDate" required>
+                <input type="datetime-local" id="appointmentDate">
             </div>
             <div class="form-container">
                 <label for="appointmentLocation">Location:</label>
-                <input type="text" id="appointmentLocation" placeholder="Location" required minlength="3" maxlength="100">
+                <input type="text" id="appointmentLocation" placeholder="Location">
             </div>
             <div class="form-container">
                 <label for="contactName">Contact Name:</label>
-                <input type="text" id="contactName" placeholder="Name" required minlength="3" maxlength="100">
+                <input type="text" id="contactName" placeholder="Name">
             </div>
             <div class="form-container">
                 <label for="contactPhoneNumber">Phone:</label>
-                <input type="tel" id="contactPhoneNumber" placeholder="Phone" required pattern="\d{10,15}">
+                <input type="text" id="contactPhoneNumber" placeholder="Phone">
             </div>
             <div class="form-container">
                 <label for="contactEmail">Email:</label>
-                <input type="email" id="contactEmail" placeholder="Email" required>
+                <input type="email" id="contactEmail" placeholder="Email">
             </div>
             <div class="form-container">
                 <label for="scheduledBy">Scheduled By:</label>
-                <input type="text" id="scheduledBy" placeholder="Your Name" required minlength="3" maxlength="100">
+                <input type="text" id="scheduledBy" placeholder="Your Name">
             </div>
-            <div class="form-container-full">
+            <div class="form-container">
                 <label for="appointmentNotes">Notes:</label>
-                <textarea id="appointmentNotes" placeholder="Notes" maxlength="500"></textarea>
+                <textarea id="appointmentNotes" placeholder="Notes"></textarea>
             </div>
-            <div class="form-container-full" style="text-align: center;">
+            <div class="form-container" style="text-align: center;">
                 <button id="addAppointment">Add Appointment</button>
             </div>
         </div>
     </div>
+
+    <!-- Step 2: View Scheduled Appointments -->
+    <div class="step">
+        <h2>View Scheduled Appointments</h2>
+        <div style="text-align: center;">
+            <button id="openCalendar">View Calendar</button>
+        </div>
+    </div>
+
+    <!-- Modal for Calendar -->
+    <div id="calendarModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Scheduled Appointments</h2>
+                <button id="closeCalendar" class="modal-close">Close</button>
+            </div>
+            <div id="modalCalendar"></div>
+        </div>
+    </div>
 </div>
+
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script>
+    const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
+
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log("DOM Loaded");
+
+        const modal = document.getElementById('calendarModal');
+        const openCalendarBtn = document.getElementById('openCalendar');
+        const closeCalendarBtn = document.getElementById('closeCalendar');
+        const modalCalendarEl = document.getElementById('modalCalendar');
+        const addAppointmentButton = document.getElementById('addAppointment');
+
+        if (!openCalendarBtn || !addAppointmentButton) {
+            console.error("Buttons not found! Check HTML.");
+            return;
+        }
+
+        let modalCalendar;
+
+        openCalendarBtn.addEventListener('click', () => {
+            console.log("Opening calendar...");
+
+            if (!modalCalendar) {
+                modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
+                    initialView: "dayGridMonth",
+                    headerToolbar: {
+                        left: "prev,next today",
+                        center: "title",
+                        right: "dayGridMonth,timeGridWeek,timeGridDay"
+                    },
+                    events: async function(fetchInfo, successCallback, failureCallback) {
+                        try {
+                            const response = await fetch(`${API_BASE_URL}/appointments`);
+                            const events = await response.json();
+                            console.log("Fetched Events:", events);
+                            successCallback(events.map(event => ({
+                                title: event.title,
+                                start: event.date
+                            })));
+                        } catch (error) {
+                            console.error("Error fetching appointments:", error);
+                            failureCallback(error);
+                        }
+                    }
+                });
+
+                modalCalendar.render();
+            }
+
+            modal.style.display = 'flex';
+        });
+
+        closeCalendarBtn.addEventListener('click', () => {
+            console.log("Closing calendar...");
+            modal.style.display = 'none';
+        });
+
+        addAppointmentButton.addEventListener('click', async () => {
+            const title = document.getElementById('appointmentTitle').value.trim();
+            const date = document.getElementById('appointmentDate').value;
+            const location = document.getElementById('appointmentLocation').value.trim();
+            const contactName = document.getElementById('contactName').value.trim();
+            const contactPhone = document.getElementById('contactPhoneNumber').value.trim();
+            const contactEmail = document.getElementById('contactEmail').value.trim();
+            const scheduledBy = document.getElementById('scheduledBy').value.trim();
+            const notes = document.getElementById('appointmentNotes').value.trim();
+
+            if (!title || !date || !location || !contactName || !contactPhone || !contactEmail || !scheduledBy) {
+                alert("Please fill out all required fields.");
+                return;
+            }
+
+            console.log("Sending appointment:", { title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes });
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/appointments`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes })
+                });
+
+                console.log("Response Status:", response.status);
+
+                if (response.ok) {
+                    alert("Appointment added successfully!");
+                    modalCalendar.refetchEvents();
+                } else {
+                    alert("Failed to add appointment.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error adding appointment.");
+            }
+        });
+    });
+</script>
 </body>
 </html>
