@@ -13,22 +13,22 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public")); // Serve static files from 'public' directory
 
-// ✅ PostgreSQL Connection
+// PostgreSQL Connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 });
 
-// ✅ Health Check Route (Temporary Debugging)
+// Health Check Route (Temporary Debugging)
 app.get("/", (req, res) => {
   res.send("Backend API is running!");
 });
 
 // ----------------------------------
-// ✅ APPOINTMENTS API ROUTES
+// APPOINTMENTS API ROUTES
 // ----------------------------------
 
-// ✅ Fetch All Appointments
+// Fetch All Appointments
 app.get(`${API_BASE_URL}/appointments`, async (req, res) => {
   console.log("Received GET /api/appointments");
   try {
@@ -40,7 +40,7 @@ app.get(`${API_BASE_URL}/appointments`, async (req, res) => {
   }
 });
 
-// ✅ Add an Appointment
+// Add an Appointment
 app.post(`${API_BASE_URL}/appointments`, async (req, res) => {
   console.log("Received POST /api/appointments");
 
@@ -63,10 +63,10 @@ app.post(`${API_BASE_URL}/appointments`, async (req, res) => {
 });
 
 // ----------------------------------
-// ✅ EVENTS API ROUTES
+// EVENTS API ROUTES
 // ----------------------------------
 
-// ✅ Fetch All Events
+// Fetch All Events
 app.get(`${API_BASE_URL}/events`, async (req, res) => {
   console.log("Received GET /api/events");
   try {
@@ -78,7 +78,7 @@ app.get(`${API_BASE_URL}/events`, async (req, res) => {
   }
 });
 
-// ✅ Add an Event
+// Add an Event
 app.post(`${API_BASE_URL}/events`, async (req, res) => {
   console.log("Received POST /api/events");
 
@@ -101,14 +101,14 @@ app.post(`${API_BASE_URL}/events`, async (req, res) => {
 });
 
 // ----------------------------------
-// ✅ Catch-All Route for Invalid API Requests
+// Catch-All Route for Invalid API Requests
 // ----------------------------------
 app.get("*", (req, res) => {
   res.status(404).send("404 - Not Found: Invalid API route");
 });
 
 // ----------------------------------
-// ✅ Start Server
+// Start Server
 // ----------------------------------
 app.listen(port, () => {
   console.log(`Backend running at http://localhost:${port}`);
