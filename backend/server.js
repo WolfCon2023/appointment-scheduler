@@ -7,18 +7,18 @@ const { Pool } = require("pg");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// ✅ Database Connection Using Environment Variables
+// Database Connection Using Environment Variables
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 });
 
-// ✅ Middleware
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-// ✅ API Route to Save an Appointment
+// API Route to Save an Appointment
 app.post("/api/appointments", async (req, res) => {
   const { title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes } = req.body;
 
@@ -34,7 +34,7 @@ app.post("/api/appointments", async (req, res) => {
   }
 });
 
-// ✅ API Route to Fetch Appointments
+// API Route to Fetch Appointments
 app.get("/api/appointments", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM appointments ORDER BY date DESC");
@@ -45,7 +45,7 @@ app.get("/api/appointments", async (req, res) => {
   }
 });
 
-// ✅ Start Server on Correct Port
+// Start Server on Correct Port
 app.listen(port, () => {
-  console.log(`✅ Server running at http://localhost:${port}`);
+  console.log(`Server running at http://localhost:${port}`);
 });
