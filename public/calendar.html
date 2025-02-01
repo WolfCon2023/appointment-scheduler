@@ -9,18 +9,18 @@
         /* Full Page Layout */
         html, body { 
             height: 100vh; 
-            width: 100vw; /* Full width */
+            width: 100vw; 
             margin: 0; 
             padding: 0; 
             display: flex; 
             flex-direction: column; 
             background-color: #f4f7f9;
-            overflow: hidden; /* Prevents unwanted scrollbars */
+            overflow: hidden; /* Prevents extra scrollbars */
         }
 
         .container { 
-            width: 100vw; /* Take full width */
-            height: 95vh; /* Keep bottom visible */
+            width: 100vw;
+            height: 100vh; 
             display: flex; 
             flex-direction: column;
             align-items: center;
@@ -33,24 +33,32 @@
             margin: 10px 0;
         }
 
+        /* Scrollable Calendar */
+        #calendar-container {
+            width: 98vw; /* Full width */
+            height: 85vh; /* Restrict height to enable scrolling */
+            overflow-y: auto; /* ✅ Enables vertical scrolling */
+            border: 1px solid #ccc; /* Optional border for clarity */
+            padding: 5px;
+        }
+
         #calendar {
-            flex-grow: 1; 
-            width: 98vw; /* **📏 Full screen width** */
-            height: 92vh; /* Adjusted for better fit */
+            width: 100%;
+            height: auto; /* Allows content to expand */
         }
 
         /* Increase calendar day box size */
         .fc-daygrid-day {
-            min-height: 130px !important; /* Increased cell height */
+            min-height: 130px !important;
             padding: 5px;
         }
 
         /* Ensure title is bold & black */
         .fc-event-title {
-            font-size: 16px !important; /* Bigger font */
-            font-weight: bold !important; /* Bold text */
-            color: black !important; /* 🔹 Set text to black */
-            white-space: nowrap !important; /* Prevents wrapping */
+            font-size: 16px !important;
+            font-weight: bold !important;
+            color: black !important;
+            white-space: nowrap !important;
             overflow: hidden;
         }
 
@@ -60,8 +68,8 @@
             position: fixed; 
             top: 0; left: 0; 
             width: 100%; height: 100%; 
-            background-color: rgba(0, 0, 0, 0.5); /* Dim Background */
-            backdrop-filter: blur(4px); /* Blurred Background */
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
             justify-content: center; 
             align-items: center;
             z-index: 9999;
@@ -97,7 +105,9 @@
 <div class="container">
     <h1>Main Calendar</h1>
     <button id="openAddEvent">Add Event</button>
-    <div id="calendar"></div>
+    <div id="calendar-container">
+        <div id="calendar"></div>
+    </div>
 </div>
 
 <!-- Add Event Modal -->
@@ -160,8 +170,8 @@
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            height: "92vh", /* Adjusted height to improve visibility */
-            width: "98vw", /* 📏 Full width */
+            height: "auto", /* Allows content to expand */
+            width: "100%", /* Keeps full width */
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
             events: fetchAllEvents,
             eventClick: function(info) {
