@@ -200,6 +200,33 @@
                         right: "dayGridMonth,timeGridWeek,timeGridDay"
                     },
                     events: events
+                    eventClick: async function(info) {
+        info.jsEvent.preventDefault(); // Prevent default link behavior
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/appointments/${info.event.id}`);
+            if (!response.ok) {
+                throw new Error("Appointment not found");
+            }
+
+            const data = await response.json();
+
+            // Display details in a modal
+            document.getElementById('detailsContent').innerHTML = `
+                <strong>Title:</strong> ${data.title}<br>
+                <strong>Date:</strong> ${data.date}<br>
+                <strong>Location:</strong> ${data.location}<br>
+                <strong>Contact:</strong> ${data.contactName} (${data.contactEmail})<br>
+                <strong>Scheduled By:</strong> ${data.scheduledBy}<br>
+                <strong>Notes:</strong> ${data.notes}<br>
+            `;
+
+            document.getElementById('appointmentDetailsModal').style.display = 'flex';
+        } catch (error) {
+            alert("Failed to load appointment details.");
+            console.error("Error fetching appointment details:", error);
+        }
+        }
                 });
 
                 modalCalendar.render();
