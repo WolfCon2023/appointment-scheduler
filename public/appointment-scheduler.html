@@ -7,7 +7,7 @@
     <!-- FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <style>
-        /* Ensure Full Page Layout */
+        /* Full Page Layout */
         html, body {
             height: 100%;
             margin: 0;
@@ -21,13 +21,9 @@
 
         .container {
             width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            max-width: 900px;
             background-color: #fff;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
@@ -38,8 +34,6 @@
         }
 
         .form {
-            width: 100%;
-            max-width: 800px;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
@@ -141,7 +135,7 @@
         </div>
     </div>
 
-    <!-- Modal for Calendar -->
+    <!-- Calendar Modal -->
     <div id="calendarModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -152,7 +146,7 @@
         </div>
     </div>
 
-    <!-- Modal for Appointment Details -->
+    <!-- Appointment Details Modal -->
     <div id="appointmentDetailsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
