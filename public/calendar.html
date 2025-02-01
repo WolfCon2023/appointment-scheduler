@@ -45,19 +45,13 @@
             padding: 5px;
         }
 
-        /* Ensure appointment format: "Appt. HH:MM AM/PM" */
+        /* Ensure title is bold & black */
         .fc-event-title {
             font-size: 16px !important; /* Bigger font */
             font-weight: bold !important; /* Bold text */
             color: black !important; /* 🔹 Set text to black */
             white-space: nowrap !important; /* Prevents wrapping */
             overflow: hidden;
-        }
-
-        .fc-event-time {
-            font-size: 16px !important;
-            font-weight: bold !important; /* Bold time text */
-            color: black !important; /* 🔹 Set time to black */
         }
 
         /* Modal Styling */
@@ -146,7 +140,7 @@
             const events = await fetch(`${API_BASE_URL}/events`).then(res => res.json());
             return [...appointments.map(a => ({
                         id: a.id, 
-                        title: `Appt. ${new Date(a.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`, 
+                        title: a.title,  // Display only the title
                         start: a.date,
                         location: a.location,
                         description: a.notes,
@@ -154,7 +148,7 @@
                     })), 
                     ...events.map(e => ({
                         id: e.id, 
-                        title: `Event @ ${new Date(e.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`, 
+                        title: e.title, // Display only the title
                         start: e.date,
                         location: e.location,
                         description: e.description,
