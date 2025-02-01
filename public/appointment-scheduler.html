@@ -63,7 +63,7 @@
             grid-column: span 2;
         }
         button {
-            padding: 15px 20px;
+            padding: 15px;
             font-size: 1.2em;
             color: white;
             background-color: #007bff;
@@ -181,7 +181,7 @@
             <div class="button-container">
                 <button id="addAppointment">Add Appointment</button>
             </div>
-            <div class="success-message" id="successMessage">Appointment Successfully Scheduled</div>
+            <div class="success-message" id="successMessage">Submittal Successful</div>
         </div>
     </div>
 
@@ -246,6 +246,7 @@
 
                 if (response.ok) {
                     successMessage.style.display = "block";
+                    setTimeout(() => { successMessage.style.display = "none"; }, 5000);
                 } else {
                     alert("Failed to add appointment.");
                 }
