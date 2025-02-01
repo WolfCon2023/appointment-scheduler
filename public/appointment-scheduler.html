@@ -46,11 +46,13 @@
             font-size: 14px;
         }
         input[type="text"], input[type="email"], input[type="tel"] {
-            min-length: 3;
-            max-length: 100;
+            minlength: 3;
+            maxlength: 100;
+            required: true;
         }
         input[type="datetime-local"] {
             min: "2023-01-01T00:00";
+            required: true;
         }
         button {
             background-color: #0056b3;
@@ -114,56 +116,39 @@
         <div class="form">
             <div class="form-container">
                 <label for="appointmentTitle">Title:</label>
-                <input type="text" id="appointmentTitle" aria-label="Appointment Title" required minlength="3" maxlength="100">
+                <input type="text" id="appointmentTitle" placeholder="Title" required minlength="3" maxlength="100">
             </div>
             <div class="form-container">
                 <label for="appointmentDate">Time:</label>
-                <input type="datetime-local" id="appointmentDate" aria-label="Appointment Time" required>
+                <input type="datetime-local" id="appointmentDate" required>
             </div>
             <div class="form-container">
                 <label for="appointmentLocation">Location:</label>
-                <input type="text" id="appointmentLocation" aria-label="Appointment Location" required minlength="3" maxlength="100">
+                <input type="text" id="appointmentLocation" placeholder="Location" required minlength="3" maxlength="100">
             </div>
             <div class="form-container">
                 <label for="contactName">Contact Name:</label>
-                <input type="text" id="contactName" aria-label="Contact Name" required minlength="3" maxlength="100">
+                <input type="text" id="contactName" placeholder="Name" required minlength="3" maxlength="100">
             </div>
             <div class="form-container">
                 <label for="contactPhoneNumber">Phone:</label>
-                <input type="tel" id="contactPhoneNumber" aria-label="Contact Phone" required pattern="\d{10,15}">
+                <input type="tel" id="contactPhoneNumber" placeholder="Phone" required pattern="\d{10,15}">
             </div>
             <div class="form-container">
                 <label for="contactEmail">Email:</label>
-                <input type="email" id="contactEmail" aria-label="Contact Email" required>
+                <input type="email" id="contactEmail" placeholder="Email" required>
             </div>
             <div class="form-container">
                 <label for="scheduledBy">Scheduled By:</label>
-                <input type="text" id="scheduledBy" aria-label="Scheduled By" required minlength="3" maxlength="100">
+                <input type="text" id="scheduledBy" placeholder="Your Name" required minlength="3" maxlength="100">
             </div>
             <div class="form-container-full">
                 <label for="appointmentNotes">Notes:</label>
-                <textarea id="appointmentNotes" aria-label="Appointment Notes" maxlength="500"></textarea>
+                <textarea id="appointmentNotes" placeholder="Notes" maxlength="500"></textarea>
             </div>
             <div class="form-container-full" style="text-align: center;">
-                <button id="addAppointment" aria-label="Add Appointment">Add Appointment</button>
+                <button id="addAppointment">Add Appointment</button>
             </div>
-        </div>
-    </div>
-    
-    <div class="step">
-        <h2>View Scheduled Appointments</h2>
-        <div style="text-align: center;">
-            <button id="openCalendar" aria-label="View Calendar">View Calendar</button>
-        </div>
-    </div>
-
-    <div id="calendarModal" class="modal" role="dialog" aria-labelledby="calendarTitle">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="calendarTitle">Scheduled Appointments</h2>
-                <button id="closeCalendar" class="modal-close" aria-label="Close Calendar">Close</button>
-            </div>
-            <div id="modalCalendar"></div>
         </div>
     </div>
 </div>
