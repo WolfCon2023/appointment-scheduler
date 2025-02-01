@@ -36,7 +36,7 @@
         /* Scrollable Calendar */
         #calendar-container {
             width: 98vw; /* Full width */
-            height: 85vh; /* Restrict height to enable scrolling */
+            flex-grow: 1; /* Allows dynamic resizing */
             overflow-y: auto; /* ✅ Enables vertical scrolling */
             border: 1px solid #ccc; /* Optional border for clarity */
             padding: 5px;
@@ -44,12 +44,12 @@
 
         #calendar {
             width: 100%;
-            height: auto; /* Allows content to expand */
+            height: 120vh; /* ✅ Expands height beyond viewport for scrolling */
         }
 
         /* Increase calendar day box size */
         .fc-daygrid-day {
-            min-height: 130px !important;
+            min-height: 140px !important; /* ✅ Bigger boxes */
             padding: 5px;
         }
 
