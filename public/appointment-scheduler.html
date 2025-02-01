@@ -39,10 +39,13 @@
         .form-container {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+        }
+        .form label {
+            font-weight: bold;
         }
         .form input, .form textarea {
-            padding: 15px;
+            padding: 12px;
             border: 1px solid #ccc;
             border-radius: 6px;
             font-size: 1.1em;
@@ -50,6 +53,7 @@
         }
         textarea {
             resize: vertical;
+            height: 80px;
         }
         .full-width {
             grid-column: span 2;
@@ -149,27 +153,27 @@
         <div class="form">
             <div class="form-container">
                 <label for="appointmentTitle">Title:</label>
-                <input type="text" id="appointmentTitle" placeholder="Title">
+                <input type="text" id="appointmentTitle" placeholder="Title" required>
             </div>
             <div class="form-container">
                 <label for="appointmentDate">Time:</label>
-                <input type="datetime-local" id="appointmentDate">
+                <input type="datetime-local" id="appointmentDate" required>
             </div>
             <div class="form-container">
                 <label for="appointmentLocation">Location:</label>
-                <input type="text" id="appointmentLocation" placeholder="Location">
+                <input type="text" id="appointmentLocation" placeholder="Location" required>
             </div>
             <div class="form-container">
                 <label for="contactName">Contact Name:</label>
-                <input type="text" id="contactName" placeholder="Name">
+                <input type="text" id="contactName" placeholder="Name" required>
             </div>
             <div class="form-container">
                 <label for="contactPhoneNumber">Phone:</label>
-                <input type="text" id="contactPhoneNumber" placeholder="Phone">
+                <input type="text" id="contactPhoneNumber" placeholder="Phone" required>
             </div>
             <div class="form-container">
                 <label for="contactEmail">Email:</label>
-                <input type="email" id="contactEmail" placeholder="Email">
+                <input type="email" id="contactEmail" placeholder="Email" required>
             </div>
             <div class="form-container full-width">
                 <label for="appointmentNotes">Notes:</label>
@@ -215,32 +219,20 @@
         const addAppointmentButton = document.getElementById('addAppointment');
         const successMessage = document.getElementById('successMessage');
 
-        const modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
-            initialView: "dayGridMonth",
-            height: "auto",
-            headerToolbar: {
-                left: "prev,next today",
-                center: "title",
-                right: "dayGridMonth,timeGridWeek,timeGridDay"
-            },
-            events: async function(fetchInfo, successCallback, failureCallback) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/appointments`);
-                    const events = await response.json();
-                    successCallback(events.map(event => ({
-                        title: event.title,
-                        start: event.date
-                    })));
-                } catch (error) {
-                    console.error("Error fetching appointments:", error);
-                    failureCallback(error);
-                }
-            }
-        });
-
         openCalendarBtn.addEventListener('click', () => modal.style.display = 'flex');
         closeCalendarBtn.addEventListener('click', () => modal.style.display = 'none');
-        addAppointmentButton.addEventListener('click', () => successMessage.style.display = "block");
+
+        addAppointmentButton.addEventListener('click', async () => {
+            const requiredFields = ["appointmentTitle", "appointmentDate", "appointmentLocation", "contactName", "contactPhoneNumber", "contactEmail"];
+            for (let field of requiredFields) {
+                if (!document.getElementById(field).value.trim()) {
+                    alert("Please fill out all required fields.");
+                    return;
+                }
+            }
+
+            successMessage.style.display = "block";
+        });
     });
 </script>
 </body>
