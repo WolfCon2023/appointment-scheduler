@@ -240,7 +240,10 @@
                 } else {
                     alert("Failed to add appointment.");
                 }
-            } 
+            } catch (error) {
+                console.error("Error:", error);
+               
+            }
         });
     });
 </script>
