@@ -27,17 +27,15 @@
             color: #004080;
         }
         .form {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(250px, 1fr));
-            gap: 20px;
-            justify-content: center;
-            align-items: center;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two equal-width columns */
+    gap: 20px; /* Space between fields */
+    justify-content: center;
+    align-items: center;
         }
         .form-container {
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            text-align: left;
         }
         .form-container input, .form-container textarea, .form-container button {
             padding: 10px;
