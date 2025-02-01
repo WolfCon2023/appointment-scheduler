@@ -191,6 +191,15 @@
             }
         }
 
+        async function updateCalendarEvents() {
+            if (modalCalendar) {
+                const events = await fetchAppointments();
+                modalCalendar.removeAllEvents(); // Clear old events
+                modalCalendar.addEventSource(events); // Add updated events
+                modalCalendar.refetchEvents();
+            }
+        }
+
         openCalendarBtn.addEventListener('click', async () => {
             modal.style.display = 'flex';
 
@@ -226,7 +235,7 @@
 
         closeCalendarBtn.addEventListener('click', () => modal.style.display = 'none');
 
-        // **✅ Fix Add Appointment Error Handling & Database Upload**
+        // **Fix Add Appointment Not Appearing in Calendar**
         addAppointmentButton.addEventListener('click', async () => {
             const title = document.getElementById('appointmentTitle');
             const date = document.getElementById('appointmentDate');
@@ -276,15 +285,9 @@
 
                 if (response.ok) {
                     alert("Appointment added successfully!");
-
-                    // **Immediately Add to Calendar Without Reload**
-                    if (modalCalendar) {
-                        modalCalendar.addEvent({
-                            id: newAppointment.id, // API should return ID, but using temp workaround
-                            title: newAppointment.title,
-                            start: newAppointment.date
-                        });
-                    }
+                    
+                    // **Refetch and update calendar with new data**
+                    await updateCalendarEvents();
 
                     // **Clear Form Fields After Successful Submission**
                     requiredFields.forEach(field => field.value = "");
