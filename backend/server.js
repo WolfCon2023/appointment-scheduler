@@ -5,7 +5,7 @@ const path = require("path");
 const { Pool } = require("pg");
 
 const app = express();
-const port = process.env.PORT || 5000; // Use PORT from .env or default to 5000
+const port = process.env.PORT || 3000; // Use PORT from .env or default to 5000
 const API_BASE_URL = "/api"; // API Base Path
 
 // Middleware
