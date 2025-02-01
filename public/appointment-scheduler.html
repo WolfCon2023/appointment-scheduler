@@ -7,7 +7,6 @@
     <!-- FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <style>
-        /* Global Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f7f9;
@@ -223,15 +222,37 @@
         closeCalendarBtn.addEventListener('click', () => modal.style.display = 'none');
 
         addAppointmentButton.addEventListener('click', async () => {
-            const requiredFields = ["appointmentTitle", "appointmentDate", "appointmentLocation", "contactName", "contactPhoneNumber", "contactEmail"];
-            for (let field of requiredFields) {
-                if (!document.getElementById(field).value.trim()) {
-                    alert("Please fill out all required fields.");
-                    return;
-                }
+            const appointmentData = {
+                title: document.getElementById('appointmentTitle').value.trim(),
+                date: document.getElementById('appointmentDate').value,
+                location: document.getElementById('appointmentLocation').value.trim(),
+                contactName: document.getElementById('contactName').value.trim(),
+                contactPhone: document.getElementById('contactPhoneNumber').value.trim(),
+                contactEmail: document.getElementById('contactEmail').value.trim(),
+                notes: document.getElementById('appointmentNotes').value.trim()
+            };
+
+            if (Object.values(appointmentData).some(value => !value)) {
+                alert("Please fill out all required fields.");
+                return;
             }
 
-            successMessage.style.display = "block";
+            try {
+                const response = await fetch(`${API_BASE_URL}/appointments`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(appointmentData)
+                });
+
+                if (response.ok) {
+                    successMessage.style.display = "block";
+                } else {
+                    alert("Failed to add appointment.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error adding appointment.");
+            }
         });
     });
 </script>
