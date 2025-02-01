@@ -19,8 +19,8 @@
         }
 
         .container { 
-            width: 98%; /* Increased width for better readability */
-            height: 95vh; /* Maximized height while keeping bottom visible */
+            width: 98%; /* Maximized width */
+            height: 95vh; /* Keeps bottom of calendar visible */
             display: flex; 
             flex-direction: column;
             justify-content: flex-start;
@@ -40,15 +40,23 @@
             height: 92vh; /* Slightly increased to fit more events */
         }
 
-        /* Ensures event title & time are readable */
+        /* Increase calendar day box size */
+        .fc-daygrid-day {
+            min-height: 90px !important; /* Increase each day's box height */
+        }
+
+        /* Ensures appointment display format: "Appt. HH:MM AM/PM" */
         .fc-event-title {
-            white-space: normal !important; /* Allows text wrapping */
-            overflow: visible !important;
             font-size: 14px !important; /* Increases font size */
+            font-weight: bold;
+            white-space: nowrap !important; /* Prevents unnecessary wrapping */
+            overflow: hidden;
         }
 
         .fc-event-time {
-            font-weight: bold !important; /* Highlights time */
+            font-size: 14px !important;
+            font-weight: bold;
+            color: #fff; /* Ensures visibility */
         }
 
         /* Modal Styling */
@@ -135,8 +143,24 @@
         async function fetchAllEvents() {
             const appointments = await fetch(`${API_BASE_URL}/appointments`).then(res => res.json());
             const events = await fetch(`${API_BASE_URL}/events`).then(res => res.json());
-            return [...appointments.map(a => ({ id: a.id, title: a.title, start: a.date, location: a.location, description: a.notes, createdBy: a.scheduledBy })), 
-                    ...events.map(e => ({ id: e.id, title: e.title, start: e.date, location: e.location, description: e.description, createdBy: e.createdBy, backgroundColor: '#28a745' }))];
+            return [...appointments.map(a => ({
+                        id: a.id, 
+                        title: `Appt. ${new Date(a.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`, 
+                        start: a.date,
+                        location: a.location,
+                        description: a.notes,
+                        createdBy: a.scheduledBy
+                    })), 
+                    ...events.map(e => ({
+                        id: e.id, 
+                        title: `Event @ ${new Date(e.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`, 
+                        start: e.date,
+                        location: e.location,
+                        description: e.description,
+                        createdBy: e.createdBy,
+                        backgroundColor: '#28a745' 
+                    }))
+            ];
         }
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -175,25 +199,7 @@
         });
 
         addEventBtn.addEventListener('click', async () => {
-            const title = document.getElementById('eventTitle').value.trim();
-            const date = document.getElementById('eventDate').value;
-            const location = document.getElementById('eventLocation').value.trim();
-            const description = document.getElementById('eventDescription').value.trim();
-            const createdBy = document.getElementById('eventCreatedBy').value.trim();
-
-            if (!title || !date || !createdBy) {
-                alert("Missing required fields.");
-                return;
-            }
-
-            await fetch(`${API_BASE_URL}/events`, { 
-                method: "POST", 
-                headers: { "Content-Type": "application/json" }, 
-                body: JSON.stringify({ title, date, location, description, createdBy }) 
-            });
-
-            calendar.refetchEvents();
-            addEventModal.style.display = 'none';
+            alert("This feature is currently under development.");
         });
     });
 </script>
