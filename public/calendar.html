@@ -3,62 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Calendar</title>
+    <title>Main Calendar | Business & Events</title>
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f9;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container {
-            width: 90%;
-            margin-top: 20px;
-        }
-        #calendar {
-            width: 100%;
-            max-width: 1000px;
-            margin: auto;
-        }
-        .form-container {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 500px;
-        }
-        button {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
+        html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; background-color: #f4f7f9; }
+        .container { width: 90%; max-width: 1200px; }
+        h1 { color: #004080; text-align: center; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; }
+        .modal-content { width: 90%; max-width: 600px; padding: 20px; border-radius: 8px; background-color: #fff; }
+        button { padding: 12px 20px; border-radius: 6px; cursor: pointer; background-color: #007bff; color: white; border: none; }
+        button:hover { background-color: #0056b3; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Main Calendar</h1>
+    <button id="openAddEvent">Add Event</button>
     <div id="calendar"></div>
+</div>
 
-    <!-- Add New Event Form -->
-    <div class="form-container">
+<!-- Add Event Modal -->
+<div id="addEventModal" class="modal">
+    <div class="modal-content">
         <h2>Add New Event</h2>
-        <input type="text" id="eventTitle" placeholder="Event Title" required>
-        <input type="datetime-local" id="eventDate" required>
+        <input type="text" id="eventTitle" placeholder="Event Title">
+        <input type="datetime-local" id="eventDate">
         <input type="text" id="eventLocation" placeholder="Location">
         <textarea id="eventDescription" placeholder="Description"></textarea>
-        <input type="text" id="eventCreatedBy" placeholder="Created By" required>
+        <input type="text" id="eventCreatedBy" placeholder="Created By">
         <button id="addEvent">Add Event</button>
+        <button onclick="document.getElementById('addEventModal').style.display='none'">Close</button>
     </div>
 </div>
 
@@ -67,93 +42,46 @@
     const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
 
     document.addEventListener('DOMContentLoaded', async function () {
-        let calendarEl = document.getElementById('calendar');
-        let calendar;
+        const calendarEl = document.getElementById('calendar');
+        const openAddEventBtn = document.getElementById('openAddEvent');
+        const addEventModal = document.getElementById('addEventModal');
+        const addEventBtn = document.getElementById('addEvent');
 
         async function fetchAllEvents() {
-            try {
-                const [appointmentsRes, eventsRes] = await Promise.all([
-                    fetch(`${API_BASE_URL}/appointments`),
-                    fetch(`${API_BASE_URL}/events`)
-                ]);
+            const appointments = await fetch(`${API_BASE_URL}/appointments`).then(res => res.json());
+            const events = await fetch(`${API_BASE_URL}/events`).then(res => res.json());
+            return [...appointments.map(a => ({ id: a.id, title: a.title, start: a.date })), 
+                    ...events.map(e => ({ id: e.id, title: e.title, start: e.date, backgroundColor: '#28a745' }))];
+        }
 
-                const appointments = await appointmentsRes.json();
-                const events = await eventsRes.json();
-
-                return [
-                    ...appointments.map(appt => ({ 
-                        id: `appt-${appt.id}`, 
-                        title: appt.title, 
-                        start: appt.date,
-                        color: "#007bff" // Blue for appointments
-                    })),
-                    ...events.map(evt => ({ 
-                        id: `evt-${evt.id}`, 
-                        title: evt.title, 
-                        start: evt.date,
-                        color: "#28a745" // Green for general events
-                    }))
-                ];
-            } catch (error) {
-                console.error("Error fetching events:", error);
-                return [];
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
+            events: fetchAllEvents,
+            eventClick: function(info) {
+                alert(`Event: ${info.event.title}\nDate: ${info.event.start.toLocaleString()}`);
             }
-        }
+        });
 
-        async function initializeCalendar() {
-            const events = await fetchAllEvents();
+        calendar.render();
 
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: "dayGridMonth",
-                headerToolbar: { left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek,timeGridDay" },
-                events: events
-            });
+        openAddEventBtn.addEventListener('click', () => addEventModal.style.display = 'flex');
 
-            calendar.render();
-        }
-
-        // Initialize Calendar
-        initializeCalendar();
-
-        // Add New Event
-        document.getElementById('addEvent').addEventListener('click', async () => {
+        addEventBtn.addEventListener('click', async () => {
             const title = document.getElementById('eventTitle').value.trim();
             const date = document.getElementById('eventDate').value;
             const location = document.getElementById('eventLocation').value.trim();
             const description = document.getElementById('eventDescription').value.trim();
             const createdBy = document.getElementById('eventCreatedBy').value.trim();
 
-            if (!title || !date || !createdBy) {
-                alert("Please fill out the required fields.");
-                return;
-            }
+            if (!title || !date || !createdBy) return alert("Missing required fields.");
 
-            const newEvent = { title, date, location, description, createdBy };
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/events`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newEvent)
-                });
-
-                if (response.ok) {
-                    alert("Event added successfully!");
-
-                    // Refresh the calendar with new data
-                    const updatedEvents = await fetchAllEvents();
-                    calendar.removeAllEvents();
-                    calendar.addEventSource(updatedEvents);
-                    calendar.refetchEvents();
-                } else {
-                    alert("Failed to add event. Please try again.");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Error adding event. Please check your internet connection.");
-            }
+            await fetch(`${API_BASE_URL}/events`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, date, location, description, createdBy }) });
+            calendar.refetchEvents();
+            addEventModal.style.display = 'none';
         });
     });
 </script>
+
 </body>
 </html>
