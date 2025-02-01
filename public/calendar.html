@@ -8,22 +8,21 @@
     <style>
         /* Full Page Layout */
         html, body { 
-            height: 100%; 
+            height: 100vh; 
+            width: 100vw; /* Full width */
             margin: 0; 
             padding: 0; 
             display: flex; 
             flex-direction: column; 
-            align-items: center; 
             background-color: #f4f7f9;
             overflow: hidden; /* Prevents unwanted scrollbars */
         }
 
         .container { 
-            width: 98%; /* Maximized width */
-            height: 95vh; /* Keeps bottom of calendar visible */
+            width: 100vw; /* Take full width */
+            height: 95vh; /* Keep bottom visible */
             display: flex; 
             flex-direction: column;
-            justify-content: flex-start;
             align-items: center;
             padding: 5px;
         }
@@ -36,13 +35,13 @@
 
         #calendar {
             flex-grow: 1; 
-            width: 100%; /* Fully utilizes available space */
-            height: 92vh; /* Slightly increased to fit more events */
+            width: 98vw; /* **📏 Full screen width** */
+            height: 92vh; /* Adjusted for better fit */
         }
 
         /* Increase calendar day box size */
         .fc-daygrid-day {
-            min-height: 120px !important; /* Increased cell height */
+            min-height: 130px !important; /* Increased cell height */
             padding: 5px;
         }
 
@@ -168,6 +167,7 @@
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             height: "92vh", /* Adjusted height to improve visibility */
+            width: "98vw", /* 📏 Full width */
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
             events: fetchAllEvents,
             eventClick: function(info) {
