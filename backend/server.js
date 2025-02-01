@@ -13,18 +13,18 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-// ✅ Serve index.html for root route (Temporary Debugging Response)
+// Serve index.html for root route (Temporary Debugging Response)
 app.get("/", (req, res) => {
     res.send("Backend API is running!");
 });
 
-// ✅ PostgreSQL Connection
+// PostgreSQL Connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 });
 
-// ✅ API Route to Save an Appointment
+// API Route to Save an Appointment
 app.post("/api/appointments", async (req, res) => {
   console.log("Received POST /api/appointments");
 
@@ -46,7 +46,7 @@ app.post("/api/appointments", async (req, res) => {
   }
 });
 
-// ✅ API Route to Fetch Appointments
+// API Route to Fetch Appointments
 app.get("/api/appointments", async (req, res) => {
   console.log("Received GET /api/appointments");
 
