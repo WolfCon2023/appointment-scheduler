@@ -12,7 +12,8 @@
             background-color: #f4f7f9;
             margin: 0;
             padding: 0;
-            color: #333;
+            color: #222;
+            font-size: 18px;
         }
         .container {
             max-width: 1200px;
@@ -20,11 +21,34 @@
             padding: 20px;
             background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
         h1, h2 {
             text-align: center;
-            color: #004080;
+            color: #003366;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #0056b3;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover, button:focus {
+            background-color: #004494;
+            outline: 3px solid #ffcc00;
         }
         .modal {
             display: none;
@@ -33,7 +57,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.7);
             justify-content: center;
             align-items: center;
         }
@@ -43,7 +67,7 @@
             border-radius: 8px;
             max-width: 800px;
             width: 100%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         .modal-header {
             display: flex;
@@ -53,179 +77,80 @@
             margin-bottom: 15px;
         }
         .modal-close {
-            background-color: #f44336;
-            color: #fff;
+            background-color: #c9302c;
+            color: white;
             border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
+            padding: 10px 15px;
+            border-radius: 5px;
             cursor: pointer;
+        }
+        .modal-close:hover, .modal-close:focus {
+            background-color: #a72824;
+            outline: 3px solid #ffcc00;
         }
     </style>
 </head>
 <body>
-
 <div class="container">
     <h1>Business Appointment Scheduler</h1>
 
-    <!-- Step 1: Schedule an Appointment -->
     <div class="step">
         <h2>Schedule an Appointment</h2>
         <div class="form">
             <div class="form-container">
                 <label for="appointmentTitle">Title:</label>
-                <input type="text" id="appointmentTitle" placeholder="Title">
+                <input type="text" id="appointmentTitle" aria-label="Appointment Title" required>
             </div>
             <div class="form-container">
                 <label for="appointmentDate">Time:</label>
-                <input type="datetime-local" id="appointmentDate">
+                <input type="datetime-local" id="appointmentDate" aria-label="Appointment Time" required>
             </div>
             <div class="form-container">
                 <label for="appointmentLocation">Location:</label>
-                <input type="text" id="appointmentLocation" placeholder="Location">
+                <input type="text" id="appointmentLocation" aria-label="Appointment Location" required>
             </div>
             <div class="form-container">
                 <label for="contactName">Contact Name:</label>
-                <input type="text" id="contactName" placeholder="Name">
+                <input type="text" id="contactName" aria-label="Contact Name" required>
             </div>
             <div class="form-container">
                 <label for="contactPhoneNumber">Phone:</label>
-                <input type="text" id="contactPhoneNumber" placeholder="Phone">
+                <input type="tel" id="contactPhoneNumber" aria-label="Contact Phone" required>
             </div>
             <div class="form-container">
                 <label for="contactEmail">Email:</label>
-                <input type="email" id="contactEmail" placeholder="Email">
+                <input type="email" id="contactEmail" aria-label="Contact Email" required>
             </div>
             <div class="form-container">
                 <label for="scheduledBy">Scheduled By:</label>
-                <input type="text" id="scheduledBy" placeholder="Your Name">
+                <input type="text" id="scheduledBy" aria-label="Scheduled By" required>
             </div>
             <div class="form-container">
                 <label for="appointmentNotes">Notes:</label>
-                <textarea id="appointmentNotes" placeholder="Notes"></textarea>
+                <textarea id="appointmentNotes" aria-label="Appointment Notes"></textarea>
             </div>
             <div class="form-container" style="text-align: center;">
-                <button id="addAppointment">Add Appointment</button>
+                <button id="addAppointment" aria-label="Add Appointment">Add Appointment</button>
             </div>
         </div>
     </div>
-
-    <!-- Step 2: View Scheduled Appointments -->
+    
     <div class="step">
         <h2>View Scheduled Appointments</h2>
         <div style="text-align: center;">
-            <button id="openCalendar">View Calendar</button>
+            <button id="openCalendar" aria-label="View Calendar">View Calendar</button>
         </div>
     </div>
 
-    <!-- Modal for Calendar -->
-    <div id="calendarModal" class="modal">
+    <div id="calendarModal" class="modal" role="dialog" aria-labelledby="calendarTitle">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Scheduled Appointments</h2>
-                <button id="closeCalendar" class="modal-close">Close</button>
+                <h2 id="calendarTitle">Scheduled Appointments</h2>
+                <button id="closeCalendar" class="modal-close" aria-label="Close Calendar">Close</button>
             </div>
             <div id="modalCalendar"></div>
         </div>
     </div>
 </div>
-
-<!-- FullCalendar JS -->
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-<script>
-    const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
-
-    document.addEventListener('DOMContentLoaded', function () {
-        console.log("DOM Loaded");
-
-        const modal = document.getElementById('calendarModal');
-        const openCalendarBtn = document.getElementById('openCalendar');
-        const closeCalendarBtn = document.getElementById('closeCalendar');
-        const modalCalendarEl = document.getElementById('modalCalendar');
-        const addAppointmentButton = document.getElementById('addAppointment');
-
-        if (!openCalendarBtn || !addAppointmentButton) {
-            console.error("Buttons not found! Check HTML.");
-            return;
-        }
-
-        let modalCalendar;
-
-        openCalendarBtn.addEventListener('click', () => {
-            console.log("Opening calendar...");
-
-            if (!modalCalendar) {
-                modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
-                    initialView: "dayGridMonth",
-                    headerToolbar: {
-                        left: "prev,next today",
-                        center: "title",
-                        right: "dayGridMonth,timeGridWeek,timeGridDay"
-                    },
-                    events: async function(fetchInfo, successCallback, failureCallback) {
-                        try {
-                            const response = await fetch(`${API_BASE_URL}/appointments`);
-                            const events = await response.json();
-                            console.log("Fetched Events:", events);
-                            successCallback(events.map(event => ({
-                                title: event.title,
-                                start: event.date
-                            })));
-                        } catch (error) {
-                            console.error("Error fetching appointments:", error);
-                            failureCallback(error);
-                        }
-                    }
-                });
-
-                modalCalendar.render();
-            }
-
-            modal.style.display = 'flex';
-        });
-
-        closeCalendarBtn.addEventListener('click', () => {
-            console.log("Closing calendar...");
-            modal.style.display = 'none';
-        });
-
-        addAppointmentButton.addEventListener('click', async () => {
-            const title = document.getElementById('appointmentTitle').value.trim();
-            const date = document.getElementById('appointmentDate').value;
-            const location = document.getElementById('appointmentLocation').value.trim();
-            const contactName = document.getElementById('contactName').value.trim();
-            const contactPhone = document.getElementById('contactPhoneNumber').value.trim();
-            const contactEmail = document.getElementById('contactEmail').value.trim();
-            const scheduledBy = document.getElementById('scheduledBy').value.trim();
-            const notes = document.getElementById('appointmentNotes').value.trim();
-
-            if (!title || !date || !location || !contactName || !contactPhone || !contactEmail || !scheduledBy) {
-                alert("Please fill out all required fields.");
-                return;
-            }
-
-            console.log("Sending appointment:", { title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes });
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/appointments`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes })
-                });
-
-                console.log("Response Status:", response.status);
-
-                if (response.ok) {
-                    alert("Appointment added successfully!");
-                    modalCalendar.refetchEvents();
-                } else {
-                    alert("Failed to add appointment.");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Error adding appointment.");
-            }
-        });
-    });
-</script>
 </body>
 </html>
