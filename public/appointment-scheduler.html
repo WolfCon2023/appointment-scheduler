@@ -168,7 +168,7 @@
 <!-- FullCalendar JS -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
 <script>
-    const API_BASE_URL = "https://vital-backoffice-apps-production.up.railway.app";
+    const API_BASE_URL = process.env.API_BASE_URL || "https://vital-backoffice-apps-production.up.railway.app/api";
 
     document.addEventListener('DOMContentLoaded', function () {
         const modal = document.getElementById('calendarModal');
