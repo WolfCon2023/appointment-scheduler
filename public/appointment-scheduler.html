@@ -64,7 +64,7 @@
 
         .modal-content {
             width: 90%;
-            max-width: 800px;
+            max-width: 600px;
             padding: 20px;
             border-radius: 8px;
             background-color: #fff;
@@ -83,12 +83,6 @@
 
         button:hover {
             background-color: #0056b3;
-        }
-
-        /* Ensure Calendar Fits Properly */
-        #modalCalendar {
-            width: 100%;
-            height: 500px;
         }
     </style>
 </head>
@@ -175,42 +169,43 @@
 
         let modalCalendar;
 
+        // Fetch Appointments from API
+        async function fetchAppointments() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/appointments`);
+                const appointments = await response.json();
+
+                return appointments.map(appt => ({
+                    title: appt.title,
+                    start: appt.date,
+                    url: `/appointment-details?id=${appt.id}`
+                }));
+            } catch (error) {
+                console.error("Error fetching appointments:", error);
+                return [];
+            }
+        }
+
         openCalendarBtn.addEventListener('click', async () => {
             modal.style.display = 'flex';
 
-            setTimeout(async () => {
-                if (!modalCalendar) {
-                    modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
-                        initialView: "dayGridMonth",
-                        headerToolbar: {
-                            left: "prev,next today",
-                            center: "title",
-                            right: "dayGridMonth,timeGridWeek,timeGridDay"
-                        },
-                        height: 500,
-                        events: async function(fetchInfo, successCallback, failureCallback) {
-                            try {
-                                const response = await fetch(`${API_BASE_URL}/appointments`);
-                                const events = await response.json();
-                                successCallback(events.map(event => ({
-                                    title: event.title,
-                                    start: event.date,
-                                    extendedProps: event
-                                })));
-                            } catch (error) {
-                                console.error("Error fetching appointments:", error);
-                                failureCallback(error);
-                            }
-                        },
-                        eventClick: function(info) {
-                            alert(`Appointment Details:\nTitle: ${info.event.title}\nDate: ${info.event.start}\nLocation: ${info.event.extendedProps.location}\nContact: ${info.event.extendedProps.contactName}`);
-                        }
-                    });
-                    modalCalendar.render();
-                } else {
-                    modalCalendar.refetchEvents();
-                }
-            }, 300);
+            if (!modalCalendar) {
+                const events = await fetchAppointments();
+
+                modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
+                    initialView: "dayGridMonth",
+                    headerToolbar: {
+                        left: "prev,next today",
+                        center: "title",
+                        right: "dayGridMonth,timeGridWeek,timeGridDay"
+                    },
+                    events: events
+                });
+
+                modalCalendar.render();
+            } else {
+                modalCalendar.refetchEvents();
+            }
         });
 
         closeCalendarBtn.addEventListener('click', () => {
@@ -221,8 +216,13 @@
             const title = document.getElementById('appointmentTitle').value.trim();
             const date = document.getElementById('appointmentDate').value;
             const location = document.getElementById('appointmentLocation').value.trim();
+            const contactName = document.getElementById('contactName').value.trim();
+            const contactPhone = document.getElementById('contactPhoneNumber').value.trim();
+            const contactEmail = document.getElementById('contactEmail').value.trim();
+            const scheduledBy = document.getElementById('scheduledBy').value.trim();
+            const notes = document.getElementById('appointmentNotes').value.trim();
 
-            if (!title || !date || !location) {
+            if (!title || !date || !location || !contactName || !contactPhone || !contactEmail || !scheduledBy) {
                 alert("Please fill out all required fields.");
                 return;
             }
@@ -231,7 +231,7 @@
                 const response = await fetch(`${API_BASE_URL}/appointments`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ title, date, location })
+                    body: JSON.stringify({ title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes })
                 });
 
                 if (response.ok) {
