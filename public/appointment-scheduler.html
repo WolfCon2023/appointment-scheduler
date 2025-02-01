@@ -227,33 +227,24 @@
                 return;
             }
 
-            eventClick: async function(info) {
-    info.jsEvent.preventDefault(); // Prevent default link behavior
+            try {
+                const response = await fetch(`${API_BASE_URL}/appointments`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes })
+                });
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/appointments/${info.event.id}`);
-        if (!response.ok) {
-            throw new Error("Appointment not found");
-        }
-
-        const data = await response.json();
-
-        // Display details in a modal
-        document.getElementById('detailsContent').innerHTML = `
-            <strong>Title:</strong> ${data.title}<br>
-            <strong>Date:</strong> ${data.date}<br>
-            <strong>Location:</strong> ${data.location}<br>
-            <strong>Contact:</strong> ${data.contactName} (${data.contactEmail})<br>
-            <strong>Scheduled By:</strong> ${data.scheduledBy}<br>
-            <strong>Notes:</strong> ${data.notes}<br>
-        `;
-
-        document.getElementById('appointmentDetailsModal').style.display = 'flex';
-    } catch (error) {
-        alert("Failed to load appointment details.");
-        console.error("Error fetching appointment details:", error);
-    }};
-            
+                if (response.ok) {
+                    alert("Appointment added successfully!");
+                    modalCalendar.refetchEvents();
+                } else {
+                    alert("Failed to add appointment.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error adding appointment.");
+            }
+        });
     });
 </script>
 </body>
