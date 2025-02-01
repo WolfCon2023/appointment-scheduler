@@ -151,16 +151,16 @@
             <div id="modalCalendar"></div>
         </div>
     </div>
-</div>
 
-<!-- Appointment Details Modal -->
-<div id="appointmentDetailsModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Appointment Details</h2>
-            <button onclick="document.getElementById('appointmentDetailsModal').style.display='none'" class="modal-close">Close</button>
+    <!-- Modal for Appointment Details -->
+    <div id="appointmentDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Appointment Details</h2>
+                <button onclick="document.getElementById('appointmentDetailsModal').style.display='none'" class="modal-close">Close</button>
+            </div>
+            <div id="detailsContent"></div>
         </div>
-        <div id="detailsContent"></div>
     </div>
 </div>
 
@@ -212,7 +212,7 @@
                     },
                     events: events,
                     eventClick: async function(info) {
-                        info.jsEvent.preventDefault(); 
+                        info.jsEvent.preventDefault();
 
                         try {
                             const response = await fetch(`${API_BASE_URL}/appointments/${info.event.id}`);
