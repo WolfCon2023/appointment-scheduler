@@ -170,19 +170,25 @@
         let modalCalendar;
 
         openCalendarBtn.addEventListener('click', () => {
-            if (!modalCalendar) {
-                modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
-                    initialView: "dayGridMonth",
-                    headerToolbar: {
-                        left: "prev,next today",
-                        center: "title",
-                        right: "dayGridMonth,timeGridWeek,timeGridDay"
-                    }
-                });
-                modalCalendar.render();
-            }
-            modal.style.display = 'flex';
-        });
+    modal.style.display = 'flex';
+
+    setTimeout(() => {
+        if (!modalCalendar) {
+            modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
+                initialView: "dayGridMonth",
+                headerToolbar: {
+                    left: "prev,next today",
+                    center: "title",
+                    right: "dayGridMonth,timeGridWeek,timeGridDay"
+                },
+                height: "auto" // 🔹 Ensures calendar fits the modal
+            });
+            modalCalendar.render();
+        } else {
+            modalCalendar.updateSize(); // 🔹 Force update the calendar size
+        }
+    }, 300); // Slight delay to allow modal to be fully displayed
+});
 
         closeCalendarBtn.addEventListener('click', () => {
             modal.style.display = 'none';
