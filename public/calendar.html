@@ -6,7 +6,7 @@
     <title>Main Calendar | Business & Events</title>
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <style>
-        /* Make the Calendar Full Screen */
+        /* Adjusted Calendar Size for Visibility */
         html, body { 
             height: 100%; 
             margin: 0; 
@@ -20,11 +20,12 @@
 
         .container { 
             width: 100%; 
-            height: 100vh; /* Full viewport height */
+            height: 95vh; /* Slightly smaller to allow bottom visibility */
             display: flex; 
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
+            padding: 10px; /* Added padding for better spacing */
         }
 
         h1 { 
@@ -35,8 +36,8 @@
 
         #calendar {
             flex-grow: 1; /* Allows calendar to fill remaining space */
-            width: 100%;
-            height: 100%;
+            width: 95%; /* Slightly smaller than full width */
+            height: 90vh; /* Adjusted height for visibility */
         }
 
         /* Modal Styling */
@@ -129,7 +130,7 @@
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            height: "100%", /* Ensure it fills the screen */
+            height: "90vh", /* Adjusted height to make bottom visible */
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
             events: fetchAllEvents,
             eventClick: function(info) {
