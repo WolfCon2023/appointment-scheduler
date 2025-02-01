@@ -6,25 +6,25 @@ const { Pool } = require("pg");
 
 const app = express();
 const port = process.env.PORT || 3000;
-const API_BASE_URL = "/api"; // Base API path
+const API_BASE_URL = "/api"; // API Base Path
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-// Route to serve index.html by default
+// ✅ Serve index.html for root route (Temporary Debugging Response)
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
+    res.send("Backend API is running!");
 });
 
-// PostgreSQL Connection
+// ✅ PostgreSQL Connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 });
 
-// API Route to Save an Appointment
+// ✅ API Route to Save an Appointment
 app.post("/api/appointments", async (req, res) => {
   console.log("Received POST /api/appointments");
 
@@ -46,7 +46,7 @@ app.post("/api/appointments", async (req, res) => {
   }
 });
 
-// API Route to Fetch Appointments
+// ✅ API Route to Fetch Appointments
 app.get("/api/appointments", async (req, res) => {
   console.log("Received GET /api/appointments");
 
@@ -59,12 +59,12 @@ app.get("/api/appointments", async (req, res) => {
   }
 });
 
-// Catch-All Route to Serve `index.html`
+// ✅ Catch-All Route to Serve `index.html`
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.status(404).send("404 - Not Found: Invalid API route");
 });
 
-// Start Server
+// ✅ Start Server
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Backend running at http://localhost:${port}`);
 });
