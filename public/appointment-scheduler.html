@@ -209,38 +209,47 @@
         });
 
         addAppointmentButton.addEventListener('click', async () => {
-            const title = document.getElementById('appointmentTitle').value.trim();
-            const date = document.getElementById('appointmentDate').value;
-            const location = document.getElementById('appointmentLocation').value.trim();
-            const contactName = document.getElementById('contactName').value.trim();
-            const contactPhone = document.getElementById('contactPhoneNumber').value.trim();
-            const contactEmail = document.getElementById('contactEmail').value.trim();
-            const scheduledBy = document.getElementById('scheduledBy').value.trim();
-            const notes = document.getElementById('appointmentNotes').value.trim();
+    const title = document.getElementById('appointmentTitle').value.trim();
+    const date = document.getElementById('appointmentDate').value;
+    const location = document.getElementById('appointmentLocation').value.trim();
+    const contactName = document.getElementById('contactName').value.trim();
+    const contactPhone = document.getElementById('contactPhoneNumber').value.trim();
+    const contactEmail = document.getElementById('contactEmail').value.trim();
+    const scheduledBy = document.getElementById('scheduledBy').value.trim();
+    const notes = document.getElementById('appointmentNotes').value.trim();
 
-            if (!title || !date || !location || !contactName || !contactPhone || !contactEmail || !scheduledBy) {
-                alert("Please fill out all required fields.");
-                return;
-            }
+    if (!title || !date || !location || !contactName || !contactPhone || !contactEmail || !scheduledBy) {
+        alert("Please fill out all required fields.");
+        return;
+    }
 
-            try {
-                const response = await fetch(`${API_BASE_URL}/appointments`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes })
-                });
+    // Debugging: Log values before sending request
+    console.log("Sending appointment:", { title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes });
 
-                if (response.ok) {
-                    alert("Appointment added successfully!");
-                    modalCalendar.refetchEvents();
-                } else {
-                    alert("Failed to add appointment.");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Error adding appointment.");
-            }
+    try {
+        const response = await fetch(`${API_BASE_URL}/appointments`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes })
         });
+
+        // Debugging: Log response status and JSON response
+        console.log("Response Status:", response.status);
+        const responseData = await response.json();
+        console.log("Response Data:", responseData);
+
+        if (response.ok) {
+            alert("Appointment added successfully!");
+            modalCalendar.refetchEvents();
+        } else {
+            alert("Failed to add appointment.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error adding appointment.");
+    }
+});
+
     });
 </script>
 </body>
