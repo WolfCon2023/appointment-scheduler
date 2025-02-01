@@ -70,6 +70,15 @@
     </div>
 </div>
 
+<!-- Event Details Modal -->
+<div id="eventDetailsModal" class="modal">
+    <div class="modal-content">
+        <h2>Event Details</h2>
+        <div id="eventDetailsContent"></div>
+        <button onclick="document.getElementById('eventDetailsModal').style.display='none'">Close</button>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
 <script>
     const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
@@ -79,12 +88,14 @@
         const openAddEventBtn = document.getElementById('openAddEvent');
         const addEventModal = document.getElementById('addEventModal');
         const addEventBtn = document.getElementById('addEvent');
+        const eventDetailsModal = document.getElementById('eventDetailsModal');
+        const eventDetailsContent = document.getElementById('eventDetailsContent');
 
         async function fetchAllEvents() {
             const appointments = await fetch(`${API_BASE_URL}/appointments`).then(res => res.json());
             const events = await fetch(`${API_BASE_URL}/events`).then(res => res.json());
-            return [...appointments.map(a => ({ id: a.id, title: a.title, start: a.date })), 
-                    ...events.map(e => ({ id: e.id, title: e.title, start: e.date, backgroundColor: '#28a745' }))];
+            return [...appointments.map(a => ({ id: a.id, title: a.title, start: a.date, location: a.location, description: a.notes, createdBy: a.scheduledBy })), 
+                    ...events.map(e => ({ id: e.id, title: e.title, start: e.date, location: e.location, description: e.description, createdBy: e.createdBy, backgroundColor: '#28a745' }))];
         }
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -92,7 +103,26 @@
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
             events: fetchAllEvents,
             eventClick: function(info) {
-                alert(`Event: ${info.event.title}\nDate: ${info.event.start.toLocaleString()}`);
+                info.jsEvent.preventDefault();
+                
+                // Get event details
+                const eventTitle = info.event.title || "No Title";
+                const eventDate = info.event.start ? new Date(info.event.start).toLocaleString() : "No Date";
+                const eventLocation = info.event.extendedProps.location || "No Location";
+                const eventDescription = info.event.extendedProps.description || "No Description";
+                const eventCreatedBy = info.event.extendedProps.createdBy || "Unknown";
+
+                // Populate Modal with Event Details
+                eventDetailsContent.innerHTML = `
+                    <strong>Title:</strong> ${eventTitle}<br>
+                    <strong>Date:</strong> ${eventDate}<br>
+                    <strong>Location:</strong> ${eventLocation}<br>
+                    <strong>Description:</strong> ${eventDescription}<br>
+                    <strong>Created By:</strong> ${eventCreatedBy}<br>
+                `;
+
+                // Show Modal
+                eventDetailsModal.style.display = 'flex';
             }
         });
 
