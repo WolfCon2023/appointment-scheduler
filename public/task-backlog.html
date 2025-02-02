@@ -228,8 +228,8 @@
     // Updated: Load "Pending" and "In Progress" tasks
     async function loadIncompleteTasks(page = 1) {
     try {
-        // Fetch both "Pending" and "In Progress" tasks correctly
-        const response = await fetch(`${API_BASE_URL}/tasks?status=Pending&status=In Progress&limit=25&page=${page}`);
+        // Use a single 'status' parameter with multiple values
+        const response = await fetch(`${API_BASE_URL}/tasks?status=Pending,In Progress&limit=25&page=${page}`);
         const tasks = await response.json();
 
         const taskTable = document.getElementById("taskList");
