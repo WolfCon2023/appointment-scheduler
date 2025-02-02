@@ -105,43 +105,6 @@
             background-color: #0056b3;
         }
 
-        /* Task List Styling */
-        .task-list {
-            list-style: none;
-            padding: 0;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        .task-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f9f9f9;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        .task-item button {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .task-item button.delete {
-            background-color: #dc3545;
-            color: #fff;
-        }
-
-        .task-item button.delete:hover {
-            background-color: #c82333;
-        }
-
         /* Footer Styling */
         .footer {
             width: 100%;
@@ -213,53 +176,56 @@
 
         <button type="button" class="add-task-button" id="addTaskButton">Add Task</button>
     </form>
-
-    <ul class="task-list" id="taskList"></ul>
 </div>
 
 <!-- Footer -->
 <div class="footer">Powered by Vital iNet</div>
 
 <script>
-    const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/tasks";
+    const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
 
     document.getElementById("addTaskButton").addEventListener("click", async function () {
-        const taskName = document.getElementById("taskName");
-        const taskDescription = document.getElementById("taskDescription");
-        const taskPriority = document.getElementById("taskPriority");
-        const taskDeadline = document.getElementById("taskDeadline");
-        const taskAssignee = document.getElementById("taskAssignee");
-        const taskStatus = document.getElementById("taskStatus");
-        const taskCategory = document.getElementById("taskCategory");
-        const taskProgress = document.getElementById("taskProgress");
+        const taskName = document.getElementById("taskName").value.trim();
+        const taskDescription = document.getElementById("taskDescription").value.trim();
+        const taskPriority = document.getElementById("taskPriority").value;
+        const taskDeadline = document.getElementById("taskDeadline").value;
+        const taskAssignee = document.getElementById("taskAssignee").value.trim();
+        const taskStatus = document.getElementById("taskStatus").value;
+        const taskCategory = document.getElementById("taskCategory").value.trim();
+        const taskProgress = document.getElementById("taskProgress").value || 0;
 
-        // ✅ Reset Borders
-        [taskName, taskDeadline, taskAssignee].forEach(input => input.classList.remove("invalid"));
-
-        if (!taskName.value.trim() || !taskDeadline.value || !taskAssignee.value.trim()) {
+        // **Validate Required Fields**
+        const requiredFields = [taskName, taskDeadline, taskAssignee];
+        if (requiredFields.some(field => !field)) {
             alert("Please fill out all required fields.");
-            [taskName, taskDeadline, taskAssignee].forEach(input => {
-                if (!input.value.trim()) input.classList.add("invalid");
-            });
             return;
         }
 
-        await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                name: taskName.value,
-                description: taskDescription.value,
-                priority: taskPriority.value,
-                deadline: taskDeadline.value,
-                assignee: taskAssignee.value,
-                status: taskStatus.value,
-                category: taskCategory.value,
-                progress: taskProgress.value || 0
-            })
-        });
+        try {
+            const response = await fetch(`${API_BASE_URL}/tasks`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: taskName,
+                    description: taskDescription,
+                    priority: taskPriority,
+                    deadline: taskDeadline,
+                    assignee: taskAssignee,
+                    status: taskStatus,
+                    category: taskCategory,
+                    progress: taskProgress
+                })
+            });
 
-        alert("Task added successfully!");
+            const result = await response.json();
+
+            if (!response.ok) throw new Error(result.message || "Task creation failed.");
+
+            alert("Task added successfully!");
+        } catch (error) {
+            console.error("Error adding task:", error);
+            alert("Error adding task. Check console for details.");
+        }
     });
 </script>
 
