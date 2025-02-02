@@ -104,33 +104,39 @@ app.post(`${API_BASE_URL}/events`, async (req, res) => {
 // TASKS API ROUTES
 // ----------------------------------
 
-// Fetch All Tasks
+// Fetch All Tasks (Support multiple statuses)
 app.get(`${API_BASE_URL}/tasks`, async (req, res) => {
     console.log("Received GET /api/tasks");
 
     const { id, priority, status, category, deadline, limit = 25, page = 1 } = req.query;
-    let query = "SELECT * FROM tasks WHERE 1=1";
+    let query = "SELECT * FROM tasks";
+    let conditions = [];
     let params = [];
 
     if (id) {
-        query += ` AND id = $${params.length + 1}`;
+        conditions.push(`id = $${params.length + 1}`);
         params.push(id);
     }
     if (priority) {
-        query += ` AND priority = $${params.length + 1}`;
+        conditions.push(`priority = $${params.length + 1}`);
         params.push(priority);
     }
     if (status) {
-        query += ` AND status = $${params.length + 1}`;
-        params.push(status);
+        let statusList = status.split(",").map(s => s.trim());
+        conditions.push(`status = ANY($${params.length + 1})`);
+        params.push(statusList);
     }
     if (category) {
-        query += ` AND category = $${params.length + 1}`;
+        conditions.push(`category = $${params.length + 1}`);
         params.push(category);
     }
     if (deadline) {
-        query += ` AND deadline = $${params.length + 1}`;
+        conditions.push(`deadline = $${params.length + 1}`);
         params.push(deadline);
+    }
+
+    if (conditions.length > 0) {
+        query += " WHERE " + conditions.join(" AND ");
     }
 
     query += ` ORDER BY deadline ASC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
@@ -145,6 +151,7 @@ app.get(`${API_BASE_URL}/tasks`, async (req, res) => {
         res.status(500).json({ message: "Database error fetching tasks" });
     }
 });
+
 
 
 // Add a Task
