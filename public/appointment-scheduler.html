@@ -3,231 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Management System</title>
-    
+    <title>Appointment Scheduling | Business Flow</title>
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <style>
-        /* Full Page Layout */
+        /* Ensure Full Page Layout */
         html, body {
-            height: 100vh;
-            width: 100vw;
+            height: 100%;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
             background-color: #f4f7f9;
-            font-family: Arial, sans-serif;
         }
 
         .container {
-            width: 95vw;
-            max-width: 1200px;
-            padding: 30px;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
-        h1 {
+        h1, h2 {
             text-align: center;
             color: #004080;
-            margin-bottom: 20px;
-            font-size: 28px;
         }
 
-        .task-form {
+        .form {
             width: 100%;
+            max-width: 800px;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 20px;
         }
 
         .form-container {
             display: flex;
             flex-direction: column;
-            position: relative;
         }
 
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: flex;
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
             align-items: center;
         }
 
-        input, select, textarea {
+        .modal-content {
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+
+        button {
             width: 100%;
-            padding: 6px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        textarea {
-            resize: vertical;
-            height: 200px;
-            max-height: 300px;
-        }
-
-        /* Highlight invalid fields */
-        .invalid {
-            border: 2px solid red;
-        }
-
-        /* Tooltip Styles */
-        .tooltip {
-            display: inline-block;
-            margin-left: 5px;
-            font-weight: bold;
-            font-size: 12px;
-            color: black;
-            cursor: help;
-        }
-
-        /* Smaller Add Task Button */
-        .add-task-button {
-            width: 150px;
-            padding: 8px;
-            font-size: 14px;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
             background-color: #007bff;
             color: white;
             border: none;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background 0.3s;
-            align-self: center;
         }
 
-        .add-task-button:hover {
+        button:hover {
             background-color: #0056b3;
         }
-
         /* Footer Styling */
-        .footer {
-            width: 100%;
-            height: 50px;
-            background-color: #004080;
-            color: white;
-            text-align: center;
-            line-height: 50px;
-            font-size: 16px;
-            font-weight: bold;
-            position: fixed;
-            bottom: 0;
-            left: 0;
+	        .footer {
+	            width: 100%;
+	            height: 40px;
+	            background-color: #004080;
+	            color: white;
+	            text-align: center;
+	            line-height: 40px;
+	            font-size: 16px;
+	            font-weight: bold;
+	            position: fixed;
+	            bottom: 0;
+	            left: 0;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Task Management System</h1>
-    <form class="task-form">
-        <div class="form-container">
-            <label for="taskName">Task Name <span class="tooltip" title="Enter a short, descriptive task title">?</span></label>
-            <input type="text" id="taskName" placeholder="Enter Task Name" required>
-        </div>
+    <h1>Business Appointment Scheduler</h1>
 
-        <div class="form-container">
-            <label for="taskPriority">Priority <span class="tooltip" title="Choose how urgent this task is">?</span></label>
-            <select id="taskPriority">
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-            </select>
+    <!-- Step 1: Schedule an Appointment -->
+    <div class="step">
+        <h2>Schedule an Appointment</h2>
+        <div class="form">
+            <div class="form-container">
+                <label for="appointmentTitle">Title:</label>
+                <input type="text" id="appointmentTitle" placeholder="Title">
+            </div>
+            <div class="form-container">
+                <label for="appointmentDate">Time:</label>
+                <input type="datetime-local" id="appointmentDate">
+            </div>
+            <div class="form-container">
+                <label for="appointmentLocation">Location:</label>
+                <input type="text" id="appointmentLocation" placeholder="Location">
+            </div>
+            <div class="form-container">
+                <label for="contactName">Contact Name:</label>
+                <input type="text" id="contactName" placeholder="Name">
+            </div>
+            <div class="form-container">
+                <label for="contactPhoneNumber">Phone:</label>
+                <input type="text" id="contactPhoneNumber" placeholder="Phone">
+            </div>
+            <div class="form-container">
+                <label for="contactEmail">Email:</label>
+                <input type="email" id="contactEmail" placeholder="Email">
+            </div>
+            <div class="form-container">
+                <label for="scheduledBy">Scheduled By:</label>
+                <input type="text" id="scheduledBy" placeholder="Your Name">
+            </div>
+            <div class="form-container">
+                <label for="appointmentNotes">Notes:</label>
+                <textarea id="appointmentNotes" placeholder="Notes"></textarea>
+            </div>
         </div>
-
-        <div class="form-container">
-            <label for="taskDeadline">Deadline <span class="tooltip" title="Select the due date">?</span></label>
-            <input type="date" id="taskDeadline" required>
+        <div style="text-align: center; margin-top: 20px;">
+            <button id="addAppointment">Add Appointment</button>
         </div>
+    </div>
 
-        <div class="form-container">
-            <label for="taskAssignee">Assigned To <span class="tooltip" title="Who is responsible for this task?">?</span></label>
-            <input type="text" id="taskAssignee" placeholder="Enter Assignee Name" required>
+    <!-- Step 2: View Scheduled Appointments -->
+    <div class="step">
+        <h2>View Scheduled Appointments</h2>
+        <div style="text-align: center;">
+            <button id="openCalendar">View Calendar</button>
         </div>
+    </div>
 
-        <div class="form-container">
-            <label for="taskStatus">Status <span class="tooltip" title="Current progress of the task">?</span></label>
-            <select id="taskStatus">
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-            </select>
+    <!-- Modal for Calendar -->
+    <div id="calendarModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Scheduled Appointments</h2>
+                <button id="closeCalendar" class="modal-close">Close</button>
+            </div>
+            <div id="modalCalendar"></div>
         </div>
+    </div>
 
-        <div class="form-container">
-            <label for="taskCategory">Category <span class="tooltip" title="Choose a category for better organization">?</span></label>
-            <input type="text" id="taskCategory" placeholder="e.g., Marketing, Development">
+    <!-- Appointment Details Modal -->
+    <div id="appointmentDetailsModal" class="modal">
+        <div class="modal-content">
+            <h2>Appointment Details</h2>
+            <div id="detailsContent"></div>
+            <button onclick="document.getElementById('appointmentDetailsModal').style.display='none'">Close</button>
         </div>
-
-        <div class="form-container">
-            <label for="taskProgress">Progress (%) <span class="tooltip" title="Enter progress in percentage">?</span></label>
-            <input type="number" id="taskProgress" min="0" max="100" placeholder="0-100">
-        </div>
-
-        <div class="form-container" style="grid-column: span 2;">
-            <label for="taskDescription">Task Description <span class="tooltip" title="Provide a detailed task description">?</span></label>
-            <textarea id="taskDescription" maxlength="5000" placeholder="Describe the task in detail"></textarea>
-        </div>
-
-        <button type="button" class="add-task-button" id="addTaskButton">Add Task</button>
-    </form>
+    </div>
+    <!-- Footer Added -->
+   <div class="footer">Powered by Vital iNet</div>
 </div>
 
-<!-- Footer -->
-<div class="footer">Powered by Vital iNet</div>
-
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
 <script>
     const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
 
-    document.getElementById("addTaskButton").addEventListener("click", async function () {
-        const taskName = document.getElementById("taskName").value.trim();
-        const taskDescription = document.getElementById("taskDescription").value.trim();
-        const taskPriority = document.getElementById("taskPriority").value;
-        const taskDeadline = document.getElementById("taskDeadline").value;
-        const taskAssignee = document.getElementById("taskAssignee").value.trim();
-        const taskStatus = document.getElementById("taskStatus").value;
-        const taskCategory = document.getElementById("taskCategory").value.trim();
-        const taskProgress = document.getElementById("taskProgress").value || 0;
+    document.addEventListener('DOMContentLoaded', async function () {
+        console.log("DOM Loaded");
 
-        // **Validate Required Fields**
-        const requiredFields = [taskName, taskDeadline, taskAssignee];
-        if (requiredFields.some(field => !field)) {
-            alert("Please fill out all required fields.");
-            return;
+        const modal = document.getElementById('calendarModal');
+        const openCalendarBtn = document.getElementById('openCalendar');
+        const closeCalendarBtn = document.getElementById('closeCalendar');
+        const modalCalendarEl = document.getElementById('modalCalendar');
+        const addAppointmentButton = document.getElementById('addAppointment');
+
+        let modalCalendar;
+        let appointmentData = {}; 
+
+        async function fetchAppointments() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/appointments`);
+                const appointments = await response.json();
+                appointmentData = appointments.reduce((acc, appt) => ({...acc, [appt.id]: appt}), {});
+                return appointments.map(appt => ({ id: appt.id, title: appt.title, start: appt.date }));
+            } catch (error) {
+                console.error("Error fetching appointments:", error);
+                return [];
+            }
         }
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/tasks`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: taskName,
-                    description: taskDescription,
-                    priority: taskPriority,
-                    deadline: taskDeadline,
-                    assignee: taskAssignee,
-                    status: taskStatus,
-                    category: taskCategory,
-                    progress: taskProgress
-                })
+        async function updateCalendarEvents() {
+            if (modalCalendar) {
+                const events = await fetchAppointments();
+                modalCalendar.removeAllEvents(); // Clear old events
+                modalCalendar.addEventSource(events); // Add updated events
+                modalCalendar.refetchEvents();
+            }
+        }
+
+        openCalendarBtn.addEventListener('click', async () => {
+            modal.style.display = 'flex';
+
+            if (!modalCalendar) {
+                const events = await fetchAppointments();
+
+                modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
+                    initialView: "dayGridMonth",
+                    headerToolbar: { left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek,timeGridDay" },
+                    events: events,
+                    eventClick: function(info) {  
+                        info.jsEvent.preventDefault();
+                        const data = appointmentData[info.event.id];
+
+                        document.getElementById('detailsContent').innerHTML = `
+                            <strong>Title:</strong> ${data.title}<br>
+                            <strong>Date:</strong> ${new Date(data.date).toLocaleString()}<br>
+                            <strong>Location:</strong> ${data.location}<br>
+                            <strong>Contact Name:</strong> ${data.contactName}<br>
+                            <strong>Phone:</strong> ${data.contactPhone}<br>
+                            <strong>Email:</strong> ${data.contactEmail}<br>
+                            <strong>Scheduled By:</strong> ${data.scheduledBy}<br>
+                            <strong>Notes:</strong> ${data.notes}<br>
+                        `;
+
+                        document.getElementById('appointmentDetailsModal').style.display = 'flex';
+                    }
+                });
+
+                modalCalendar.render();
+            }
+        });
+
+        closeCalendarBtn.addEventListener('click', () => modal.style.display = 'none');
+
+        // **Fix Add Appointment Not Appearing in Calendar**
+        addAppointmentButton.addEventListener('click', async () => {
+            const title = document.getElementById('appointmentTitle');
+            const date = document.getElementById('appointmentDate');
+            const location = document.getElementById('appointmentLocation');
+            const contactName = document.getElementById('contactName');
+            const contactPhone = document.getElementById('contactPhoneNumber');
+            const contactEmail = document.getElementById('contactEmail');
+            const scheduledBy = document.getElementById('scheduledBy');
+            const notes = document.getElementById('appointmentNotes');
+
+            // **Check Required Fields**
+            const requiredFields = [title, date, location, contactName, contactPhone, contactEmail, scheduledBy];
+            let valid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.style.border = "2px solid red";
+                    valid = false;
+                } else {
+                    field.style.border = ""; // Reset border color if filled
+                }
             });
 
-            const result = await response.json();
+            if (!valid) {
+                alert("Please fill out all required fields.");
+                return;
+            }
 
-            if (!response.ok) throw new Error(result.message || "Task creation failed.");
+            // **Create Appointment Object**
+            const newAppointment = {
+                title: title.value.trim(),
+                date: date.value,
+                location: location.value.trim(),
+                contactName: contactName.value.trim(),
+                contactPhone: contactPhone.value.trim(),
+                contactEmail: contactEmail.value.trim(),
+                scheduledBy: scheduledBy.value.trim(),
+                notes: notes.value.trim()
+            };
 
-            alert("Task added successfully!");
-        } catch (error) {
-            console.error("Error adding task:", error);
-            alert("Error adding task. Check console for details.");
-        }
+            try {
+                const response = await fetch(`${API_BASE_URL}/appointments`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newAppointment)
+                });
+
+                if (response.ok) {
+                    alert("Appointment added successfully!");
+                    
+                    // **Refetch and update calendar with new data**
+                    await updateCalendarEvents();
+
+                    // **Clear Form Fields After Successful Submission**
+                    requiredFields.forEach(field => field.value = "");
+                    notes.value = "";
+
+                } else {
+                    alert("Failed to add appointment. Please try again.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error adding appointment. Please check your internet connection.");
+            }
+        });
     });
 </script>
-
 </body>
 </html>
