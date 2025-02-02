@@ -100,14 +100,14 @@ app.post(`${API_BASE_URL}/tasks`, async (req, res) => {
 
     const { task_name, task_description, priority, deadline, assignee, status, category, progress } = req.body;
 
-    if (!task_name || !task_description || !deadline || !assignee) {
-        return res.status(400).json({ error: "Missing required fields." });
+    if (!task_name || !task_description || !priority || !status) {
+        return res.status(400).json({ message: "Missing required fields." });
     }
 
     try {
         const result = await pool.query(
             "INSERT INTO tasks (task_name, task_description, priority, deadline, assignee, status, category, progress) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, task_name",
-            [task_name, task_description, priority, deadline, assignee, status, category, progress]
+            [task_name, task_description, priority, deadline || null, assignee, status, category, progress]
         );
 
         res.status(201).json({ 
@@ -122,10 +122,10 @@ app.post(`${API_BASE_URL}/tasks`, async (req, res) => {
     }
 });
 
-// ✅ Update Task by ID
+// ✅ Update Task by ID (Handles NULL deadline)
 app.put(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
     console.log(`Received PUT /api/tasks/${req.params.id}`);
-    console.log("Request Body:", req.body);  
+    console.log("Request Body:", req.body);
 
     const { task_name, task_description, priority, deadline, assignee, status, category, progress } = req.body;
 
@@ -137,8 +137,14 @@ app.put(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
     try {
         const result = await pool.query(
             `UPDATE tasks 
-             SET task_name = $1, task_description = $2, priority = $3, deadline = $4, assignee = $5, 
-                 status = $6, category = $7, progress = $8 
+             SET task_name = $1, 
+                 task_description = $2, 
+                 priority = $3, 
+                 deadline = CASE WHEN $4 = '' THEN NULL ELSE $4::DATE END, 
+                 assignee = $5, 
+                 status = $6, 
+                 category = $7, 
+                 progress = $8 
              WHERE id = $9 RETURNING *`,
             [task_name, task_description, priority, deadline, assignee, status, category, progress, req.params.id]
         );
