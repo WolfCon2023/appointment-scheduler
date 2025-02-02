@@ -28,10 +28,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative; /* ✅ Ensures home button doesn't shift layout */
+            position: relative; /* Keeps everything inside intact */
         }
 
-        /* ✅ Home Button Styling - Top Right */
+        /* ✅ Home Button - Fixed in the top-right corner without breaking layout */
         .home-button {
             position: absolute;
             top: 15px;
@@ -59,10 +59,11 @@
             font-size: 28px;
         }
 
+        /* ✅ Ensures form layout remains in two columns */
         .task-form {
             width: 100%;
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* ✅ Restores original two-column layout */
+            grid-template-columns: repeat(2, 1fr); /* Ensures two-column format */
             gap: 15px;
         }
 
@@ -108,6 +109,7 @@
             border-radius: 4px;
             transition: background 0.3s;
             align-self: center;
+            grid-column: span 2; /* Ensures button stays centered in two-column layout */
         }
 
         .add-task-button:hover {
@@ -132,7 +134,7 @@
 <body>
 
 <div class="container">
-    <!-- ✅ Home Button inside container but positioned at the top-right -->
+    <!-- ✅ Home Button in top-right (does not shift layout) -->
     <button class="home-button" onclick="goToHomePage()">🏠 Home</button>
 
     <h1>Task Management System</h1>
