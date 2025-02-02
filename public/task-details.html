@@ -102,6 +102,10 @@
 <div class="container">
     <h1>Task Details</h1>
     <form id="taskForm">
+        <!-- ✅ Task ID (Read-only) -->
+        <label for="taskId">Task ID:</label>
+        <input type="text" id="taskId" readonly>
+
         <label for="taskName">Task Name:</label>
         <input type="text" id="taskName">
 
@@ -135,7 +139,7 @@
         <input type="date" id="taskDeadline">
 
         <label for="taskAssignee">Assignee:</label>
-        <input type="text" id="taskAssignee">  <!-- ✅ Added this field -->
+        <input type="text" id="taskAssignee">
 
         <label for="taskProgress">Progress (%):</label>
         <input type="number" id="taskProgress" min="0" max="100">
@@ -144,6 +148,9 @@
             <button type="button" class="save-button" onclick="updateTask()">Save Changes</button>
             <button type="button" class="cancel-button" onclick="goBack()">Cancel</button>
         </div>
+    </form>
+</div>
+
     </form>
 </div>
 
