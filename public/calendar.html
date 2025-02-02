@@ -146,11 +146,14 @@
         const eventDetailsContent = document.getElementById('eventDetailsContent');
 
         async function fetchAllEvents() {
-            const appointments = await fetch(`${API_BASE_URL}/appointments`).then(res => res.json());
-            const events = await fetch(`${API_BASE_URL}/events`).then(res => res.json());
-            return [...appointments.map(a => ({
+            try {
+                const appointments = await fetch(`${API_BASE_URL}/appointments`).then(res => res.json());
+                const events = await fetch(`${API_BASE_URL}/events`).then(res => res.json());
+
+                return [
+                    ...appointments.map(a => ({
                         id: a.id, 
-                        title: a.title,  // Display only the title
+                        title: a.title,  
                         start: a.date,
                         location: a.location,
                         description: a.notes,
@@ -158,33 +161,35 @@
                     })), 
                     ...events.map(e => ({
                         id: e.id, 
-                        title: e.title, // Display only the title
+                        title: e.title, 
                         start: e.date,
                         location: e.location,
                         description: e.description,
                         createdBy: e.createdBy,
                         backgroundColor: '#28a745' 
                     }))
-            ];
+                ];
+            } catch (error) {
+                console.error("Error fetching events:", error);
+                return [];
+            }
         }
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            height: "auto", /* Allows content to expand */
-            width: "100%", /* Keeps full width */
+            height: "auto",
+            width: "100%",
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
             events: fetchAllEvents,
             eventClick: function(info) {
                 info.jsEvent.preventDefault();
                 
-                // Get event details
                 const eventTitle = info.event.title || "No Title";
                 const eventDate = info.event.start ? new Date(info.event.start).toLocaleString() : "No Date";
                 const eventLocation = info.event.extendedProps.location || "No Location";
                 const eventDescription = info.event.extendedProps.description || "No Description";
                 const eventCreatedBy = info.event.extendedProps.createdBy || "Unknown";
 
-                // Populate Modal with Event Details
                 eventDetailsContent.innerHTML = `
                     <strong>Title:</strong> ${eventTitle}<br>
                     <strong>Date:</strong> ${eventDate}<br>
@@ -193,7 +198,6 @@
                     <strong>Created By:</strong> ${eventCreatedBy}<br>
                 `;
 
-                // Show Modal
                 eventDetailsModal.style.display = 'flex';
             }
         });
@@ -204,11 +208,63 @@
             addEventModal.style.display = 'flex';
         });
 
+        // ✅ **Fix: Implement Working "Add Event" Feature**
         addEventBtn.addEventListener('click', async () => {
-            alert("This feature is currently under development.");
+            const title = document.getElementById('eventTitle').value.trim();
+            const date = document.getElementById('eventDate').value;
+            const location = document.getElementById('eventLocation').value.trim();
+            const description = document.getElementById('eventDescription').value.trim();
+            const createdBy = document.getElementById('eventCreatedBy').value.trim();
+
+            // **✅ Validate Required Fields**
+            if (!title || !date || !createdBy) {
+                alert("Error: Title, Date, and Created By are required.");
+                return;
+            }
+
+            // **✅ Create Event Object**
+            const newEvent = { title, date, location, description, createdBy };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/events`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newEvent)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to add event.");
+                }
+
+                const savedEvent = await response.json();
+
+                // **✅ Add Event to Calendar Without Refreshing**
+                calendar.addEvent({
+                    id: savedEvent.id, 
+                    title: savedEvent.title, 
+                    start: savedEvent.date,
+                    backgroundColor: '#28a745' 
+                });
+
+                alert("Event added successfully!");
+
+                // **✅ Close Modal & Clear Inputs**
+                addEventModal.style.display = 'none';
+                document.getElementById('eventTitle').value = "";
+                document.getElementById('eventDate').value = "";
+                document.getElementById('eventLocation').value = "";
+                document.getElementById('eventDescription').value = "";
+                document.getElementById('eventCreatedBy').value = "";
+
+            } catch (error) {
+                console.error("Error adding event:", error);
+                alert("Failed to add event. Please try again.");
+            }
         });
+
     });
 </script>
+
 
 </body>
 </html>
