@@ -19,7 +19,7 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
-// Health Check Route (Temporary Debugging)
+// Health Check Route
 app.get("/", (req, res) => {
   res.send("Backend API is running!");
 });
@@ -104,7 +104,7 @@ app.post(`${API_BASE_URL}/events`, async (req, res) => {
 // TASKS API ROUTES
 // ----------------------------------
 
-// Fetch All Tasks (Support multiple statuses)
+// ✅ Fetch All Tasks (Supports multiple statuses)
 app.get(`${API_BASE_URL}/tasks`, async (req, res) => {
     console.log("Received GET /api/tasks");
 
@@ -152,9 +152,25 @@ app.get(`${API_BASE_URL}/tasks`, async (req, res) => {
     }
 });
 
+// ✅ Fetch Task Details by ID
+app.get(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
+    console.log(`Received GET /api/tasks/${req.params.id}`);
+    
+    try {
+        const result = await pool.query("SELECT * FROM tasks WHERE id = $1", [req.params.id]);
 
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Task not found" });
+        }
 
-// Add a Task
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error fetching task:", error);
+        res.status(500).json({ message: "Database error fetching task" });
+    }
+});
+
+// ✅ Add a Task
 app.post(`${API_BASE_URL}/tasks`, async (req, res) => {
     console.log("Received POST /api/tasks");
 
@@ -170,7 +186,7 @@ app.post(`${API_BASE_URL}/tasks`, async (req, res) => {
             [task_name, task_description, priority, deadline, assignee, status, category, progress]
         );
 
-        res.status(201).json({ 	
+        res.status(201).json({ 
             message: "Task added successfully!", 
             task_id: result.rows[0].id,
             task_name: result.rows[0].task_name
@@ -181,7 +197,6 @@ app.post(`${API_BASE_URL}/tasks`, async (req, res) => {
         res.status(500).json({ message: "Database error adding task" });
     }
 });
-
 
 // ----------------------------------
 // Catch-All Route for Invalid API Requests
