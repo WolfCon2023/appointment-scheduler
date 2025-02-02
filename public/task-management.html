@@ -58,7 +58,7 @@
             align-items: center;
         }
 
-        input, select, textarea {
+        input, select {
             width: 100%;
             padding: 6px;
             font-size: 14px;
@@ -70,12 +70,10 @@
             resize: vertical;
             height: 200px;
             max-height: 300px;
-        }
-
-        /* Highlight invalid fields */
-        .invalid {
-            border: 2px solid red !important;
-            background-color: #ffebee; /* Light red background */
+            width: 100%;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
 
         /* Tooltip Styles */
@@ -88,7 +86,7 @@
             cursor: help;
         }
 
-        /* Smaller Add Task Button */
+        /* Add Task Button */
         .add-task-button {
             width: 150px;
             padding: 8px;
@@ -106,6 +104,43 @@
             background-color: #0056b3;
         }
 
+        /* Task List Styling */
+        .task-list {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .task-item button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .task-item button.delete {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .task-item button.delete:hover {
+            background-color: #c82333;
+        }
+
         /* Footer Styling */
         .footer {
             width: 100%;
@@ -119,6 +154,12 @@
             position: fixed;
             bottom: 0;
             left: 0;
+        }
+
+        /* Highlight Fields with Errors */
+        .error {
+            border: 2px solid red !important;
+            background-color: #ffe6e6;
         }
     </style>
 </head>
@@ -151,25 +192,6 @@
             <input type="text" id="taskAssignee" placeholder="Enter Assignee Name" required>
         </div>
 
-        <div class="form-container">
-            <label for="taskStatus">Status <span class="tooltip" title="Current progress of the task">?</span></label>
-            <select id="taskStatus">
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-            </select>
-        </div>
-
-        <div class="form-container">
-            <label for="taskCategory">Category <span class="tooltip" title="Choose a category for better organization">?</span></label>
-            <input type="text" id="taskCategory" placeholder="e.g., Marketing, Development">
-        </div>
-
-        <div class="form-container">
-            <label for="taskProgress">Progress (%) <span class="tooltip" title="Enter progress in percentage">?</span></label>
-            <input type="number" id="taskProgress" min="0" max="100" placeholder="0-100">
-        </div>
-
         <div class="form-container" style="grid-column: span 2;">
             <label for="taskDescription">Task Description <span class="tooltip" title="Provide a detailed task description">?</span></label>
             <textarea id="taskDescription" maxlength="5000" placeholder="Describe the task in detail"></textarea>
@@ -177,6 +199,8 @@
 
         <button type="button" class="add-task-button" id="addTaskButton">Add Task</button>
     </form>
+
+    <ul class="task-list" id="taskList"></ul>
 </div>
 
 <!-- Footer -->
@@ -191,24 +215,26 @@
         const taskPriority = document.getElementById("taskPriority").value;
         const taskDeadline = document.getElementById("taskDeadline");
         const taskAssignee = document.getElementById("taskAssignee");
-        const taskStatus = document.getElementById("taskStatus").value;
-        const taskCategory = document.getElementById("taskCategory").value.trim();
-        const taskProgress = document.getElementById("taskProgress").value || 0;
 
-        // **Validation: Ensure required fields are filled**
-        let isValid = true;
-        const requiredFields = [taskName, taskDeadline, taskAssignee];
+        // Reset previous errors
+        [taskName, taskDescription, taskDeadline, taskAssignee].forEach(field => field.classList.remove("error"));
 
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                field.classList.add("invalid");
-                isValid = false;
-            } else {
-                field.classList.remove("invalid");
-            }
-        });
+        // Check Required Fields
+        let valid = true;
+        if (!taskName.value.trim()) {
+            taskName.classList.add("error");
+            valid = false;
+        }
+        if (!taskDeadline.value) {
+            taskDeadline.classList.add("error");
+            valid = false;
+        }
+        if (!taskAssignee.value.trim()) {
+            taskAssignee.classList.add("error");
+            valid = false;
+        }
 
-        if (!isValid) {
+        if (!valid) {
             alert("Please fill out all required fields.");
             return;
         }
@@ -223,23 +249,23 @@
                     priority: taskPriority,
                     deadline: taskDeadline.value,
                     assignee: taskAssignee.value.trim(),
-                    status: taskStatus,
-                    category: taskCategory,
-                    progress: taskProgress
+                    status: "Pending",
+                    category: "General",
+                    progress: 0
                 })
             });
 
             const result = await response.json();
 
-            if (!response.ok) throw new Error(result.message || "Task creation failed.");
+            if (!response.ok) {
+                console.error("Server Response:", result);
+                throw new Error(result.message || "Task creation failed.");
+            }
 
             alert("Task added successfully!");
-
-            // Reset Form
-            document.querySelector(".task-form").reset();
         } catch (error) {
             console.error("Error adding task:", error);
-            alert("Error adding task. Check console for details.");
+            alert(`Error adding task: ${error.message}`);
         }
     });
 </script>
