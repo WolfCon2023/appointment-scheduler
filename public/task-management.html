@@ -68,7 +68,7 @@
 
         textarea {
             resize: vertical;
-            height: 200px;
+            height: 200px; /* ✅ Enlarged for detailed task descriptions */
             max-height: 300px;
             width: 100%;
             font-size: 14px;
@@ -76,17 +76,22 @@
             border-radius: 4px;
         }
 
+        /* Adjust Priority & Deadline to Fit */
+        #taskPriority, #taskDeadline {
+            width: auto;
+        }
+
         /* Tooltip Styles */
         .tooltip {
             display: inline-block;
             margin-left: 5px;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 12px; /* ✅ Smaller "?" for better appearance */
             color: black;
             cursor: help;
         }
 
-        /* Add Task Button */
+        /* Smaller Add Task Button */
         .add-task-button {
             width: 150px;
             padding: 8px;
@@ -154,12 +159,6 @@
             position: fixed;
             bottom: 0;
             left: 0;
-        }
-
-        /* Highlight Fields with Errors */
-        .error {
-            border: 2px solid red !important;
-            background-color: #ffe6e6;
         }
     </style>
 </head>
@@ -229,25 +228,25 @@
     const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
 
     document.getElementById("addTaskButton").addEventListener("click", async function () {
-        const taskName = document.getElementById("taskName").value.trim();
-        const taskDescription = document.getElementById("taskDescription").value.trim();
-        const taskPriority = document.getElementById("taskPriority").value;
-        const taskDeadline = document.getElementById("taskDeadline").value;
-        const taskAssignee = document.getElementById("taskAssignee").value.trim();
-        const taskStatus = document.getElementById("taskStatus").value;
-        const taskCategory = document.getElementById("taskCategory").value.trim();
-        const taskProgress = document.getElementById("taskProgress").value || 0;
-
         try {
             const response = await fetch(`${API_BASE_URL}/tasks`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: taskName, description: taskDescription, priority: taskPriority, deadline: taskDeadline, assignee: taskAssignee, status: taskStatus, category: taskCategory, progress: taskProgress })
+                body: JSON.stringify({
+                    name: taskName.value.trim(),
+                    description: taskDescription.value.trim(),
+                    priority: taskPriority.value,
+                    deadline: taskDeadline.value,
+                    assignee: taskAssignee.value.trim(),
+                    status: taskStatus.value,
+                    category: taskCategory.value.trim(),
+                    progress: taskProgress.value || 0
+                })
             });
 
             const result = await response.json();
-            if (!response.ok) throw new Error(result.message || "Task creation failed.");
 
+            if (!response.ok) throw new Error(result.message || "Task creation failed.");
             alert("Task added successfully!");
         } catch (error) {
             console.error("Error adding task:", error);
