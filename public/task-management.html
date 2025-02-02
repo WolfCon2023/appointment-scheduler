@@ -58,7 +58,7 @@
             align-items: center;
         }
 
-        input, select {
+        input, select, textarea {
             width: 100%;
             padding: 6px;
             font-size: 14px;
@@ -68,17 +68,13 @@
 
         textarea {
             resize: vertical;
-            height: 200px; /* ✅ Enlarged for detailed task descriptions */
+            height: 200px;
             max-height: 300px;
-            width: 100%;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
         }
 
-        /* Adjust Priority & Deadline to Fit */
-        #taskPriority, #taskDeadline {
-            width: auto;
+        /* Highlight invalid fields */
+        .invalid {
+            border: 2px solid red;
         }
 
         /* Tooltip Styles */
@@ -86,7 +82,7 @@
             display: inline-block;
             margin-left: 5px;
             font-weight: bold;
-            font-size: 12px; /* ✅ Smaller "?" for better appearance */
+            font-size: 12px;
             color: black;
             cursor: help;
         }
@@ -225,22 +221,42 @@
 <div class="footer">Powered by Vital iNet</div>
 
 <script>
-    const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
+    const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/tasks";
 
     document.getElementById("addTaskButton").addEventListener("click", async function () {
-        const taskName = document.getElementById("taskName").value;
-        const taskDescription = document.getElementById("taskDescription").value;
-        const taskPriority = document.getElementById("taskPriority").value;
-        const taskDeadline = document.getElementById("taskDeadline").value;
-        const taskAssignee = document.getElementById("taskAssignee").value;
-        const taskStatus = document.getElementById("taskStatus").value;
-        const taskCategory = document.getElementById("taskCategory").value;
-        const taskProgress = document.getElementById("taskProgress").value || 0;
+        const taskName = document.getElementById("taskName");
+        const taskDescription = document.getElementById("taskDescription");
+        const taskPriority = document.getElementById("taskPriority");
+        const taskDeadline = document.getElementById("taskDeadline");
+        const taskAssignee = document.getElementById("taskAssignee");
+        const taskStatus = document.getElementById("taskStatus");
+        const taskCategory = document.getElementById("taskCategory");
+        const taskProgress = document.getElementById("taskProgress");
+
+        // ✅ Reset Borders
+        [taskName, taskDeadline, taskAssignee].forEach(input => input.classList.remove("invalid"));
+
+        if (!taskName.value.trim() || !taskDeadline.value || !taskAssignee.value.trim()) {
+            alert("Please fill out all required fields.");
+            [taskName, taskDeadline, taskAssignee].forEach(input => {
+                if (!input.value.trim()) input.classList.add("invalid");
+            });
+            return;
+        }
 
         await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: taskName, description: taskDescription, priority: taskPriority, deadline: taskDeadline, assignee: taskAssignee, status: taskStatus, category: taskCategory, progress: taskProgress })
+            body: JSON.stringify({
+                name: taskName.value,
+                description: taskDescription.value,
+                priority: taskPriority.value,
+                deadline: taskDeadline.value,
+                assignee: taskAssignee.value,
+                status: taskStatus.value,
+                category: taskCategory.value,
+                progress: taskProgress.value || 0
+            })
         });
 
         alert("Task added successfully!");
