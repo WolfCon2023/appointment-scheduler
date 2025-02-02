@@ -162,34 +162,36 @@
     const taskId = urlParams.get("id");
 
     async function loadTaskDetails() {
-        if (!taskId) {
-            alert("Invalid Task ID");
+    if (!taskId) {
+        alert("Invalid Task ID");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`);
+        const task = await response.json();
+
+        if (!response.ok) {
+            alert(task.message);
             return;
         }
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`);
-            const task = await response.json();
-
-            if (!response.ok) {
-                alert(task.message);
-                return;
-            }
-
-            document.getElementById("taskName").value = task.task_name;
-            document.getElementById("taskDescription").value = task.task_description;
-            document.getElementById("taskPriority").value = task.priority;
-            document.getElementById("taskStatus").value = task.status;
-            document.getElementById("taskCategory").value = task.category;
-            document.getElementById("taskDeadline").value = task.deadline ? task.deadline.split("T")[0] : ""; // ✅ Fix for NULL values
-            document.getElementById("taskProgress").value = task.progress;
-            document.getElementById("taskAssignee").value = task.assignee;
-            
-        } catch (error) {
-            console.error("Error loading task:", error);
-            alert("Error loading task details.");
-        }
+        document.getElementById("taskId").value = task.id;  // ✅ Populate Task ID
+        document.getElementById("taskName").value = task.task_name;
+        document.getElementById("taskDescription").value = task.task_description;
+        document.getElementById("taskPriority").value = task.priority;
+        document.getElementById("taskStatus").value = task.status;
+        document.getElementById("taskCategory").value = task.category;
+        document.getElementById("taskDeadline").value = task.deadline ? task.deadline.split("T")[0] : ""; 
+        document.getElementById("taskProgress").value = task.progress;
+        document.getElementById("taskAssignee").value = task.assignee;
+        
+    } catch (error) {
+        console.error("Error loading task:", error);
+        alert("Error loading task details.");
     }
+}
+
 
     async function updateTask() {
         if (!taskId) {
