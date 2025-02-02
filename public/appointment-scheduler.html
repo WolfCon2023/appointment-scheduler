@@ -4,109 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appointment Scheduling | Business Flow</title>
-    
     <!-- FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
-
     <style>
-        /* Light Mode (Default) */
-        body {
-            height: 100vh;
+        /* Ensure Full Page Layout */
+        html, body {
+            height: 100%;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
-            background: linear-gradient(to right, #e0eafc, #ffffff);
-            color: #333;
-            transition: background 0.5s ease, color 0.5s ease;
-        }
-
-        /* Dark Mode */
-        body.dark-mode {
-            background: linear-gradient(to right, #2c3e50, #34495e);
-            color: white;
+            background-color: #f4f7f9;
         }
 
         .container {
             width: 100%;
-            max-width: 1200px;
+            height: 100vh;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background 0.5s ease;
         }
 
-        .dark-mode .container {
-            background-color: rgba(44, 62, 80, 0.9);
-        }
-
-        h1 {
+        h1, h2 {
             text-align: center;
             color: #004080;
         }
 
-        .dark-mode h1 {
-            color: #ffffff;
+        .form {
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
         }
 
         button {
+            width: 100%;
             padding: 12px 20px;
+            font-size: 16px;
             border-radius: 6px;
             cursor: pointer;
             background-color: #007bff;
             color: white;
             border: none;
-            transition: background 0.3s;
         }
 
         button:hover {
             background-color: #0056b3;
-        }
-
-        .dark-mode button {
-            background-color: #f39c12;
-            color: #000;
-        }
-
-        .dark-mode button:hover {
-            background-color: #e67e22;
-        }
-
-        /* Calendar Styling */
-        #calendar-container {
-            width: 100%;
-            flex-grow: 1;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 5px;
-            background-color: white;
-        }
-
-        #calendar {
-            width: 100%;
-            height: auto;
-        }
-
-        /* Footer */
-        .footer {
-            width: 100%;
-            text-align: center;
-            padding: 10px;
-            background-color: rgba(0, 0, 0, 0.1);
-            position: fixed;
-            bottom: 0;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .dark-mode .footer {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
         }
     </style>
 </head>
@@ -114,125 +90,218 @@
 
 <div class="container">
     <h1>Business Appointment Scheduler</h1>
-    
-    <button id="toggleDarkMode">Toggle Dark Mode</button>
-    <button id="openAddEvent">Add Appointment</button>
 
-    <!-- Calendar Section -->
-    <div id="calendar-container">
-        <div id="calendar"></div>
+    <!-- Step 1: Schedule an Appointment -->
+    <div class="step">
+        <h2>Schedule an Appointment</h2>
+        <div class="form">
+            <div class="form-container">
+                <label for="appointmentTitle">Title:</label>
+                <input type="text" id="appointmentTitle" placeholder="Title">
+            </div>
+            <div class="form-container">
+                <label for="appointmentDate">Time:</label>
+                <input type="datetime-local" id="appointmentDate">
+            </div>
+            <div class="form-container">
+                <label for="appointmentLocation">Location:</label>
+                <input type="text" id="appointmentLocation" placeholder="Location">
+            </div>
+            <div class="form-container">
+                <label for="contactName">Contact Name:</label>
+                <input type="text" id="contactName" placeholder="Name">
+            </div>
+            <div class="form-container">
+                <label for="contactPhoneNumber">Phone:</label>
+                <input type="text" id="contactPhoneNumber" placeholder="Phone">
+            </div>
+            <div class="form-container">
+                <label for="contactEmail">Email:</label>
+                <input type="email" id="contactEmail" placeholder="Email">
+            </div>
+            <div class="form-container">
+                <label for="scheduledBy">Scheduled By:</label>
+                <input type="text" id="scheduledBy" placeholder="Your Name">
+            </div>
+            <div class="form-container">
+                <label for="appointmentNotes">Notes:</label>
+                <textarea id="appointmentNotes" placeholder="Notes"></textarea>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button id="addAppointment">Add Appointment</button>
+        </div>
+    </div>
+
+    <!-- Step 2: View Scheduled Appointments -->
+    <div class="step">
+        <h2>View Scheduled Appointments</h2>
+        <div style="text-align: center;">
+            <button id="openCalendar">View Calendar</button>
+        </div>
+    </div>
+
+    <!-- Modal for Calendar -->
+    <div id="calendarModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Scheduled Appointments</h2>
+                <button id="closeCalendar" class="modal-close">Close</button>
+            </div>
+            <div id="modalCalendar"></div>
+        </div>
+    </div>
+
+    <!-- Appointment Details Modal -->
+    <div id="appointmentDetailsModal" class="modal">
+        <div class="modal-content">
+            <h2>Appointment Details</h2>
+            <div id="detailsContent"></div>
+            <button onclick="document.getElementById('appointmentDetailsModal').style.display='none'">Close</button>
+        </div>
     </div>
 </div>
-
-<!-- Add Event Modal -->
-<div id="addEventModal" class="modal">
-    <div class="modal-content">
-        <h2>Add New Appointment</h2>
-        <input type="text" id="eventTitle" placeholder="Appointment Title">
-        <input type="datetime-local" id="eventDate">
-        <input type="text" id="eventLocation" placeholder="Location">
-        <textarea id="eventDescription" placeholder="Notes"></textarea>
-        <input type="text" id="eventCreatedBy" placeholder="Scheduled By">
-        <button id="addEvent">Add Appointment</button>
-        <button onclick="document.getElementById('addEventModal').style.display='none'">Close</button>
-    </div>
-</div>
-
-<!-- Footer -->
-<div class="footer">Powered by Vital iNet</div>
 
 <!-- FullCalendar JS -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-
 <script>
     const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
 
-    document.addEventListener("DOMContentLoaded", async function () {
+    document.addEventListener('DOMContentLoaded', async function () {
         console.log("DOM Loaded");
 
-        const calendarEl = document.getElementById("calendar");
-        const openAddEventBtn = document.getElementById("openAddEvent");
-        const addEventModal = document.getElementById("addEventModal");
-        const addEventBtn = document.getElementById("addEvent");
-        const toggleDarkModeButton = document.getElementById("toggleDarkMode");
+        const modal = document.getElementById('calendarModal');
+        const openCalendarBtn = document.getElementById('openCalendar');
+        const closeCalendarBtn = document.getElementById('closeCalendar');
+        const modalCalendarEl = document.getElementById('modalCalendar');
+        const addAppointmentButton = document.getElementById('addAppointment');
 
-        // Load Dark Mode Preference
-        if (localStorage.getItem("darkMode") === "enabled") {
-            document.body.classList.add("dark-mode");
-        }
+        let modalCalendar;
+        let appointmentData = {}; 
 
-        toggleDarkModeButton.addEventListener("click", function () {
-            document.body.classList.toggle("dark-mode");
-            localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
-        });
-
-        // Fetch Appointments & Events
-        async function fetchAllEvents() {
+        async function fetchAppointments() {
             try {
-                const appointments = await fetch(`${API_BASE_URL}/appointments`).then(res => res.json());
-                return appointments.map(a => ({
-                    id: a.id,
-                    title: a.title,
-                    start: a.date
-                }));
+                const response = await fetch(`${API_BASE_URL}/appointments`);
+                const appointments = await response.json();
+                appointmentData = appointments.reduce((acc, appt) => ({...acc, [appt.id]: appt}), {});
+                return appointments.map(appt => ({ id: appt.id, title: appt.title, start: appt.date }));
             } catch (error) {
-                console.error("Error fetching events:", error);
+                console.error("Error fetching appointments:", error);
                 return [];
             }
         }
 
-        const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: "dayGridMonth",
-            height: "auto",
-            width: "100%",
-            headerToolbar: { left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek,timeGridDay" },
-            events: fetchAllEvents,
-            eventClick: function(info) {
-                alert(`Appointment: ${info.event.title}\nDate: ${info.event.start.toLocaleString()}`);
+        async function updateCalendarEvents() {
+            if (modalCalendar) {
+                const events = await fetchAppointments();
+                modalCalendar.removeAllEvents(); // Clear old events
+                modalCalendar.addEventSource(events); // Add updated events
+                modalCalendar.refetchEvents();
+            }
+        }
+
+        openCalendarBtn.addEventListener('click', async () => {
+            modal.style.display = 'flex';
+
+            if (!modalCalendar) {
+                const events = await fetchAppointments();
+
+                modalCalendar = new FullCalendar.Calendar(modalCalendarEl, {
+                    initialView: "dayGridMonth",
+                    headerToolbar: { left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek,timeGridDay" },
+                    events: events,
+                    eventClick: function(info) {  
+                        info.jsEvent.preventDefault();
+                        const data = appointmentData[info.event.id];
+
+                        document.getElementById('detailsContent').innerHTML = `
+                            <strong>Title:</strong> ${data.title}<br>
+                            <strong>Date:</strong> ${new Date(data.date).toLocaleString()}<br>
+                            <strong>Location:</strong> ${data.location}<br>
+                            <strong>Contact Name:</strong> ${data.contactName}<br>
+                            <strong>Phone:</strong> ${data.contactPhone}<br>
+                            <strong>Email:</strong> ${data.contactEmail}<br>
+                            <strong>Scheduled By:</strong> ${data.scheduledBy}<br>
+                            <strong>Notes:</strong> ${data.notes}<br>
+                        `;
+
+                        document.getElementById('appointmentDetailsModal').style.display = 'flex';
+                    }
+                });
+
+                modalCalendar.render();
             }
         });
 
-        calendar.render();
+        closeCalendarBtn.addEventListener('click', () => modal.style.display = 'none');
 
-        // Open Add Event Modal
-        openAddEventBtn.addEventListener("click", () => addEventModal.style.display = "flex");
+        // **Fix Add Appointment Not Appearing in Calendar**
+        addAppointmentButton.addEventListener('click', async () => {
+            const title = document.getElementById('appointmentTitle');
+            const date = document.getElementById('appointmentDate');
+            const location = document.getElementById('appointmentLocation');
+            const contactName = document.getElementById('contactName');
+            const contactPhone = document.getElementById('contactPhoneNumber');
+            const contactEmail = document.getElementById('contactEmail');
+            const scheduledBy = document.getElementById('scheduledBy');
+            const notes = document.getElementById('appointmentNotes');
 
-        // Add Event Function
-        addEventBtn.addEventListener("click", async () => {
-            const title = document.getElementById("eventTitle").value.trim();
-            const date = document.getElementById("eventDate").value;
-            const location = document.getElementById("eventLocation").value.trim();
-            const description = document.getElementById("eventDescription").value.trim();
-            const createdBy = document.getElementById("eventCreatedBy").value.trim();
+            // **Check Required Fields**
+            const requiredFields = [title, date, location, contactName, contactPhone, contactEmail, scheduledBy];
+            let valid = true;
 
-            if (!title || !date || !createdBy) {
-                alert("Error: Title, Date, and Scheduled By are required.");
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.style.border = "2px solid red";
+                    valid = false;
+                } else {
+                    field.style.border = ""; // Reset border color if filled
+                }
+            });
+
+            if (!valid) {
+                alert("Please fill out all required fields.");
                 return;
             }
 
-            const newEvent = { title, date, location, description, createdBy };
+            // **Create Appointment Object**
+            const newAppointment = {
+                title: title.value.trim(),
+                date: date.value,
+                location: location.value.trim(),
+                contactName: contactName.value.trim(),
+                contactPhone: contactPhone.value.trim(),
+                contactEmail: contactEmail.value.trim(),
+                scheduledBy: scheduledBy.value.trim(),
+                notes: notes.value.trim()
+            };
 
             try {
                 const response = await fetch(`${API_BASE_URL}/appointments`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newEvent)
+                    body: JSON.stringify(newAppointment)
                 });
 
                 if (response.ok) {
                     alert("Appointment added successfully!");
-                    calendar.refetchEvents();
-                    addEventModal.style.display = "none";
+                    
+                    // **Refetch and update calendar with new data**
+                    await updateCalendarEvents();
+
+                    // **Clear Form Fields After Successful Submission**
+                    requiredFields.forEach(field => field.value = "");
+                    notes.value = "";
+
                 } else {
                     alert("Failed to add appointment. Please try again.");
                 }
             } catch (error) {
-                console.error("Error adding appointment:", error);
+                console.error("Error:", error);
                 alert("Error adding appointment. Please check your internet connection.");
             }
         });
     });
 </script>
-
 </body>
 </html>
