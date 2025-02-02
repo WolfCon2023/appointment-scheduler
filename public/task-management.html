@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Management System</title>
-    
+
     <style>
         html, body {
             height: 100vh;
@@ -265,8 +265,8 @@ document.getElementById("addTaskButton").addEventListener("click", async functio
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                task_name: taskName.value.trim(),  // Fixed field name
-                task_description: taskDescription.value.trim(),  // Fixed field name
+                task_name: taskName.value.trim(),
+                task_description: taskDescription.value.trim(),
                 priority: taskPriority,
                 deadline: taskDeadline.value,
                 assignee: taskAssignee.value.trim(),
@@ -289,7 +289,7 @@ document.getElementById("addTaskButton").addEventListener("click", async functio
             throw new Error(result.error || "Task creation failed.");
         }
 
-        alert("Task added successfully!");
+        alert(`Task added successfully!\nTicket Number: ${result.task_id}`);
 
         // Clear Fields After Submission
         requiredFields.forEach(field => field.value = "");
