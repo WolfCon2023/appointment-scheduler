@@ -4,61 +4,156 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Management System</title>
+    
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        /* Full Page Layout */
+        html, body {
+            height: 100vh;
+            width: 100vw;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            background-color: #f4f7f9;
+            font-family: Arial, sans-serif;
         }
+
         .container {
-            width: 90%;
+            width: 95vw;
             max-width: 1200px;
-            background: #fff;
-            padding: 20px;
+            padding: 30px;
+            background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+
         h1 {
             text-align: center;
             color: #004080;
+            margin-bottom: 20px;
+            font-size: 28px;
         }
+
         .task-form {
+            width: 100%;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            gap: 15px;
         }
-        .task-form input, .task-form select, .task-form textarea {
-            padding: 10px;
-            border: 1px solid #ddd;
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 6px;
+            font-size: 14px;
+            border: 1px solid #ccc;
             border-radius: 4px;
         }
-        .task-form button {
+
+        textarea {
+            resize: vertical;
+            height: 200px; /* ✅ Enlarged for detailed task descriptions */
+            max-height: 300px;
+            width: 100%;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Adjust Priority & Deadline to Fit */
+        #taskPriority, #taskDeadline {
+            width: auto;
+        }
+
+        /* Tooltip Styles */
+        .tooltip {
+            display: inline-block;
+            margin-left: 5px;
+            font-weight: bold;
+            font-size: 12px; /* ✅ Smaller "?" for better appearance */
+            color: black;
+            cursor: help;
+        }
+
+        /* Smaller Add Task Button */
+        .add-task-button {
+            width: 150px;
+            padding: 8px;
+            font-size: 14px;
             background-color: #007bff;
-            color: #fff;
-            padding: 8px 12px;
+            color: white;
             border: none;
             cursor: pointer;
             border-radius: 4px;
+            transition: background 0.3s;
+            align-self: center;
         }
-        .task-form button:hover {
+
+        .add-task-button:hover {
             background-color: #0056b3;
         }
+
+        /* Task List Styling */
         .task-list {
             list-style: none;
             padding: 0;
+            width: 100%;
+            margin-top: 20px;
         }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .task-item button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .task-item button.delete {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .task-item button.delete:hover {
+            background-color: #c82333;
+        }
+
+        /* Footer Styling */
         .footer {
             width: 100%;
-            height: 40px;
+            height: 50px;
             background-color: #004080;
             color: white;
             text-align: center;
-            line-height: 40px;
+            line-height: 50px;
             font-size: 16px;
             font-weight: bold;
             position: fixed;
@@ -72,28 +167,61 @@
 <div class="container">
     <h1>Task Management System</h1>
     <form class="task-form">
-        <input type="text" id="taskName" placeholder="Task Name" required>
-        <select id="taskPriority">
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-        </select>
-        <input type="date" id="taskDeadline" required>
-        <input type="text" id="taskAssignee" placeholder="Assign To" required>
-        <select id="taskStatus">
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
-        </select>
-        <input type="text" id="taskCategory" placeholder="Category">
-        <input type="number" id="taskProgress" placeholder="Progress %" min="0" max="100">
-        <textarea id="taskDescription" placeholder="Task Description (max 5000 chars)" rows="4" maxlength="5000"></textarea>
-        <button type="button" id="addTaskButton">Add Task</button>
+        <div class="form-container">
+            <label for="taskName">Task Name <span class="tooltip" title="Enter a short, descriptive task title">?</span></label>
+            <input type="text" id="taskName" placeholder="Enter Task Name" required>
+        </div>
+
+        <div class="form-container">
+            <label for="taskPriority">Priority <span class="tooltip" title="Choose how urgent this task is">?</span></label>
+            <select id="taskPriority">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+        </div>
+
+        <div class="form-container">
+            <label for="taskDeadline">Deadline <span class="tooltip" title="Select the due date">?</span></label>
+            <input type="date" id="taskDeadline" required>
+        </div>
+
+        <div class="form-container">
+            <label for="taskAssignee">Assigned To <span class="tooltip" title="Who is responsible for this task?">?</span></label>
+            <input type="text" id="taskAssignee" placeholder="Enter Assignee Name" required>
+        </div>
+
+        <div class="form-container">
+            <label for="taskStatus">Status <span class="tooltip" title="Current progress of the task">?</span></label>
+            <select id="taskStatus">
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+            </select>
+        </div>
+
+        <div class="form-container">
+            <label for="taskCategory">Category <span class="tooltip" title="Choose a category for better organization">?</span></label>
+            <input type="text" id="taskCategory" placeholder="e.g., Marketing, Development">
+        </div>
+
+        <div class="form-container">
+            <label for="taskProgress">Progress (%) <span class="tooltip" title="Enter progress in percentage">?</span></label>
+            <input type="number" id="taskProgress" min="0" max="100" placeholder="0-100">
+        </div>
+
+        <div class="form-container" style="grid-column: span 2;">
+            <label for="taskDescription">Task Description <span class="tooltip" title="Provide a detailed task description">?</span></label>
+            <textarea id="taskDescription" maxlength="5000" placeholder="Describe the task in detail"></textarea>
+        </div>
+
+        <button type="button" class="add-task-button" id="addTaskButton">Add Task</button>
     </form>
-    
+
     <ul class="task-list" id="taskList"></ul>
 </div>
 
+<!-- Footer -->
 <div class="footer">Powered by Vital iNet</div>
 
 <script>
