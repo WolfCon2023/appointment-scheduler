@@ -54,6 +54,8 @@
         label {
             font-weight: bold;
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
         }
 
         input, select {
@@ -84,7 +86,8 @@
             display: inline-block;
             margin-left: 5px;
             font-weight: bold;
-            color: black; /* ✅ Black "?" icon */
+            font-size: 12px; /* ✅ Smaller "?" for better appearance */
+            color: black;
             cursor: help;
         }
 
@@ -165,12 +168,12 @@
     <h1>Task Management System</h1>
     <form class="task-form">
         <div class="form-container">
-            <label for="taskName">Task Name:<span class="tooltip" title="Enter a short, descriptive task title">?</span></label>
+            <label for="taskName">Task Name <span class="tooltip" title="Enter a short, descriptive task title">?</span></label>
             <input type="text" id="taskName" placeholder="Enter Task Name" required>
         </div>
 
         <div class="form-container">
-            <label for="taskPriority">Priority:<span class="tooltip" title="Choose how urgent this task is">?</span></label>
+            <label for="taskPriority">Priority <span class="tooltip" title="Choose how urgent this task is">?</span></label>
             <select id="taskPriority">
                 <option value="Low">Low</option>
                 <option value="Medium">Medium</option>
@@ -179,17 +182,17 @@
         </div>
 
         <div class="form-container">
-            <label for="taskDeadline">Deadline:<span class="tooltip" title="Select the due date">?</span></label>
+            <label for="taskDeadline">Deadline <span class="tooltip" title="Select the due date">?</span></label>
             <input type="date" id="taskDeadline" required>
         </div>
 
         <div class="form-container">
-            <label for="taskAssignee">Assigned To:<span class="tooltip" title="Who is responsible for this task?">?</span></label>
+            <label for="taskAssignee">Assigned To <span class="tooltip" title="Who is responsible for this task?">?</span></label>
             <input type="text" id="taskAssignee" placeholder="Enter Assignee Name" required>
         </div>
 
         <div class="form-container">
-            <label for="taskStatus">Status:<span class="tooltip" title="Current progress of the task">?</span></label>
+            <label for="taskStatus">Status <span class="tooltip" title="Current progress of the task">?</span></label>
             <select id="taskStatus">
                 <option value="Pending">Pending</option>
                 <option value="In Progress">In Progress</option>
@@ -198,17 +201,17 @@
         </div>
 
         <div class="form-container">
-            <label for="taskCategory">Category:<span class="tooltip" title="Choose a category for better organization">?</span></label>
+            <label for="taskCategory">Category <span class="tooltip" title="Choose a category for better organization">?</span></label>
             <input type="text" id="taskCategory" placeholder="e.g., Marketing, Development">
         </div>
 
         <div class="form-container">
-            <label for="taskProgress">Progress (%):<span class="tooltip" title="Enter progress in percentage">?</span></label>
+            <label for="taskProgress">Progress (%) <span class="tooltip" title="Enter progress in percentage">?</span></label>
             <input type="number" id="taskProgress" min="0" max="100" placeholder="0-100">
         </div>
 
         <div class="form-container" style="grid-column: span 2;">
-            <label for="taskDescription">Task Description:<span class="tooltip" title="Provide a detailed task description">?</span></label>
+            <label for="taskDescription">Task Description <span class="tooltip" title="Provide a detailed task description">?</span></label>
             <textarea id="taskDescription" maxlength="5000" placeholder="Describe the task in detail"></textarea>
         </div>
 
@@ -224,13 +227,8 @@
 <script>
     document.getElementById("addTaskButton").addEventListener("click", function () {
         const taskName = document.getElementById("taskName").value.trim();
-        const taskPriority = document.getElementById("taskPriority").value;
         const taskDeadline = document.getElementById("taskDeadline").value;
         const taskAssignee = document.getElementById("taskAssignee").value.trim();
-        const taskStatus = document.getElementById("taskStatus").value;
-        const taskCategory = document.getElementById("taskCategory").value.trim();
-        const taskProgress = document.getElementById("taskProgress").value.trim();
-        const taskDescription = document.getElementById("taskDescription").value.trim();
 
         if (!taskName || !taskDeadline || !taskAssignee) {
             alert("Please fill in all required fields.");
