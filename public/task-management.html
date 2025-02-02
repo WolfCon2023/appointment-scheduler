@@ -12,7 +12,7 @@
             background-color: #f4f4f4;
         }
         .container {
-            max-width: 900px;
+            max-width: 800px;
             margin: 20px auto;
             background: #fff;
             padding: 20px;
@@ -27,16 +27,22 @@
             flex-wrap: wrap;
             gap: 10px;
             margin-bottom: 20px;
+            align-items: center;
         }
-        .task-form input, .task-form select, .task-form textarea, .task-form button {
+        .form-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .task-form input, .task-form select, .task-form button, textarea {
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
         }
         .task-form textarea {
             width: 100%;
-            height: 50px;
-            resize: none;
+            height: 60px;
         }
         .task-form button {
             background-color: #007bff;
@@ -53,47 +59,40 @@
         }
         .task-item {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
             background: #f9f9f9;
             padding: 10px;
             margin-bottom: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
         }
-        .task-buttons {
-            margin-top: 10px;
-            display: flex;
-            gap: 10px;
-        }
-        .task-buttons button {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
+        .tooltip {
+            position: relative;
+            display: inline-block;
             cursor: pointer;
+            color: #007bff;
+            font-size: 14px;
         }
-        .edit-btn {
-            background-color: #ffc107;
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
             color: #fff;
-        }
-        .delete-btn {
-            background-color: #dc3545;
-            color: #fff;
-        }
-        .edit-btn:hover {
-            background-color: #e0a800;
-        }
-        .delete-btn:hover {
-            background-color: #c82333;
-        }
-        .filter-form {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .filter-form select {
-            padding: 10px;
-            border: 1px solid #ddd;
+            text-align: center;
+            padding: 5px;
             border-radius: 4px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
 </head>
@@ -101,112 +100,83 @@
 
 <div class="container">
     <h1>Task Management System</h1>
-
     <form class="task-form">
-        <input type="text" id="taskName" placeholder="Task Name" required>
-        <textarea id="taskDescription" placeholder="Task Description"></textarea>
-        <select id="taskPriority">
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-        </select>
-        <select id="taskStatus">
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
-        </select>
-        <input type="text" id="taskCategory" placeholder="Category (e.g., HR, IT)">
-        <input type="date" id="taskDeadline" required>
-        <input type="text" id="taskAssignee" placeholder="Assign To" required>
-        <input type="number" id="taskProgress" placeholder="Progress %" min="0" max="100">
+        <div class="form-group">
+            <input type="text" id="taskName" placeholder="Task Name" required>
+            <span class="tooltip">❓
+                <span class="tooltip-text">Enter the name of the task.</span>
+            </span>
+        </div>
+
+        <div class="form-group">
+            <select id="taskPriority">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+            <span class="tooltip">❓
+                <span class="tooltip-text">Choose task priority.</span>
+            </span>
+        </div>
+
+        <div class="form-group">
+            <input type="date" id="taskDeadline" required>
+            <span class="tooltip">❓
+                <span class="tooltip-text">Set a due date for the task.</span>
+            </span>
+        </div>
+
+        <div class="form-group">
+            <input type="text" id="taskAssignee" placeholder="Assign To" required>
+            <span class="tooltip">❓
+                <span class="tooltip-text">Assign the task to a team member.</span>
+            </span>
+        </div>
+
+        <div class="form-group">
+            <textarea id="taskDescription" placeholder="Task Description"></textarea>
+            <span class="tooltip">❓
+                <span class="tooltip-text">Provide a brief task description.</span>
+            </span>
+        </div>
+
         <button type="button" id="addTaskButton">Add Task</button>
     </form>
-
-    <div class="filter-form">
-        <select id="filterPriority">
-            <option value="">Filter by Priority</option>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-        </select>
-        <select id="filterStatus">
-            <option value="">Filter by Status</option>
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
-        </select>
-    </div>
 
     <ul class="task-list" id="taskList"></ul>
 </div>
 
 <script>
-    const API_BASE_URL = "https://your-api-endpoint.com/api/tasks";
+    document.getElementById("addTaskButton").addEventListener("click", function () {
+        const taskName = document.getElementById("taskName").value.trim();
+        const taskPriority = document.getElementById("taskPriority").value;
+        const taskDeadline = document.getElementById("taskDeadline").value;
+        const taskAssignee = document.getElementById("taskAssignee").value.trim();
+        const taskDescription = document.getElementById("taskDescription").value.trim();
 
-    document.getElementById('addTaskButton').addEventListener('click', async function () {
-        const taskData = {
-            task_name: document.getElementById('taskName').value.trim(),
-            task_description: document.getElementById('taskDescription').value.trim(),
-            priority: document.getElementById('taskPriority').value,
-            status: document.getElementById('taskStatus').value,
-            category: document.getElementById('taskCategory').value.trim(),
-            deadline: document.getElementById('taskDeadline').value,
-            assignee: document.getElementById('taskAssignee').value.trim(),
-            progress: document.getElementById('taskProgress').value.trim() || "0"
-        };
-
-        if (!taskData.task_name || !taskData.deadline || !taskData.assignee) {
-            alert("Please fill in required fields: Task Name, Deadline, Assignee.");
+        if (!taskName || !taskDeadline || !taskAssignee) {
+            alert("Please fill in all required fields.");
             return;
         }
 
-        try {
-            const response = await fetch(API_BASE_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(taskData)
-            });
+        const taskItem = document.createElement("li");
+        taskItem.classList.add("task-item");
+        taskItem.innerHTML = `
+            <span><strong>${taskName}</strong> - ${taskPriority} Priority - Due: ${taskDeadline} - Assigned to: ${taskAssignee}</span>
+            <span class="tooltip">❓
+                <span class="tooltip-text">${taskDescription || "No description provided."}</span>
+            </span>
+            <button class="delete" onclick="this.parentElement.remove()">Delete</button>
+        `;
 
-            if (response.ok) {
-                alert("Task added successfully!");
-                loadTasks();
-            } else {
-                alert("Failed to add task.");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Error adding task.");
-        }
+        document.getElementById("taskList").appendChild(taskItem);
+
+        document.getElementById("taskName").value = "";
+        document.getElementById("taskPriority").value = "Low";
+        document.getElementById("taskDeadline").value = "";
+        document.getElementById("taskAssignee").value = "";
+        document.getElementById("taskDescription").value = "";
     });
-
-    async function loadTasks() {
-        try {
-            const response = await fetch(API_BASE_URL);
-            const tasks = await response.json();
-            const taskList = document.getElementById('taskList');
-            taskList.innerHTML = "";
-
-            tasks.forEach(task => {
-                const taskItem = document.createElement('li');
-                taskItem.classList.add('task-item');
-                taskItem.innerHTML = `
-                    <span>${task.task_name} (${task.category || "General"})</span>
-                    <p>${task.task_description}</p>
-                    <p>Priority: <strong>${task.priority}</strong> | Status: <strong>${task.status}</strong> | Progress: <strong>${task.progress}%</strong></p>
-                    <p>Assigned to: ${task.assignee} | Due: ${task.deadline}</p>
-                    <div class="task-buttons">
-                        <button class="edit-btn">Edit</button>
-                        <button class="delete-btn">Delete</button>
-                    </div>
-                `;
-                taskList.appendChild(taskItem);
-            });
-        } catch (error) {
-            console.error("Error fetching tasks:", error);
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", loadTasks);
 </script>
 
 </body>
