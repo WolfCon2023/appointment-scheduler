@@ -9,7 +9,6 @@
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
 
     <style>
-        /* Ensure Full Page Layout */
         html, body {
             height: 100%;
             margin: 0;
@@ -40,6 +39,11 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
         }
 
         .modal {
@@ -94,6 +98,11 @@
             width: 100%;
             position: fixed;
             bottom: 0;
+        }
+
+        /* Error Styles */
+        .error {
+            border: 2px solid red !important;
         }
 
     </style>
