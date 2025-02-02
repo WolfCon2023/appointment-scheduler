@@ -1,79 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management System</title>
+    
+    <style>
+        html, body {
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f7f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 95vw;
+            max-width: 1200px;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            text-align: center;
+            color: #004080;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .task-form {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 6px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 200px;
+            max-height: 300px;
+            width: 100%;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .tooltip {
+            display: inline-block;
+            margin-left: 5px;
+            font-weight: bold;
+            font-size: 12px;
+            color: black;
+            cursor: help;
+        }
+
+        .add-task-button {
+            width: 150px;
+            padding: 8px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.3s;
+            align-self: center;
+        }
+
+        .add-task-button:hover {
+            background-color: #0056b3;
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .task-item button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .task-item button.delete {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .task-item button.delete:hover {
+            background-color: #c82333;
+        }
+
+        .footer {
+            width: 100%;
+            height: 50px;
+            background-color: #004080;
+            color: white;
+            text-align: center;
+            line-height: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Task Management System</h1>
+    <form class="task-form">
+        <div class="form-container">
+            <label for="taskName">Task Name <span class="tooltip" title="Enter a short, descriptive task title">?</span></label>
+            <input type="text" id="taskName" required>
+        </div>
+
+        <div class="form-container">
+            <label for="taskPriority">Priority <span class="tooltip" title="Choose how urgent this task is">?</span></label>
+            <select id="taskPriority">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+        </div>
+
+        <div class="form-container">
+            <label for="taskDeadline">Deadline <span class="tooltip" title="Select the due date">?</span></label>
+            <input type="date" id="taskDeadline" required>
+        </div>
+
+        <div class="form-container">
+            <label for="taskAssignee">Assigned To <span class="tooltip" title="Who is responsible for this task?">?</span></label>
+            <input type="text" id="taskAssignee" required>
+        </div>
+
+        <div class="form-container">
+            <label for="taskStatus">Status <span class="tooltip" title="Current progress of the task">?</span></label>
+            <select id="taskStatus">
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+            </select>
+        </div>
+
+        <div class="form-container">
+            <label for="taskCategory">Category <span class="tooltip" title="Choose a category for better organization">?</span></label>
+            <input type="text" id="taskCategory">
+        </div>
+
+        <div class="form-container">
+            <label for="taskProgress">Progress (%) <span class="tooltip" title="Enter progress in percentage">?</span></label>
+            <input type="number" id="taskProgress" min="0" max="100" placeholder="0-100">
+            <small style="color: #555; font-size: 12px;">Enter a value between 0 and 100%</small>
+        </div>
+
+        <div class="form-container" style="grid-column: span 2;">
+            <label for="taskDescription">Task Description <span class="tooltip" title="Provide a detailed task description">?</span></label>
+            <textarea id="taskDescription" maxlength="5000"></textarea>
+        </div>
+
+        <button type="button" class="add-task-button" id="addTaskButton">Add Task</button>
+    </form>
+
+    <ul class="task-list" id="taskList"></ul>
+</div>
+
+<div class="footer">Powered by Vital iNet</div>
+
 <script>
     const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
 
     document.getElementById("addTaskButton").addEventListener("click", async function () {
-        const taskName = document.getElementById("taskName");
-        const taskDescription = document.getElementById("taskDescription");
-        const taskPriority = document.getElementById("taskPriority").value;
-        const taskDeadline = document.getElementById("taskDeadline");
-        const taskAssignee = document.getElementById("taskAssignee");
-        const taskStatus = document.getElementById("taskStatus").value;
-        const taskCategory = document.getElementById("taskCategory");
-        const taskProgress = document.getElementById("taskProgress");
-
-        // Reset error styles before validating again
-        document.querySelectorAll("input, select, textarea").forEach(field => {
-            field.style.border = "1px solid #ccc"; // Reset to default
-        });
-
-        let valid = true;
-
-        // Validate required fields
-        const requiredFields = [taskName, taskDeadline, taskAssignee, taskDescription];
-
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                field.style.border = "2px solid red";
-                valid = false;
-            }
-        });
-
-        // Validate progress (should be between 0-100)
-        if (taskProgress.value !== "" && (taskProgress.value < 0 || taskProgress.value > 100)) {
-            taskProgress.style.border = "2px solid red";
-            valid = false;
-            alert("Progress must be between 0 and 100%");
-        }
-
-        if (!valid) {
-            alert("Please fill out all required fields.");
-            return;
-        }
-
-        // ✅ Send Data to API
         try {
+            console.log("Sending Task Data...");
+            
             const response = await fetch(`${API_BASE_URL}/tasks`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    name: taskName.value.trim(),
-                    description: taskDescription.value.trim(),
-                    priority: taskPriority,
-                    deadline: taskDeadline.value,
-                    assignee: taskAssignee.value.trim(),
-                    status: taskStatus,
-                    category: taskCategory.value.trim(),
-                    progress: taskProgress.value || 0
+                    name: document.getElementById("taskName").value.trim(),
+                    description: document.getElementById("taskDescription").value.trim(),
+                    priority: document.getElementById("taskPriority").value,
+                    deadline: document.getElementById("taskDeadline").value,
+                    assignee: document.getElementById("taskAssignee").value.trim()
                 })
             });
 
-            const result = await response.json();
-
-            if (!response.ok) {
-                console.error("Server Response:", result);
-                throw new Error(result.message || "Task creation failed.");
-            }
-
+            if (!response.ok) throw new Error("Task creation failed.");
             alert("Task added successfully!");
-
-            // ✅ Clear Fields After Submission
-            requiredFields.forEach(field => field.value = "");
-            taskCategory.value = "";
-            taskProgress.value = "";
-
         } catch (error) {
             console.error("Error adding task:", error);
             alert(`Error adding task: ${error.message}`);
         }
     });
 </script>
+
+</body>
+</html>
