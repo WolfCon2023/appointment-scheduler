@@ -15,12 +15,12 @@
             display: flex; 
             flex-direction: column; 
             background-color: #f4f7f9;
-            overflow: hidden; /* Prevents extra scrollbars */
+            overflow: hidden;
         }
 
         .container { 
             width: 100vw;
-            height: 100vh; 
+            height: calc(100vh - 40px); /* Adjusted to prevent overlap with footer */
             display: flex; 
             flex-direction: column;
             align-items: center;
@@ -35,21 +35,21 @@
 
         /* Scrollable Calendar */
         #calendar-container {
-            width: 98vw; /* Full width */
-            flex-grow: 1; /* Allows dynamic resizing */
-            overflow-y: auto; /* ✅ Enables vertical scrolling */
-            border: 1px solid #ccc; /* Optional border for clarity */
+            width: 98vw;
+            flex-grow: 1;
+            overflow-y: auto;
+            border: 1px solid #ccc;
             padding: 5px;
         }
 
         #calendar {
             width: 100%;
-            height: 120vh; /* ✅ Expands height beyond viewport for scrolling */
+            height: 120vh;
         }
 
         /* Increase calendar day box size */
         .fc-daygrid-day {
-            min-height: 140px !important; /* ✅ Bigger boxes */
+            min-height: 140px !important;
             padding: 5px;
         }
 
@@ -98,6 +98,21 @@
         }
 
         button:hover { background-color: #0056b3; }
+
+        /* ✅ Footer Styling */
+        .footer {
+            width: 100%;
+            height: 40px;
+            background-color: #004080;
+            color: white;
+            text-align: center;
+            line-height: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
     </style>
 </head>
 <body>
@@ -109,6 +124,9 @@
         <div id="calendar"></div>
     </div>
 </div>
+
+<!-- ✅ Footer Added -->
+<div class="footer">Powered by Vital iNet</div>
 
 <!-- Add Event Modal -->
 <div id="addEventModal" class="modal">
@@ -208,63 +226,8 @@
             addEventModal.style.display = 'flex';
         });
 
-        // ✅ **Fix: Implement Working "Add Event" Feature**
-        addEventBtn.addEventListener('click', async () => {
-            const title = document.getElementById('eventTitle').value.trim();
-            const date = document.getElementById('eventDate').value;
-            const location = document.getElementById('eventLocation').value.trim();
-            const description = document.getElementById('eventDescription').value.trim();
-            const createdBy = document.getElementById('eventCreatedBy').value.trim();
-
-            // **✅ Validate Required Fields**
-            if (!title || !date || !createdBy) {
-                alert("Error: Title, Date, and Created By are required.");
-                return;
-            }
-
-            // **✅ Create Event Object**
-            const newEvent = { title, date, location, description, createdBy };
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/events`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newEvent)
-                });
-
-                if (!response.ok) {
-                    throw new Error("Failed to add event.");
-                }
-
-                const savedEvent = await response.json();
-
-                // **✅ Add Event to Calendar Without Refreshing**
-                calendar.addEvent({
-                    id: savedEvent.id, 
-                    title: savedEvent.title, 
-                    start: savedEvent.date,
-                    backgroundColor: '#28a745' 
-                });
-
-                alert("Event added successfully!");
-
-                // **✅ Close Modal & Clear Inputs**
-                addEventModal.style.display = 'none';
-                document.getElementById('eventTitle').value = "";
-                document.getElementById('eventDate').value = "";
-                document.getElementById('eventLocation').value = "";
-                document.getElementById('eventDescription').value = "";
-                document.getElementById('eventCreatedBy').value = "";
-
-            } catch (error) {
-                console.error("Error adding event:", error);
-                alert("Failed to add event. Please try again.");
-            }
-        });
-
     });
 </script>
-
 
 </body>
 </html>
