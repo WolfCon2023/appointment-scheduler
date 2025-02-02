@@ -8,41 +8,43 @@
     <style>
         /* Ensure Full Page Layout */
         html, body {
-            height: 100%;
+            height: 100vh;
+            width: 100vw;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             background-color: #f4f7f9;
+            font-family: Arial, sans-serif;
         }
 
         .container {
-            width: 100%;
+            width: 95vw; /* ✅ Maximized width */
             height: auto;
-            max-width: 900px;
+            max-width: 1200px; /* ✅ Adjusted for large screens */
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             text-align: center;
             color: #004080;
             margin-bottom: 20px;
+            font-size: 28px;
         }
 
         .task-form {
             width: 100%;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 20px;
         }
 
         .form-container {
@@ -57,7 +59,7 @@
 
         input, select, textarea {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             font-size: 14px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -65,13 +67,13 @@
 
         textarea {
             resize: vertical;
-            height: 120px; /* ✅ Enlarged task description box */
+            height: 150px; /* ✅ Enlarged task description box */
         }
 
         /* Smaller Add Task Button */
         .add-task-button {
-            width: 120px; /* ✅ Made button smaller */
-            padding: 8px;
+            width: 150px; /* ✅ Properly sized */
+            padding: 10px;
             font-size: 14px;
             background-color: #007bff;
             color: white;
@@ -79,6 +81,7 @@
             cursor: pointer;
             border-radius: 4px;
             transition: background 0.3s;
+            align-self: center; /* ✅ Centered button */
         }
 
         .add-task-button:hover {
@@ -98,14 +101,15 @@
             justify-content: space-between;
             align-items: center;
             background: #f9f9f9;
-            padding: 12px;
+            padding: 15px;
             margin-bottom: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            font-size: 16px;
         }
 
         .task-item button {
-            padding: 6px 10px;
+            padding: 8px 12px;
             border: none;
             border-radius: 4px;
             font-size: 14px;
@@ -124,11 +128,11 @@
         /* Footer Styling */
         .footer {
             width: 100%;
-            height: 40px;
+            height: 50px;
             background-color: #004080;
             color: white;
             text-align: center;
-            line-height: 40px;
+            line-height: 50px;
             font-size: 16px;
             font-weight: bold;
             position: fixed;
