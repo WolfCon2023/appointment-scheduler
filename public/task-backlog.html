@@ -158,7 +158,9 @@
                     <th>Deadline</th>
                 </tr>
             </thead>
-            <tbody id="searchResults"></tbody>
+            <tbody id="searchResults">
+                <tr><td colspan="6" style="text-align:center;">No Records Found</td></tr>
+            </tbody>
         </table>
     </div>
 
@@ -176,7 +178,9 @@
                     <th>Deadline</th>
                 </tr>
             </thead>
-            <tbody id="taskList"></tbody>
+            <tbody id="taskList">
+                <tr><td colspan="6" style="text-align:center;">No Ongoing Tasks</td></tr>
+            </tbody>
         </table>
         <div class="pagination" id="pagination"></div>
     </div>
@@ -202,16 +206,18 @@
             const tasks = await response.json();
             const resultsTable = document.getElementById("searchResults");
 
-            resultsTable.innerHTML = tasks.map(task => `
-                <tr>
-                    <td>${task.id}</td>
-                    <td>${task.task_name}</td>
-                    <td>${task.priority}</td>
-                    <td>${task.status}</td>
-                    <td>${task.category}</td>
-                    <td>${task.deadline}</td>
-                </tr>
-            `).join("");
+            resultsTable.innerHTML = tasks.length > 0
+                ? tasks.map(task => `
+                    <tr>
+                        <td>${task.id}</td>
+                        <td>${task.task_name}</td>
+                        <td>${task.priority}</td>
+                        <td>${task.status}</td>
+                        <td>${task.category}</td>
+                        <td>${task.deadline}</td>
+                    </tr>
+                `).join("")
+                : `<tr><td colspan="6" style="text-align:center;">No Records Found</td></tr>`;
 
         } catch (error) {
             console.error("Error fetching tasks:", error);
@@ -225,16 +231,18 @@
             const tasks = await response.json();
 
             const taskTable = document.getElementById("taskList");
-            taskTable.innerHTML = tasks.map(task => `
-                <tr>
-                    <td>${task.id}</td>
-                    <td>${task.task_name}</td>
-                    <td>${task.priority}</td>
-                    <td>${task.status}</td>
-                    <td>${task.category}</td>
-                    <td>${task.deadline}</td>
-                </tr>
-            `).join("");
+            taskTable.innerHTML = tasks.length > 0
+                ? tasks.map(task => `
+                    <tr>
+                        <td>${task.id}</td>
+                        <td>${task.task_name}</td>
+                        <td>${task.priority}</td>
+                        <td>${task.status}</td>
+                        <td>${task.category}</td>
+                        <td>${task.deadline}</td>
+                    </tr>
+                `).join("")
+                : `<tr><td colspan="6" style="text-align:center;">No Ongoing Tasks</td></tr>`;
 
         } catch (error) {
             console.error("Error fetching tasks:", error);
