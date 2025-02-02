@@ -166,7 +166,7 @@
         async function fetchAllEvents() {
     try {
         // Try alternate API paths if necessary
-        const appointmentsResponse = await fetch(`${API_BASE_URL}/api/appointments`);
+        const appointmentsResponse = await fetch(`${API_BASE_URL}/appointments`);
         if (!appointmentsResponse.ok) throw new Error("Appointments endpoint not found.");
         const appointments = await appointmentsResponse.json();
 
