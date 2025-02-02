@@ -172,37 +172,49 @@
     }
 
     async function updateTask() {
-        const updatedTask = {
-            task_name: document.getElementById("taskName").value,
-            task_description: document.getElementById("taskDescription").value,
-            priority: document.getElementById("taskPriority").value,
-            status: document.getElementById("taskStatus").value,
-            category: document.getElementById("taskCategory").value,
-            deadline: document.getElementById("taskDeadline").value,
-            progress: document.getElementById("taskProgress").value
-        };
+    const params = new URLSearchParams(window.location.search);
+    const taskId = params.get("id");
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updatedTask)
-            });
+    const task_name = document.getElementById("taskName").value;
+    const task_description = document.getElementById("taskDescription").value;
+    const priority = document.getElementById("taskPriority").value;
+    const deadline = document.getElementById("taskDeadline").value;
+    const assignee = document.getElementById("taskAssignee").value;
+    const status = document.getElementById("taskStatus").value;
+    const category = document.getElementById("taskCategory").value;
+    const progress = document.getElementById("taskProgress").value;
 
-            const result = await response.json();
+    const taskData = {
+        task_name,
+        task_description,
+        priority,
+        deadline,
+        assignee,
+        status,
+        category,
+        progress: progress ? parseInt(progress) : 0
+    };
 
-            if (!response.ok) {
-                alert(result.message);
-                return;
-            }
+    console.log("Updating Task:", taskData);  // ✅ Debugging
 
-            alert("Task updated successfully!");
-            window.location.href = "task-backlog.html"; // Redirect to task list
-        } catch (error) {
-            console.error("Error updating task:", error);
-            alert("Error updating task.");
-        }
+    try {
+        const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(taskData)
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message);
+
+        alert("Task updated successfully!");
+        window.location.reload();  // ✅ Refresh page to show updated data
+
+    } catch (error) {
+        console.error("Error updating task:", error);
+        alert(`Error updating task: ${error.message}`);
     }
+}
 
     function goBack() {
         window.history.back();
