@@ -28,6 +28,28 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
+        }
+
+        /* ✅ Home Button Styling */
+        .home-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 100px;
+            padding: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .home-button:hover {
+            background-color: #0056b3;
         }
 
         h1 {
@@ -35,106 +57,6 @@
             color: #004080;
             margin-bottom: 20px;
             font-size: 28px;
-        }
-
-        .task-form {
-            width: 100%;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
-        .form-container {
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 6px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        textarea {
-            resize: vertical;
-            height: 200px;
-            max-height: 300px;
-            width: 100%;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .tooltip {
-            display: inline-block;
-            margin-left: 5px;
-            font-weight: bold;
-            font-size: 12px;
-            color: black;
-            cursor: help;
-        }
-
-        .add-task-button {
-            width: 150px;
-            padding: 8px;
-            font-size: 14px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background 0.3s;
-            align-self: center;
-        }
-
-        .add-task-button:hover {
-            background-color: #0056b3;
-        }
-
-        .task-list {
-            list-style: none;
-            padding: 0;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        .task-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f9f9f9;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        .task-item button {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .task-item button.delete {
-            background-color: #dc3545;
-            color: #fff;
-        }
-
-        .task-item button.delete:hover {
-            background-color: #c82333;
         }
 
         .footer {
@@ -155,6 +77,9 @@
 <body>
 
 <div class="container">
+    <!-- ✅ Home Button in Upper-Right Corner -->
+    <button class="home-button" onclick="goToHomePage()">🏠 Home</button>
+
     <h1>Task Management System</h1>
     <form class="task-form">
         <div class="form-container">
@@ -223,91 +148,76 @@
 <script>
     const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
 
-document.getElementById("addTaskButton").addEventListener("click", async function () {
-    const taskName = document.getElementById("taskName");
-    const taskDescription = document.getElementById("taskDescription");
-    const taskPriority = document.getElementById("taskPriority").value;
-    const taskDeadline = document.getElementById("taskDeadline");
-    const taskAssignee = document.getElementById("taskAssignee");
-    const taskStatus = document.getElementById("taskStatus").value;
-    const taskCategory = document.getElementById("taskCategory");
-    const taskProgress = document.getElementById("taskProgress");
+    document.getElementById("addTaskButton").addEventListener("click", async function () {
+        const taskName = document.getElementById("taskName");
+        const taskDescription = document.getElementById("taskDescription");
+        const taskPriority = document.getElementById("taskPriority").value;
+        const taskDeadline = document.getElementById("taskDeadline");
+        const taskAssignee = document.getElementById("taskAssignee");
+        const taskStatus = document.getElementById("taskStatus").value;
+        const taskCategory = document.getElementById("taskCategory");
+        const taskProgress = document.getElementById("taskProgress");
 
-    // Reset error styles before validating again
-    document.querySelectorAll("input, select, textarea").forEach(field => {
-        field.style.border = "1px solid #ccc"; // Reset to default
-    });
+        let valid = true;
+        let missingFields = [];
 
-    let valid = true;
-    let missingFields = [];
+        const requiredFields = [taskName, taskDeadline, taskAssignee, taskDescription];
 
-    // Validate required fields (highlight empty fields in red)
-    const requiredFields = [taskName, taskDeadline, taskAssignee, taskDescription];
-
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            field.style.border = "2px solid red";
-            missingFields.push(field.getAttribute("id"));
-            valid = false;
-        }
-    });
-
-    // Validate progress (should be between 0-100)
-    if (taskProgress.value !== "" && (taskProgress.value < 0 || taskProgress.value > 100)) {
-        taskProgress.style.border = "2px solid red";
-        valid = false;
-        alert("Progress must be between 0 and 100%");
-    }
-
-    // Stop submission if validation fails
-    if (!valid) {
-        alert("Please fill out all required fields: " + missingFields.join(", "));
-        return;
-    }
-
-    // Send Data to API
-    try {
-        const response = await fetch(`${API_BASE_URL}/tasks`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                task_name: taskName.value.trim(),
-                task_description: taskDescription.value.trim(),
-                priority: taskPriority,
-                deadline: taskDeadline.value,
-                assignee: taskAssignee.value.trim(),
-                status: taskStatus,
-                category: taskCategory.value.trim(),
-                progress: taskProgress.value || 0
-            })
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.style.border = "2px solid red";
+                missingFields.push(field.getAttribute("id"));
+                valid = false;
+            }
         });
 
-        // Handle JSON Response
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            throw new Error("Server returned an invalid response. Check API logs.");
+        if (taskProgress.value !== "" && (taskProgress.value < 0 || taskProgress.value > 100)) {
+            taskProgress.style.border = "2px solid red";
+            valid = false;
+            alert("Progress must be between 0 and 100%");
         }
 
-        const result = await response.json();
-
-        if (!response.ok) {
-            console.error("Server Response:", result);
-            throw new Error(result.error || "Task creation failed.");
+        if (!valid) {
+            alert("Please fill out all required fields: " + missingFields.join(", "));
+            return;
         }
 
-        alert(`Task added successfully!\nTicket Number: ${result.task_id}`);
+        try {
+            const response = await fetch(`${API_BASE_URL}/tasks`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    task_name: taskName.value.trim(),
+                    task_description: taskDescription.value.trim(),
+                    priority: taskPriority,
+                    deadline: taskDeadline.value,
+                    assignee: taskAssignee.value.trim(),
+                    status: taskStatus,
+                    category: taskCategory.value.trim(),
+                    progress: taskProgress.value || 0
+                })
+            });
 
-        // Clear Fields After Submission
-        requiredFields.forEach(field => field.value = "");
-        taskCategory.value = "";
-        taskProgress.value = "";
+            const result = await response.json();
 
-    } catch (error) {
-        console.error("Error adding task:", error);
-        alert(`Error adding task: ${error.message}`);
+            if (!response.ok) {
+                throw new Error(result.error || "Task creation failed.");
+            }
+
+            alert(`Task added successfully!\nTicket Number: ${result.task_id}`);
+
+            requiredFields.forEach(field => field.value = "");
+            taskCategory.value = "";
+            taskProgress.value = "";
+
+        } catch (error) {
+            alert(`Error adding task: ${error.message}`);
+        }
+    });
+
+    function goToHomePage() {
+        window.location.href = "application-menu-page.html";
     }
-});
-
 </script>
 
 </body>
