@@ -6,7 +6,7 @@ const { Pool } = require("pg");
 
 const app = express();
 const port = process.env.PORT || 3000;
-const API_BASE_URL = "/api";
+const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
 
 // Middleware
 app.use(cors());
