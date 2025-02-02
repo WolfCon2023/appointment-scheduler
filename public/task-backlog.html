@@ -84,26 +84,6 @@
             color: white;
         }
 
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-        }
-
-        .pagination button {
-            padding: 5px 10px;
-            margin: 2px;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-            background-color: #007bff;
-            color: white;
-        }
-
-        .pagination button:hover {
-            background-color: #0056b3;
-        }
-
         .footer {
             width: 100%;
             height: 50px;
@@ -164,9 +144,9 @@
         </table>
     </div>
 
-    <!-- Incomplete Tasks Container with Pagination -->
+    <!-- Open Tasks Container -->
     <div class="task-table-container">
-        <h2>Open Tasks (First 25)</h2>
+        <h2>Open Tasks</h2>
         <table>
             <thead>
                 <tr>
@@ -182,7 +162,6 @@
                 <tr><td colspan="6" style="text-align:center;">No Open Tasks</td></tr>
             </tbody>
         </table>
-        <div class="pagination" id="pagination"></div>
     </div>
 </div>
 
@@ -209,7 +188,7 @@
             resultsTable.innerHTML = tasks.length > 0
                 ? tasks.map(task => `
                     <tr>
-                        <td>${task.id}</td>
+                        <td><a href="task-details.html?id=${task.id}" style="color:blue; text-decoration:underline;">${task.id}</a></td>
                         <td>${task.task_name}</td>
                         <td>${task.priority}</td>
                         <td>${task.status}</td>
@@ -225,35 +204,31 @@
         }
     }
 
-    // Updated: Load "Pending" and "In Progress" tasks
-    async function loadIncompleteTasks(page = 1) {
-    try {
-        // Use a single 'status' parameter with multiple values
-        const response = await fetch(`${API_BASE_URL}/tasks?status=Pending,In Progress&limit=25&page=${page}`);
-        const tasks = await response.json();
+    async function loadIncompleteTasks() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/tasks?status=Pending,In Progress&limit=25`);
+            const tasks = await response.json();
 
-        const taskTable = document.getElementById("taskList");
-        taskTable.innerHTML = tasks.length > 0
-            ? tasks.map(task => `
-                <tr>
-                    <td>${task.id}</td>
-                    <td>${task.task_name}</td>
-                    <td>${task.priority}</td>
-                    <td>${task.status}</td>
-                    <td>${task.category}</td>
-                    <td>${task.deadline}</td>
-                </tr>
-            `).join("")
-            : `<tr><td colspan="6" style="text-align:center;">No Open Tasks</td></tr>`;
+            const taskTable = document.getElementById("taskList");
+            taskTable.innerHTML = tasks.length > 0
+                ? tasks.map(task => `
+                    <tr>
+                        <td><a href="task-details.html?id=${task.id}" style="color:blue; text-decoration:underline;">${task.id}</a></td>
+                        <td>${task.task_name}</td>
+                        <td>${task.priority}</td>
+                        <td>${task.status}</td>
+                        <td>${task.category}</td>
+                        <td>${task.deadline}</td>
+                    </tr>
+                `).join("")
+                : `<tr><td colspan="6" style="text-align:center;">No Open Tasks</td></tr>`;
 
-    } catch (error) {
-        console.error("Error fetching tasks:", error);
+        } catch (error) {
+            console.error("Error fetching tasks:", error);
+        }
     }
-}
 
-// Load Open Tasks (Pending & In Progress)
-loadIncompleteTasks();
-    
+    loadIncompleteTasks();
 </script>
 
 </body>
