@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appointment Scheduling | Business Flow</title>
-    
+
     <!-- FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
 
     <style>
         /* Light Mode (Default) */
-        body {
+        html, body {
             height: 100%;
             margin: 0;
             padding: 0;
@@ -20,7 +20,7 @@
             align-items: center;
             background-color: #f4f7f9;
             color: #333;
-            transition: background 0.5s ease, color 0.5s ease;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         /* Dark Mode */
@@ -40,7 +40,7 @@
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background 0.5s ease;
+            transition: background 0.3s ease;
         }
 
         .dark-mode .container {
@@ -62,11 +62,6 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
-        }
-
-        .form-container {
-            display: flex;
-            flex-direction: column;
         }
 
         .modal {
@@ -142,6 +137,19 @@
             background-color: #f39c12;
             color: black;
         }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            color: white;
+            background: #004080;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+        }
+
     </style>
 </head>
 <body>
