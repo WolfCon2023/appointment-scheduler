@@ -6,63 +6,71 @@
     <title>Task Management System</title>
     
     <style>
-        /* WCAG & ADA Compliant Styles */
-        body {
-            font-family: Arial, sans-serif;
+        /* Ensure Full Page Layout */
+        html, body {
+            height: 100%;
             margin: 0;
             padding: 0;
-            background-color: #f8f9fa;
-            color: #222;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f7f9;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            background: #fff;
-            padding: 30px;
+            width: 100%;
+            height: auto;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            flex-grow: 1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             text-align: center;
-            font-size: 28px;
+            color: #004080;
+            margin-bottom: 20px;
         }
 
         .task-form {
+            width: 100%;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 20px;
-            align-items: center;
+            gap: 15px;
         }
 
-        .form-group {
-            position: relative;
+        .form-container {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            flex-direction: column;
         }
 
-        .task-form input, .task-form select, .task-form button, .task-form textarea {
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input, select, textarea, button {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
 
-        .task-form textarea {
-            height: 70px;
+        textarea {
+            resize: vertical;
+            height: 60px;
         }
 
-        .task-form button {
+        button {
             background-color: #007bff;
-            color: #fff;
+            color: white;
             border: none;
             cursor: pointer;
             font-size: 16px;
@@ -70,60 +78,23 @@
             transition: background 0.3s;
         }
 
-        .task-form button:hover, .task-item button:hover {
+        button:hover {
             background-color: #0056b3;
-        }
-
-        /* Accessible Tooltip */
-        .tooltip {
-            position: relative;
-            display: inline-block;
-            font-size: 18px;
-            color: black; /* Black color for "?" */
-            cursor: help;
-            font-weight: bold;
-            text-align: center;
-            width: 24px;
-            height: 24px;
-            line-height: 24px;
-            border-radius: 50%;
-            background: #ddd;
-        }
-
-        .tooltip .tooltip-text {
-            visibility: hidden;
-            width: 220px;
-            background-color: #222;
-            color: #fff;
-            text-align: center;
-            padding: 6px;
-            border-radius: 4px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 14px;
-        }
-
-        .tooltip:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
         }
 
         /* Task List Styling */
         .task-list {
             list-style: none;
             padding: 0;
+            width: 100%;
+            margin-top: 20px;
         }
 
         .task-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #f1f1f1;
+            background: #f9f9f9;
             padding: 12px;
             margin-bottom: 10px;
             border: 1px solid #ddd;
@@ -147,14 +118,19 @@
             background-color: #c82333;
         }
 
-        /* Footer */
+        /* Footer Styling */
         .footer {
-            text-align: center;
-            padding: 15px;
-            font-size: 16px;
-            background: #222;
+            width: 100%;
+            height: 40px;
+            background-color: #004080;
             color: white;
-            margin-top: auto;
+            text-align: center;
+            line-height: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            position: fixed;
+            bottom: 0;
+            left: 0;
         }
     </style>
 </head>
@@ -163,44 +139,33 @@
 <div class="container">
     <h1>Task Management System</h1>
     <form class="task-form">
-        
-        <div class="form-group">
-            <input type="text" id="taskName" placeholder="Task Name" required aria-label="Task Name">
-            <span class="tooltip">?
-                <span class="tooltip-text">Enter the name of the task.</span>
-            </span>
+        <div class="form-container">
+            <label for="taskName">Task Name:</label>
+            <input type="text" id="taskName" placeholder="Enter Task Name" required>
         </div>
 
-        <div class="form-group">
-            <select id="taskPriority" aria-label="Task Priority">
+        <div class="form-container">
+            <label for="taskPriority">Priority:</label>
+            <select id="taskPriority">
                 <option value="Low">Low</option>
                 <option value="Medium">Medium</option>
                 <option value="High">High</option>
             </select>
-            <span class="tooltip">?
-                <span class="tooltip-text">Choose task priority.</span>
-            </span>
         </div>
 
-        <div class="form-group">
-            <input type="date" id="taskDeadline" required aria-label="Task Deadline">
-            <span class="tooltip">?
-                <span class="tooltip-text">Set a due date for the task.</span>
-            </span>
+        <div class="form-container">
+            <label for="taskDeadline">Deadline:</label>
+            <input type="date" id="taskDeadline" required>
         </div>
 
-        <div class="form-group">
-            <input type="text" id="taskAssignee" placeholder="Assign To" required aria-label="Task Assignee">
-            <span class="tooltip">?
-                <span class="tooltip-text">Assign the task to a team member.</span>
-            </span>
+        <div class="form-container">
+            <label for="taskAssignee">Assigned To:</label>
+            <input type="text" id="taskAssignee" placeholder="Enter Assignee Name" required>
         </div>
 
-        <div class="form-group">
-            <textarea id="taskDescription" placeholder="Task Description" aria-label="Task Description"></textarea>
-            <span class="tooltip">?
-                <span class="tooltip-text">Provide a brief task description.</span>
-            </span>
+        <div class="form-container">
+            <label for="taskDescription">Task Description:</label>
+            <textarea id="taskDescription" placeholder="Describe the task"></textarea>
         </div>
 
         <button type="button" id="addTaskButton">Add Task</button>
@@ -229,9 +194,6 @@
         taskItem.classList.add("task-item");
         taskItem.innerHTML = `
             <span><strong>${taskName}</strong> - ${taskPriority} Priority - Due: ${taskDeadline} - Assigned to: ${taskAssignee}</span>
-            <span class="tooltip">?
-                <span class="tooltip-text">${taskDescription || "No description provided."}</span>
-            </span>
             <button class="delete" onclick="this.parentElement.remove()">Delete</button>
         `;
 
