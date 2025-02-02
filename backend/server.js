@@ -125,9 +125,14 @@ app.post(`${API_BASE_URL}/tasks`, async (req, res) => {
 // ✅ Update Task by ID
 app.put(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
     console.log(`Received PUT /api/tasks/${req.params.id}`);
-    console.log("Request Body:", req.body);  // ✅ Log request payload
+    console.log("Request Body:", req.body);  
 
     const { task_name, task_description, priority, deadline, assignee, status, category, progress } = req.body;
+
+    if (!task_name || !task_description || !priority || !status) {
+        console.log("Missing required fields in request");
+        return res.status(400).json({ message: "Missing required fields." });
+    }
 
     try {
         const result = await pool.query(
@@ -138,7 +143,7 @@ app.put(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
             [task_name, task_description, priority, deadline, assignee, status, category, progress, req.params.id]
         );
 
-        console.log("Query Result:", result.rows); // ✅ Log the query result
+        console.log("Query Result:", result.rows); 
 
         if (result.rows.length === 0) {
             return res.status(404).json({ message: "Task not found" });
