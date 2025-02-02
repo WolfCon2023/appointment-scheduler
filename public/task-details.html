@@ -126,6 +126,9 @@
         <label for="taskDeadline">Deadline:</label>
         <input type="date" id="taskDeadline">
 
+        <label for="taskAssignee">Assignee:</label>
+        <input type="text" id="taskAssignee">  <!-- ✅ Added this field -->
+
         <label for="taskProgress">Progress (%):</label>
         <input type="number" id="taskProgress" min="0" max="100">
 
@@ -164,6 +167,7 @@
             document.getElementById("taskStatus").value = task.status;
             document.getElementById("taskCategory").value = task.category;
             document.getElementById("taskDeadline").value = task.deadline;
+            document.getElementById("taskAssignee").value = task.assignee;  // ✅ Ensure this field is populated
             document.getElementById("taskProgress").value = task.progress;
         } catch (error) {
             console.error("Error loading task:", error);
@@ -172,49 +176,55 @@
     }
 
     async function updateTask() {
-    const params = new URLSearchParams(window.location.search);
-    const taskId = params.get("id");
+        if (!taskId) {
+            alert("Task ID is missing.");
+            return;
+        }
 
-    const task_name = document.getElementById("taskName").value;
-    const task_description = document.getElementById("taskDescription").value;
-    const priority = document.getElementById("taskPriority").value;
-    const deadline = document.getElementById("taskDeadline").value;
-    const assignee = document.getElementById("taskAssignee").value;
-    const status = document.getElementById("taskStatus").value;
-    const category = document.getElementById("taskCategory").value;
-    const progress = document.getElementById("taskProgress").value;
+        const task_name = document.getElementById("taskName").value;
+        const task_description = document.getElementById("taskDescription").value;
+        const priority = document.getElementById("taskPriority").value;
+        const deadline = document.getElementById("taskDeadline").value;
+        const assignee = document.getElementById("taskAssignee").value;  // ✅ Ensure this exists in the form
+        const status = document.getElementById("taskStatus").value;
+        const category = document.getElementById("taskCategory").value;
+        const progress = document.getElementById("taskProgress").value;
 
-    const taskData = {
-        task_name,
-        task_description,
-        priority,
-        deadline,
-        assignee,
-        status,
-        category,
-        progress: progress ? parseInt(progress) : 0
-    };
+        const taskData = {
+            task_name,
+            task_description,
+            priority,
+            deadline,
+            assignee,
+            status,
+            category,
+            progress: progress ? parseInt(progress) : 0
+        };
 
-    console.log("Updating Task:", taskData);  // ✅ Debugging
+        console.log("Updating Task:", taskData);
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(taskData)
-        });
+        try {
+            const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(taskData)
+            });
 
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.message);
+            const result = await response.json();
+            console.log("Server Response:", result);
 
-        alert("Task updated successfully!");
-        window.location.reload();  // ✅ Refresh page to show updated data
+            if (!response.ok) {
+                throw new Error(result.message || "Failed to update task");
+            }
 
-    } catch (error) {
-        console.error("Error updating task:", error);
-        alert(`Error updating task: ${error.message}`);
+            alert("Task updated successfully!");
+            window.location.reload();
+
+        } catch (error) {
+            console.error("Error updating task:", error);
+            alert(`Error updating task: ${error.message}`);
+        }
     }
-}
 
     function goBack() {
         window.history.back();
