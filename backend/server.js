@@ -125,6 +125,7 @@ app.post(`${API_BASE_URL}/tasks`, async (req, res) => {
 // ✅ Update Task by ID
 app.put(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
     console.log(`Received PUT /api/tasks/${req.params.id}`);
+    console.log("Request Body:", req.body);  // ✅ Log request payload
 
     const { task_name, task_description, priority, deadline, assignee, status, category, progress } = req.body;
 
@@ -137,6 +138,8 @@ app.put(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
             [task_name, task_description, priority, deadline, assignee, status, category, progress, req.params.id]
         );
 
+        console.log("Query Result:", result.rows); // ✅ Log the query result
+
         if (result.rows.length === 0) {
             return res.status(404).json({ message: "Task not found" });
         }
@@ -145,7 +148,7 @@ app.put(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
 
     } catch (error) {
         console.error("Error updating task:", error);
-        res.status(500).json({ message: "Database error updating task" });
+        res.status(500).json({ message: `Database error updating task: ${error.message}` });
     }
 });
 
