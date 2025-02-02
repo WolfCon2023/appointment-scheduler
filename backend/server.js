@@ -106,15 +106,46 @@ app.post(`${API_BASE_URL}/events`, async (req, res) => {
 
 // Fetch All Tasks
 app.get(`${API_BASE_URL}/tasks`, async (req, res) => {
-  console.log("Received GET /api/tasks");
-  try {
-    const result = await pool.query("SELECT * FROM tasks ORDER BY deadline ASC");
-    res.json(result.rows);
-  } catch (error) {
-    console.error("Error fetching tasks:", error);
-    res.status(500).json({ message: "Database error fetching tasks" });
-  }
+    console.log("Received GET /api/tasks");
+
+    const { id, priority, status, category, deadline, limit = 25, page = 1 } = req.query;
+    let query = "SELECT * FROM tasks WHERE 1=1";
+    let params = [];
+
+    if (id) {
+        query += ` AND id = $${params.length + 1}`;
+        params.push(id);
+    }
+    if (priority) {
+        query += ` AND priority = $${params.length + 1}`;
+        params.push(priority);
+    }
+    if (status) {
+        query += ` AND status = $${params.length + 1}`;
+        params.push(status);
+    }
+    if (category) {
+        query += ` AND category = $${params.length + 1}`;
+        params.push(category);
+    }
+    if (deadline) {
+        query += ` AND deadline = $${params.length + 1}`;
+        params.push(deadline);
+    }
+
+    query += ` ORDER BY deadline ASC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    params.push(limit);
+    params.push((page - 1) * limit);
+
+    try {
+        const result = await pool.query(query, params);
+        res.json(result.rows);
+    } catch (error) {
+        console.error("Error fetching tasks:", error);
+        res.status(500).json({ message: "Database error fetching tasks" });
+    }
 });
+
 
 // Add a Task
 app.post(`${API_BASE_URL}/tasks`, async (req, res) => {
@@ -132,7 +163,7 @@ app.post(`${API_BASE_URL}/tasks`, async (req, res) => {
             [task_name, task_description, priority, deadline, assignee, status, category, progress]
         );
 
-        res.status(201).json({ 
+        res.status(201).json({ 	
             message: "Task added successfully!", 
             task_id: result.rows[0].id,
             task_name: result.rows[0].task_name
