@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Details</title>
+    
     <style>
         html, body {
             height: 100vh;
@@ -33,13 +34,50 @@
             color: #004080;
         }
 
-        .details {
-            width: 100%;
-            font-size: 16px;
-        }
-
         .details label {
             font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .save-button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .save-button:hover {
+            background-color: #0056b3;
+        }
+
+        .cancel-button {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .cancel-button:hover {
+            background-color: #c82333;
         }
 
         .footer {
@@ -61,20 +99,53 @@
 
 <div class="container">
     <h1>Task Details</h1>
-    <div id="taskDetails" class="details"></div>
+    <form id="taskForm">
+        <label for="taskName">Task Name:</label>
+        <input type="text" id="taskName">
+
+        <label for="taskDescription">Description:</label>
+        <textarea id="taskDescription"></textarea>
+
+        <label for="taskPriority">Priority:</label>
+        <select id="taskPriority">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+        </select>
+
+        <label for="taskStatus">Status:</label>
+        <select id="taskStatus">
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+        </select>
+
+        <label for="taskCategory">Category:</label>
+        <input type="text" id="taskCategory">
+
+        <label for="taskDeadline">Deadline:</label>
+        <input type="date" id="taskDeadline">
+
+        <label for="taskProgress">Progress (%):</label>
+        <input type="number" id="taskProgress" min="0" max="100">
+
+        <div class="button-container">
+            <button type="button" class="save-button" onclick="updateTask()">Save Changes</button>
+            <button type="button" class="cancel-button" onclick="goBack()">Cancel</button>
+        </div>
+    </form>
 </div>
 
 <div class="footer">Powered by Vital iNet</div>
 
 <script>
     const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
+    const urlParams = new URLSearchParams(window.location.search);
+    const taskId = urlParams.get("id");
 
     async function loadTaskDetails() {
-        const params = new URLSearchParams(window.location.search);
-        const taskId = params.get("id");
-
         if (!taskId) {
-            document.getElementById("taskDetails").innerHTML = "<p>Invalid Task ID</p>";
+            alert("Invalid Task ID");
             return;
         }
 
@@ -82,26 +153,59 @@
             const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`);
             const task = await response.json();
 
-            if (!task) {
-                document.getElementById("taskDetails").innerHTML = "<p>Task not found</p>";
+            if (!response.ok) {
+                alert(task.message);
                 return;
             }
 
-            document.getElementById("taskDetails").innerHTML = `
-                <p><label>Task ID:</label> ${task.id}</p>
-                <p><label>Name:</label> ${task.task_name}</p>
-                <p><label>Description:</label> ${task.task_description}</p>
-                <p><label>Priority:</label> ${task.priority}</p>
-                <p><label>Status:</label> ${task.status}</p>
-                <p><label>Category:</label> ${task.category}</p>
-                <p><label>Deadline:</label> ${task.deadline}</p>
-                <p><label>Progress:</label> ${task.progress}%</p>
-            `;
-
+            document.getElementById("taskName").value = task.task_name;
+            document.getElementById("taskDescription").value = task.task_description;
+            document.getElementById("taskPriority").value = task.priority;
+            document.getElementById("taskStatus").value = task.status;
+            document.getElementById("taskCategory").value = task.category;
+            document.getElementById("taskDeadline").value = task.deadline;
+            document.getElementById("taskProgress").value = task.progress;
         } catch (error) {
-            console.error("Error fetching task details:", error);
-            document.getElementById("taskDetails").innerHTML = "<p>Error loading task details</p>";
+            console.error("Error loading task:", error);
+            alert("Error loading task details.");
         }
+    }
+
+    async function updateTask() {
+        const updatedTask = {
+            task_name: document.getElementById("taskName").value,
+            task_description: document.getElementById("taskDescription").value,
+            priority: document.getElementById("taskPriority").value,
+            status: document.getElementById("taskStatus").value,
+            category: document.getElementById("taskCategory").value,
+            deadline: document.getElementById("taskDeadline").value,
+            progress: document.getElementById("taskProgress").value
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updatedTask)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                alert(result.message);
+                return;
+            }
+
+            alert("Task updated successfully!");
+            window.location.href = "task-backlog.html"; // Redirect to task list
+        } catch (error) {
+            console.error("Error updating task:", error);
+            alert("Error updating task.");
+        }
+    }
+
+    function goBack() {
+        window.history.back();
     }
 
     loadTaskDetails();
