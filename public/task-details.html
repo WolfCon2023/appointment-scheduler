@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Details</title>
+    <style>
+        html, body {
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f7f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 50%;
+            max-width: 800px;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        h1 {
+            text-align: center;
+            color: #004080;
+        }
+
+        .details {
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .details label {
+            font-weight: bold;
+        }
+
+        .footer {
+            width: 100%;
+            height: 50px;
+            background-color: #004080;
+            color: white;
+            text-align: center;
+            line-height: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Task Details</h1>
+    <div id="taskDetails" class="details"></div>
+</div>
+
+<div class="footer">Powered by Vital iNet</div>
+
+<script>
+    const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
+
+    async function loadTaskDetails() {
+        const params = new URLSearchParams(window.location.search);
+        const taskId = params.get("id");
+
+        if (!taskId) {
+            document.getElementById("taskDetails").innerHTML = "<p>Invalid Task ID</p>";
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`);
+            const task = await response.json();
+
+            if (!task) {
+                document.getElementById("taskDetails").innerHTML = "<p>Task not found</p>";
+                return;
+            }
+
+            document.getElementById("taskDetails").innerHTML = `
+                <p><label>Task ID:</label> ${task.id}</p>
+                <p><label>Name:</label> ${task.task_name}</p>
+                <p><label>Description:</label> ${task.task_description}</p>
+                <p><label>Priority:</label> ${task.priority}</p>
+                <p><label>Status:</label> ${task.status}</p>
+                <p><label>Category:</label> ${task.category}</p>
+                <p><label>Deadline:</label> ${task.deadline}</p>
+                <p><label>Progress:</label> ${task.progress}%</p>
+            `;
+
+        } catch (error) {
+            console.error("Error fetching task details:", error);
+            document.getElementById("taskDetails").innerHTML = "<p>Error loading task details</p>";
+        }
+    }
+
+    loadTaskDetails();
+</script>
+
+</body>
+</html>
