@@ -225,32 +225,35 @@
         }
     }
 
-    // ✅ Updated: Load "Pending" and "In Progress" tasks
+    // Updated: Load "Pending" and "In Progress" tasks
     async function loadIncompleteTasks(page = 1) {
-        try {
-            const response = await fetch(`${API_BASE_URL}/tasks?status=Pending,In Progress&limit=25&page=${page}`);
-            const tasks = await response.json();
+    try {
+        // Fetch both "Pending" and "In Progress" tasks correctly
+        const response = await fetch(`${API_BASE_URL}/tasks?status=Pending&status=In Progress&limit=25&page=${page}`);
+        const tasks = await response.json();
 
-            const taskTable = document.getElementById("taskList");
-            taskTable.innerHTML = tasks.length > 0
-                ? tasks.map(task => `
-                    <tr>
-                        <td>${task.id}</td>
-                        <td>${task.task_name}</td>
-                        <td>${task.priority}</td>
-                        <td>${task.status}</td>
-                        <td>${task.category}</td>
-                        <td>${task.deadline}</td>
-                    </tr>
-                `).join("")
-                : `<tr><td colspan="6" style="text-align:center;">No Open Tasks</td></tr>`;
+        const taskTable = document.getElementById("taskList");
+        taskTable.innerHTML = tasks.length > 0
+            ? tasks.map(task => `
+                <tr>
+                    <td>${task.id}</td>
+                    <td>${task.task_name}</td>
+                    <td>${task.priority}</td>
+                    <td>${task.status}</td>
+                    <td>${task.category}</td>
+                    <td>${task.deadline}</td>
+                </tr>
+            `).join("")
+            : `<tr><td colspan="6" style="text-align:center;">No Open Tasks</td></tr>`;
 
-        } catch (error) {
-            console.error("Error fetching tasks:", error);
-        }
+    } catch (error) {
+        console.error("Error fetching tasks:", error);
     }
+}
 
-    loadIncompleteTasks();
+// Load Open Tasks (Pending & In Progress)
+loadIncompleteTasks();
+    
 </script>
 
 </body>
