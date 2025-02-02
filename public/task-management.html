@@ -13,6 +13,9 @@
             padding: 0;
             background-color: #f8f9fa;
             color: #222;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         .container {
@@ -22,6 +25,7 @@
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            flex-grow: 1;
         }
 
         h1 {
@@ -142,6 +146,16 @@
         .task-item button.delete:hover {
             background-color: #c82333;
         }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 16px;
+            background: #222;
+            color: white;
+            margin-top: auto;
+        }
     </style>
 </head>
 <body>
@@ -194,6 +208,9 @@
 
     <ul class="task-list" id="taskList"></ul>
 </div>
+
+<!-- Footer -->
+<div class="footer">Powered by Vital iNet</div>
 
 <script>
     document.getElementById("addTaskButton").addEventListener("click", function () {
