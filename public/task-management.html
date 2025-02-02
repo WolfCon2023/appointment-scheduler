@@ -28,14 +28,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative; /* ✅ Keeps button inside without shifting layout */
+            position: relative; /* ✅ Ensures home button doesn't shift layout */
         }
 
-        /* ✅ Home Button Styling - Positioned in the Upper-Right */
+        /* ✅ Home Button Styling - Top Right */
         .home-button {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 15px;
+            right: 15px;
             width: 100px;
             padding: 8px;
             font-size: 14px;
@@ -57,6 +57,61 @@
             color: #004080;
             margin-bottom: 20px;
             font-size: 28px;
+        }
+
+        .task-form {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* ✅ Restores original two-column layout */
+            gap: 15px;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 6px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 200px;
+            max-height: 300px;
+            width: 100%;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .add-task-button {
+            width: 150px;
+            padding: 8px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.3s;
+            align-self: center;
+        }
+
+        .add-task-button:hover {
+            background-color: #0056b3;
         }
 
         .footer {
@@ -146,75 +201,6 @@
 <div class="footer">Powered by Vital iNet</div>
 
 <script>
-    const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
-
-    document.getElementById("addTaskButton").addEventListener("click", async function () {
-        const taskName = document.getElementById("taskName");
-        const taskDescription = document.getElementById("taskDescription");
-        const taskPriority = document.getElementById("taskPriority").value;
-        const taskDeadline = document.getElementById("taskDeadline");
-        const taskAssignee = document.getElementById("taskAssignee");
-        const taskStatus = document.getElementById("taskStatus").value;
-        const taskCategory = document.getElementById("taskCategory");
-        const taskProgress = document.getElementById("taskProgress");
-
-        let valid = true;
-        let missingFields = [];
-
-        const requiredFields = [taskName, taskDeadline, taskAssignee, taskDescription];
-
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                field.style.border = "2px solid red";
-                missingFields.push(field.getAttribute("id"));
-                valid = false;
-            }
-        });
-
-        if (taskProgress.value !== "" && (taskProgress.value < 0 || taskProgress.value > 100)) {
-            taskProgress.style.border = "2px solid red";
-            valid = false;
-            alert("Progress must be between 0 and 100%");
-        }
-
-        if (!valid) {
-            alert("Please fill out all required fields: " + missingFields.join(", "));
-            return;
-        }
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/tasks`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    task_name: taskName.value.trim(),
-                    task_description: taskDescription.value.trim(),
-                    priority: taskPriority,
-                    deadline: taskDeadline.value,
-                    assignee: taskAssignee.value.trim(),
-                    status: taskStatus,
-                    category: taskCategory.value.trim(),
-                    progress: taskProgress.value || 0
-                })
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.error || "Task creation failed.");
-            }
-
-            alert(`Task added successfully!\nTicket Number: ${result.task_id}`);
-
-            requiredFields.forEach(field => field.value = "");
-            taskCategory.value = "";
-            taskProgress.value = "";
-
-        } catch (error) {
-            alert(`Error adding task: ${error.message}`);
-        }
-    });
-
     function goToHomePage() {
         window.location.href = "application-menu-page.html";
     }
