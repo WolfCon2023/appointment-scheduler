@@ -165,14 +165,17 @@
 
         async function fetchAllEvents() {
     try {
-        // Try alternate API paths if necessary
         const appointmentsResponse = await fetch(`${API_BASE_URL}/appointments`);
-        if (!appointmentsResponse.ok) throw new Error("Appointments endpoint not found.");
-        const appointments = await appointmentsResponse.json();
+        const eventsResponse = await fetch(`${API_BASE_URL}/events`);
 
-        const eventsResponse = await fetch(`${API_BASE_URL}/api/events`);
-        if (!eventsResponse.ok) throw new Error("Events endpoint not found.");
+        if (!appointmentsResponse.ok) throw new Error("Failed to fetch appointments.");
+        if (!eventsResponse.ok) throw new Error("Failed to fetch events.");
+
+        const appointments = await appointmentsResponse.json();
         const events = await eventsResponse.json();
+
+        console.log("Appointments:", appointments);
+        console.log("Events:", events);
 
         return [
             ...appointments.map(a => ({
@@ -198,6 +201,7 @@
         return [];
     }
 }
+
 
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
