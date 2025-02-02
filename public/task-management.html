@@ -257,21 +257,40 @@
     }
 
     // Send Data to API
-    try {
-        const response = await fetch(`${API_BASE_URL}/tasks`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                name: taskName.value.trim(),
-                description: taskDescription.value.trim(),
-                priority: taskPriority,
-                deadline: taskDeadline.value,
-                assignee: taskAssignee.value.trim(),
-                status: taskStatus,
-                category: taskCategory.value.trim(),
-                progress: taskProgress.value || 0
-            })
-        });
+try {
+    const response = await fetch(`${API_BASE_URL}/tasks`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            task_name: taskName.value.trim(),  // Changed from name to task_name
+            task_description: taskDescription.value.trim(),  // Changed from description to task_description
+            priority: taskPriority,
+            deadline: taskDeadline.value,
+            assignee: taskAssignee.value.trim(),
+            status: taskStatus,
+            category: taskCategory.value.trim(),
+            progress: taskProgress.value || 0
+        })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        console.error("Server Response:", result);
+        throw new Error(result.message || "Task creation failed.");
+    }
+
+    alert("Task added successfully!");
+
+    // Clear Fields After Submission
+    requiredFields.forEach(field => field.value = "");
+    taskCategory.value = "";
+    taskProgress.value = "";
+
+} catch (error) {
+    console.error("Error adding task:", error);
+    alert(`Error adding task: ${error.message}`);
+}
 
         // **Handle JSON Response**
         const contentType = response.headers.get("content-type");
