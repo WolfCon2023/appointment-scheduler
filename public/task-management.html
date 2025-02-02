@@ -218,29 +218,82 @@
     const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
 
     document.getElementById("addTaskButton").addEventListener("click", async function () {
+        const taskName = document.getElementById("taskName");
+        const taskDescription = document.getElementById("taskDescription");
+        const taskPriority = document.getElementById("taskPriority").value;
+        const taskDeadline = document.getElementById("taskDeadline");
+        const taskAssignee = document.getElementById("taskAssignee");
+        const taskStatus = document.getElementById("taskStatus").value;
+        const taskCategory = document.getElementById("taskCategory");
+        const taskProgress = document.getElementById("taskProgress");
+
+        // Reset error styles before validating again
+        document.querySelectorAll("input, select, textarea").forEach(field => {
+            field.style.border = "1px solid #ccc"; // Reset to default
+        });
+
+        let valid = true;
+
+        // Validate required fields
+        const requiredFields = [taskName, taskDeadline, taskAssignee, taskDescription];
+
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.style.border = "2px solid red";
+                valid = false;
+            }
+        });
+
+        // Validate progress (should be between 0-100)
+        if (taskProgress.value !== "" && (taskProgress.value < 0 || taskProgress.value > 100)) {
+            taskProgress.style.border = "2px solid red";
+            valid = false;
+            alert("Progress must be between 0 and 100%");
+        }
+
+        if (!valid) {
+            alert("Please fill out all required fields.");
+            return;
+        }
+
+        // Send Data to API
         try {
-            console.log("Sending Task Data...");
-            
             const response = await fetch(`${API_BASE_URL}/tasks`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    name: document.getElementById("taskName").value.trim(),
-                    description: document.getElementById("taskDescription").value.trim(),
-                    priority: document.getElementById("taskPriority").value,
-                    deadline: document.getElementById("taskDeadline").value,
-                    assignee: document.getElementById("taskAssignee").value.trim()
+                    name: taskName.value.trim(),
+                    description: taskDescription.value.trim(),
+                    priority: taskPriority,
+                    deadline: taskDeadline.value,
+                    assignee: taskAssignee.value.trim(),
+                    status: taskStatus,
+                    category: taskCategory.value.trim(),
+                    progress: taskProgress.value || 0
                 })
             });
 
-            if (!response.ok) throw new Error("Task creation failed.");
+            const result = await response.json();
+
+            if (!response.ok) {
+                console.error("Server Response:", result);
+                throw new Error(result.message || "Task creation failed.");
+            }
+
             alert("Task added successfully!");
+
+            // Clear Fields After Submission
+            requiredFields.forEach(field => field.value = "");
+            taskCategory.value = "";
+            taskProgress.value = "";
+
         } catch (error) {
             console.error("Error adding task:", error);
             alert(`Error adding task: ${error.message}`);
         }
     });
 </script>
+
 
 </body>
 </html>
