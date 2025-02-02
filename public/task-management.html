@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Management Portal</title>
+    <title>Task Management System</title>
     
     <style>
         /* Ensure Full Page Layout */
@@ -55,30 +55,33 @@
             margin-bottom: 5px;
         }
 
-        input, select, textarea, button {
+        input, select, textarea {
             width: 100%;
-            padding: 10px;
-            font-size: 16px;
+            padding: 8px;
+            font-size: 14px;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
 
         textarea {
             resize: vertical;
-            height: 60px;
+            height: 120px; /* ✅ Enlarged task description box */
         }
 
-        button {
+        /* Smaller Add Task Button */
+        .add-task-button {
+            width: 120px; /* ✅ Made button smaller */
+            padding: 8px;
+            font-size: 14px;
             background-color: #007bff;
             color: white;
             border: none;
             cursor: pointer;
-            font-size: 16px;
-            padding: 12px;
+            border-radius: 4px;
             transition: background 0.3s;
         }
 
-        button:hover {
+        .add-task-button:hover {
             background-color: #0056b3;
         }
 
@@ -137,7 +140,7 @@
 <body>
 
 <div class="container">
-    <h1>Task Management Portal</h1>
+    <h1>Task Management System</h1>
     <form class="task-form">
         <div class="form-container">
             <label for="taskName">Task Name:</label>
@@ -163,12 +166,12 @@
             <input type="text" id="taskAssignee" placeholder="Enter Assignee Name" required>
         </div>
 
-        <div class="form-container">
+        <div class="form-container" style="grid-column: span 2;"> <!-- Expands across both columns -->
             <label for="taskDescription">Task Description:</label>
-            <textarea id="taskDescription" placeholder="Describe the task"></textarea>
+            <textarea id="taskDescription" placeholder="Describe the task in detail"></textarea>
         </div>
 
-        <button type="button" id="addTaskButton">Add Task</button>
+        <button type="button" class="add-task-button" id="addTaskButton">Add Task</button>
     </form>
 
     <ul class="task-list" id="taskList"></ul>
