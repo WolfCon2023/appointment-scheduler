@@ -120,25 +120,23 @@ app.get(`${API_BASE_URL}/tasks`, async (req, res) => {
 app.post(`${API_BASE_URL}/tasks`, async (req, res) => {
     console.log("Received POST /api/tasks", req.body);
 
-    const { name, description, priority, deadline, assignee, status, category, progress } = req.body;
-
-    if (!name || !description || !deadline || !assignee) {
-        console.error("Validation Error: Missing required fields.");
-        return res.status(400).json({ error: "Missing required fields: name, description, deadline, or assignee." });
+    // Fix column names to match the database
+    const { task_name, task_description, priority, deadline, assignee, status, category, progress } = req.body;
+    
+    // Ensure required fields are present
+    if (!task_name || !deadline || !assignee || !task_description) {
+        return res.status(400).json({ error: "Missing required fields: task_name, deadline, assignee, or task_description." });
     }
 
     try {
         const result = await pool.query(
-            "INSERT INTO tasks (name, description, priority, deadline, assignee, status, category, progress) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-            [name, description, priority, deadline, assignee, status, category, progress]
+            "INSERT INTO tasks (task_name, task_description, priority, deadline, assignee, status, category, progress) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+            [task_name, task_description, priority, deadline, assignee, status, category, progress]
         );
-
-        console.log("Task Inserted:", result.rows[0]);
         res.status(201).json(result.rows[0]);
-
     } catch (error) {
-        console.error("Error inserting task into database:", error);
-        res.status(500).json({ message: "Database error adding task", error: error.message });
+        console.error("Error adding task:", error);
+        res.status(500).json({ message: "Database error adding task" });
     }
 });
 
