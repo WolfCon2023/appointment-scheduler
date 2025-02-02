@@ -87,7 +87,10 @@ app.get(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
             return res.status(404).json({ message: "Task not found" });
         }
 
-        res.json(result.rows[0]);
+        let task = result.rows[0];
+        task.deadline = task.deadline ? task.deadline.toISOString().split("T")[0] : ""; // ✅ Convert NULL to empty string
+
+        res.json(task);
     } catch (error) {
         console.error("Error fetching task:", error);
         res.status(500).json({ message: "Database error fetching task" });
