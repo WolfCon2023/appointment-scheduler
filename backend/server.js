@@ -101,6 +101,45 @@ app.post(`${API_BASE_URL}/events`, async (req, res) => {
 });
 
 // ----------------------------------
+// TASKS API ROUTES
+// ----------------------------------
+
+// Fetch All Tasks
+app.get(`${API_BASE_URL}/tasks`, async (req, res) => {
+  console.log("Received GET /api/tasks");
+  try {
+    const result = await pool.query("SELECT * FROM tasks ORDER BY deadline ASC");
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    res.status(500).json({ message: "Database error fetching tasks" });
+  }
+});
+
+// Add a Task
+app.post(`${API_BASE_URL}/tasks`, async (req, res) => {
+  console.log("Received POST /api/tasks");
+
+  const { name, description, priority, deadline, assignee, status, category, progress } = req.body;
+
+  if (!name || !description || !deadline || !assignee) {
+    return res.status(400).json({ error: "Missing required fields." });
+  }
+
+  try {
+    const result = await pool.query(
+      "INSERT INTO tasks (name, description, priority, deadline, assignee, status, category, progress) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+      [name, description, priority, deadline, assignee, status, category, progress]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("Error adding task:", error);
+    res.status(500).json({ message: "Database error adding task" });
+  }
+});
+
+
+// ----------------------------------
 // Catch-All Route for Invalid API Requests
 // ----------------------------------
 app.get("*", (req, res) => {
