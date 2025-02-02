@@ -233,38 +233,40 @@ document.getElementById("addTaskButton").addEventListener("click", async functio
     });
 
     let valid = true;
+    let missingFields = [];
 
-    // ✅ Validate required fields (highlight empty fields in red)
+    // Validate required fields (highlight empty fields in red)
     const requiredFields = [taskName, taskDeadline, taskAssignee, taskDescription];
 
     requiredFields.forEach(field => {
         if (!field.value.trim()) {
             field.style.border = "2px solid red";
+            missingFields.push(field.getAttribute("id"));
             valid = false;
         }
     });
 
-    // ✅ Validate progress (should be between 0-100)
+    // Validate progress (should be between 0-100)
     if (taskProgress.value !== "" && (taskProgress.value < 0 || taskProgress.value > 100)) {
         taskProgress.style.border = "2px solid red";
         valid = false;
         alert("Progress must be between 0 and 100%");
     }
 
-    // ✅ Stop submission if validation fails
+    // Stop submission if validation fails
     if (!valid) {
-        alert("Please fill out all required fields.");
+        alert("Please fill out all required fields: " + missingFields.join(", "));
         return;
     }
 
-    // ✅ Send Data to API
+    // Send Data to API
     try {
         const response = await fetch(`${API_BASE_URL}/tasks`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                task_name: taskName.value.trim(),  // ✅ Fixed field name
-                task_description: taskDescription.value.trim(),  // ✅ Fixed field name
+                task_name: taskName.value.trim(),  // Fixed field name
+                task_description: taskDescription.value.trim(),  // Fixed field name
                 priority: taskPriority,
                 deadline: taskDeadline.value,
                 assignee: taskAssignee.value.trim(),
@@ -274,33 +276,7 @@ document.getElementById("addTaskButton").addEventListener("click", async functio
             })
         });
 
-        // ✅ Handle JSON Response
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            throw new Error("Server returned an invalid response. Check API logs.");
-        }
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            console.error("Server Response:", result);
-            throw new Error(result.error || "Task creation failed.");
-        }
-
-        alert("Task added successfully!");
-
-        // ✅ Clear Fields After Submission
-        requiredFields.forEach(field => field.value = "");
-        taskCategory.value = "";
-        taskProgress.value = "";
-
-    } catch (error) {
-        console.error("Error adding task:", error);
-        alert(`Error adding task: ${error.message}`);
-    }
-});
-
-        // **Handle JSON Response**
+        // Handle JSON Response
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
             throw new Error("Server returned an invalid response. Check API logs.");
