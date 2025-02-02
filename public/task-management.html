@@ -192,6 +192,25 @@
             <input type="text" id="taskAssignee" placeholder="Enter Assignee Name" required>
         </div>
 
+        <div class="form-container">
+            <label for="taskStatus">Status <span class="tooltip" title="Current progress of the task">?</span></label>
+            <select id="taskStatus">
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+            </select>
+        </div>
+
+        <div class="form-container">
+            <label for="taskCategory">Category <span class="tooltip" title="Choose a category for better organization">?</span></label>
+            <input type="text" id="taskCategory" placeholder="e.g., Marketing, Development">
+        </div>
+
+        <div class="form-container">
+            <label for="taskProgress">Progress (%) <span class="tooltip" title="Enter progress in percentage">?</span></label>
+            <input type="number" id="taskProgress" min="0" max="100" placeholder="0-100">
+        </div>
+
         <div class="form-container" style="grid-column: span 2;">
             <label for="taskDescription">Task Description <span class="tooltip" title="Provide a detailed task description">?</span></label>
             <textarea id="taskDescription" maxlength="5000" placeholder="Describe the task in detail"></textarea>
@@ -210,57 +229,24 @@
     const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
 
     document.getElementById("addTaskButton").addEventListener("click", async function () {
-        const taskName = document.getElementById("taskName");
-        const taskDescription = document.getElementById("taskDescription");
+        const taskName = document.getElementById("taskName").value.trim();
+        const taskDescription = document.getElementById("taskDescription").value.trim();
         const taskPriority = document.getElementById("taskPriority").value;
-        const taskDeadline = document.getElementById("taskDeadline");
-        const taskAssignee = document.getElementById("taskAssignee");
-
-        // Reset previous errors
-        [taskName, taskDescription, taskDeadline, taskAssignee].forEach(field => field.classList.remove("error"));
-
-        // Check Required Fields
-        let valid = true;
-        if (!taskName.value.trim()) {
-            taskName.classList.add("error");
-            valid = false;
-        }
-        if (!taskDeadline.value) {
-            taskDeadline.classList.add("error");
-            valid = false;
-        }
-        if (!taskAssignee.value.trim()) {
-            taskAssignee.classList.add("error");
-            valid = false;
-        }
-
-        if (!valid) {
-            alert("Please fill out all required fields.");
-            return;
-        }
+        const taskDeadline = document.getElementById("taskDeadline").value;
+        const taskAssignee = document.getElementById("taskAssignee").value.trim();
+        const taskStatus = document.getElementById("taskStatus").value;
+        const taskCategory = document.getElementById("taskCategory").value.trim();
+        const taskProgress = document.getElementById("taskProgress").value || 0;
 
         try {
             const response = await fetch(`${API_BASE_URL}/tasks`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: taskName.value.trim(),
-                    description: taskDescription.value.trim(),
-                    priority: taskPriority,
-                    deadline: taskDeadline.value,
-                    assignee: taskAssignee.value.trim(),
-                    status: "Pending",
-                    category: "General",
-                    progress: 0
-                })
+                body: JSON.stringify({ name: taskName, description: taskDescription, priority: taskPriority, deadline: taskDeadline, assignee: taskAssignee, status: taskStatus, category: taskCategory, progress: taskProgress })
             });
 
             const result = await response.json();
-
-            if (!response.ok) {
-                console.error("Server Response:", result);
-                throw new Error(result.message || "Task creation failed.");
-            }
+            if (!response.ok) throw new Error(result.message || "Task creation failed.");
 
             alert("Task added successfully!");
         } catch (error) {
