@@ -6,7 +6,6 @@
     <title>Task Management System</title>
     
     <style>
-        /* Full Page Layout */
         html, body {
             height: 100vh;
             width: 100vw;
@@ -68,7 +67,7 @@
 
         textarea {
             resize: vertical;
-            height: 200px; /* ✅ Enlarged for detailed task descriptions */
+            height: 200px;
             max-height: 300px;
             width: 100%;
             font-size: 14px;
@@ -76,7 +75,6 @@
             border-radius: 4px;
         }
 
-        /* Tooltip Styles */
         .tooltip {
             display: inline-block;
             margin-left: 5px;
@@ -86,7 +84,6 @@
             cursor: help;
         }
 
-        /* Smaller Add Task Button */
         .add-task-button {
             width: 150px;
             padding: 8px;
@@ -104,7 +101,6 @@
             background-color: #0056b3;
         }
 
-        /* Task List Styling */
         .task-list {
             list-style: none;
             padding: 0;
@@ -141,7 +137,6 @@
             background-color: #c82333;
         }
 
-        /* Footer Styling */
         .footer {
             width: 100%;
             height: 50px;
@@ -164,7 +159,7 @@
     <form class="task-form">
         <div class="form-container">
             <label for="taskName">Task Name <span class="tooltip" title="Enter a short, descriptive task title">?</span></label>
-            <input type="text" id="taskName" placeholder="Enter Task Name" required>
+            <input type="text" id="taskName" required>
         </div>
 
         <div class="form-container">
@@ -183,12 +178,31 @@
 
         <div class="form-container">
             <label for="taskAssignee">Assigned To <span class="tooltip" title="Who is responsible for this task?">?</span></label>
-            <input type="text" id="taskAssignee" placeholder="Enter Assignee Name" required>
+            <input type="text" id="taskAssignee" required>
+        </div>
+
+        <div class="form-container">
+            <label for="taskStatus">Status <span class="tooltip" title="Current progress of the task">?</span></label>
+            <select id="taskStatus">
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+            </select>
+        </div>
+
+        <div class="form-container">
+            <label for="taskCategory">Category <span class="tooltip" title="Choose a category for better organization">?</span></label>
+            <input type="text" id="taskCategory">
+        </div>
+
+        <div class="form-container">
+            <label for="taskProgress">Progress (%) <span class="tooltip" title="Enter progress in percentage">?</span></label>
+            <input type="number" id="taskProgress" min="0" max="100">
         </div>
 
         <div class="form-container" style="grid-column: span 2;">
             <label for="taskDescription">Task Description <span class="tooltip" title="Provide a detailed task description">?</span></label>
-            <textarea id="taskDescription" maxlength="5000" placeholder="Describe the task in detail"></textarea>
+            <textarea id="taskDescription" maxlength="5000"></textarea>
         </div>
 
         <button type="button" class="add-task-button" id="addTaskButton">Add Task</button>
@@ -197,7 +211,6 @@
     <ul class="task-list" id="taskList"></ul>
 </div>
 
-<!-- Footer -->
 <div class="footer">Powered by Vital iNet</div>
 
 <script>
@@ -219,16 +232,8 @@
                 })
             });
 
-            const textResponse = await response.text(); // Read response as text
-
-            try {
-                const result = JSON.parse(textResponse); // Try parsing JSON
-                if (!response.ok) throw new Error(result.message || "Task creation failed.");
-                alert("Task added successfully!");
-            } catch (jsonError) {
-                console.error("Non-JSON response:", textResponse); // Log HTML response
-                throw new Error("Unexpected server response. Check console.");
-            }
+            if (!response.ok) throw new Error("Task creation failed.");
+            alert("Task added successfully!");
         } catch (error) {
             console.error("Error adding task:", error);
             alert(`Error adding task: ${error.message}`);
