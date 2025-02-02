@@ -28,26 +28,24 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative;
         }
 
-        /* ✅ Home Button Styles */
+        /* ✅ Home Button Styling */
         .home-button {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
+            width: 120px;
+            padding: 10px;
+            font-size: 14px;
             font-weight: bold;
-            background-color: #004080;
+            background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-bottom: 10px; /* Ensures space between the button and title */
         }
 
         .home-button:hover {
-            background-color: #002d5a;
+            background-color: #0056b3;
         }
 
         h1 {
@@ -75,7 +73,7 @@
 <body>
 
 <div class="container">
-    <!-- ✅ Home Button -->
+    <!-- ✅ Home Button Added -->
     <button class="home-button" onclick="goToHomePage()">🏠 Home</button>
 
     <h1>Task Management System</h1>
