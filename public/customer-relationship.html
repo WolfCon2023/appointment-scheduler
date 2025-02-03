@@ -324,10 +324,11 @@
         }
     });
 
-    // ✅ FUNCTION TO OPEN CUSTOMER DETAILS IN A NEW TAB
-    function fetchCustomer(customerId) {
-        window.open(`${API_URL}/${customerId}`, "_blank");
-    }
+   // ✅ FUNCTION TO OPEN CUSTOMER DETAILS IN A NEW PAGE
+   function fetchCustomer(customerId) {
+        console.log(`🔵 Opening customer details page for ID: ${customerId}`);
+        window.open(`customer.html?id=${customerId}`, "_blank"); // ✅ Open customer.html instead of raw JSON
+}
 
     // ✅ CLEAR SEARCH FUNCTIONALITY
     document.getElementById("clearSearchButton").addEventListener("click", () => {
