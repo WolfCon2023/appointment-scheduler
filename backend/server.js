@@ -273,6 +273,79 @@ app.post("/api/tasks", async (req, res) => {
     }
 });
 
+// ✅ Fetch all customers
+app.get("/api/customers", async (req, res) => {
+    console.log("🔵 Fetching customers...");
+    try {
+        const result = await pool.query("SELECT * FROM customers ORDER BY created_at DESC");
+        res.json(result.rows);
+    } catch (error) {
+        console.error("🔴 Error fetching customers:", error);
+        res.status(500).json({ message: "Database error fetching customers" });
+    }
+});
+
+// ✅ Fetch all interactions for a specific customer
+app.get("/api/customers/:id/interactions", async (req, res) => {
+    const customerId = req.params.id;
+    console.log(`🔵 Fetching interactions for customer ${customerId}`);
+
+    try {
+        const result = await pool.query(
+            "SELECT * FROM customer_interactions WHERE customer_id = $1 ORDER BY contact_date DESC",
+            [customerId]
+        );
+        res.json(result.rows);
+    } catch (error) {
+        console.error("🔴 Error fetching interactions:", error);
+        res.status(500).json({ message: "Database error fetching interactions" });
+    }
+});
+
+// ✅ Add a new customer
+app.post("/api/customers", async (req, res) => {
+    console.log("🔵 Adding new customer...");
+
+    const { customer_name, business_email, phone_number, product_lines } = req.body;
+
+    if (!customer_name || !business_email) {
+        return res.status(400).json({ message: "Customer name and business email are required." });
+    }
+
+    try {
+        const result = await pool.query(
+            "INSERT INTO customers (customer_name, business_email, phone_number, product_lines) VALUES ($1, $2, $3, $4) RETURNING *",
+            [customer_name, business_email, phone_number, product_lines]
+        );
+        res.status(201).json({ message: "Customer added successfully!", customer: result.rows[0] });
+
+    } catch (error) {
+        console.error("🔴 Database Error Adding Customer:", error);
+        res.status(500).json({ message: "Database error adding customer" });
+    }
+});
+
+// ✅ Log a new interaction for a customer
+app.post("/api/customers/:id/interactions", async (req, res) => {
+    const customerId = req.params.id;
+    const { contact_date, notes } = req.body;
+
+    if (!notes) {
+        return res.status(400).json({ message: "Interaction notes are required." });
+    }
+
+    try {
+        const result = await pool.query(
+            "INSERT INTO customer_interactions (customer_id, contact_date, notes) VALUES ($1, $2, $3) RETURNING *",
+            [customerId, contact_date || new Date(), notes]
+        );
+        res.status(201).json({ message: "Interaction logged successfully!", interaction: result.rows[0] });
+
+    } catch (error) {
+        console.error("🔴 Database Error Adding Interaction:", error);
+        res.status(500).json({ message: "Database error adding interaction" });
+    }
+});
 
 
 // ----------------------------------
