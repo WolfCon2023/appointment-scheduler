@@ -124,6 +124,57 @@ app.get("/api/events/:id", async (req, res) => {
     }
 });
 
+app.get("/api/tasks", async (req, res) => {
+    console.log("🔵 Received GET /api/tasks");
+
+    let { id, priority, status, category, deadline, limit = 25, page = 1 } = req.query;
+    let query = "SELECT * FROM tasks";
+    let conditions = [];
+    let params = [];
+
+    if (id) {
+        conditions.push(`id = $${params.length + 1}`);
+        params.push(id);
+    }
+    if (priority) {
+        conditions.push(`priority = $${params.length + 1}`);
+        params.push(priority);
+    }
+    if (status) {
+        let statusList = status.split(",").map(s => s.trim());
+        conditions.push(`status = ANY($${params.length + 1})`);
+        params.push(statusList);
+    }
+    if (category) {
+        conditions.push(`category = $${params.length + 1}`);
+        params.push(category);
+    }
+    if (deadline) {
+        conditions.push(`deadline = $${params.length + 1}`);
+        params.push(deadline);
+    }
+
+    if (conditions.length > 0) {
+        query += " WHERE " + conditions.join(" AND ");
+    }
+
+    query += ` ORDER BY deadline ASC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    params.push(limit);
+    params.push((page - 1) * limit);
+
+    try {
+        console.log("🔍 Executing Query:", query);
+        console.log("📩 Query Parameters:", params);
+        
+        const result = await pool.query(query, params);
+        res.json(result.rows);
+    } catch (error) {
+        console.error("🔴 Database Error Fetching Tasks:", error);
+        res.status(500).json({ message: "Database error fetching tasks" });
+    }
+});
+
+
 // ----------------------------------
 // ✅ Catch-All Route for Invalid API Requests
 // ----------------------------------
