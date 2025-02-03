@@ -59,6 +59,7 @@ app.get("/api/appointments/:id", async (req, res) => {
 
 // ✅ Create a New Appointment (POST)
 // ✅ Add New Appointment
+// ✅ Add New Appointment
 app.post(`${API_BASE_URL}/appointments`, async (req, res) => {
     console.log("🔵 Received POST /api/appointments");
     console.log("📩 Incoming Request Body:", req.body); // ✅ Log received data
@@ -69,7 +70,7 @@ app.post(`${API_BASE_URL}/appointments`, async (req, res) => {
     let missingFields = [];
     if (!title) missingFields.push("title");
     if (!date) missingFields.push("date");
-    if (!scheduledBy) missingFields.push("scheduled_by"); // ✅ Check required fields
+    if (!scheduledBy) missingFields.push("scheduledBy");
 
     if (missingFields.length > 0) {
         console.warn("⚠️ Missing required fields:", missingFields);
@@ -84,13 +85,14 @@ app.post(`${API_BASE_URL}/appointments`, async (req, res) => {
         );
 
         console.log("🟢 Appointment Added:", result.rows[0]); // ✅ Log inserted data
-        res.status(201).json({ message: "Appointment added successfully!", appointment: result.rows[0] });
+        return res.status(201).json({ message: "Appointment added successfully!", appointment: result.rows[0] });
 
     } catch (error) {
         console.error("🔴 Database Error:", error); // ✅ Log full DB error
-        res.status(500).json({ message: "Database error adding appointment", error: error.message });
+        return res.status(500).json({ message: "Database error adding appointment", error: error.message });
     }
 });
+
 
 
 // ----------------------------------
