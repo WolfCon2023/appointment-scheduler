@@ -15,7 +15,7 @@
             align-items: center;
             background-color: #f4f7f9;
             font-family: Arial, sans-serif;
-            overflow-y: auto; /* Enables scrolling */
+            overflow-y: auto;
         }
 
         .container {
@@ -26,7 +26,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
-            margin-bottom: 50px; /* Ensures space before footer */
+            margin-bottom: 50px;
         }
 
         h1, h2 {
@@ -46,7 +46,6 @@
         .form-container {
             display: flex;
             flex-direction: column;
-            position: relative;
         }
 
         label {
@@ -83,47 +82,19 @@
             background-color: #0056b3;
         }
 
-        /* Help Icon Style */
-        .help-icon {
-            margin-left: 5px;
-            font-size: 14px;
-            color: #007bff;
-            cursor: pointer;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #e7f0fe;
-        }
-
-        .help-icon:hover {
-            background-color: #cce0ff;
-        }
-
-        /* Search Bar Container */
-        .search-bar-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 20px 0;
-            gap: 5px;
-        }
-
-        .search-bar {
-            width: 70%;
-            padding: 10px;
-        }
-
-        .search-button {
-            padding: 8px 12px;
-            font-size: 14px;
-        }
-
         /* Success Message */
         .success-message {
             background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        /* Error Message */
+        .error-message {
+            background-color: #dc3545;
             color: white;
             padding: 10px;
             border-radius: 6px;
@@ -156,30 +127,22 @@
         <h2>Add Customer</h2>
         <div class="form">
             <div class="form-container">
-                <label for="customerName">Customer Name* 
-                    <span class="help-icon" title="Enter the full name of the customer">?</span>
-                </label>
+                <label for="customerName">Customer Name*</label>
                 <input type="text" id="customerName" required>
             </div>
 
             <div class="form-container">
-                <label for="customerBusinessEmail">Business Email* 
-                    <span class="help-icon" title="Enter the customer's business email address">?</span>
-                </label>
+                <label for="customerBusinessEmail">Business Email*</label>
                 <input type="email" id="customerBusinessEmail" required>
             </div>
 
             <div class="form-container">
-                <label for="customerPhoneNumber">Phone Number 
-                    <span class="help-icon" title="Enter the customer's contact phone number">?</span>
-                </label>
+                <label for="customerPhoneNumber">Phone Number</label>
                 <input type="text" id="customerPhoneNumber">
             </div>
 
             <div class="form-container">
-                <label for="customerProductLines">Product Lines* 
-                    <span class="help-icon" title="Select the type of consulting services the customer is interested in">?</span>
-                </label>
+                <label for="customerProductLines">Product Lines*</label>
                 <select id="customerProductLines" required>
                     <option value="" disabled selected>Select a Product Line</option>
                     <option value="Agile Consulting">Agile Consulting</option>
@@ -190,9 +153,7 @@
             </div>
 
             <div class="form-container" style="grid-column: span 2;">
-                <label for="customerNotes">Interaction Notes 
-                    <span class="help-icon" title="Add notes about interactions with the customer">?</span>
-                </label>
+                <label for="customerNotes">Interaction Notes</label>
                 <textarea id="customerNotes"></textarea>
             </div>
         </div>
@@ -200,6 +161,7 @@
     </form>
 
     <div id="successMessage" class="success-message">Customer has been successfully added.</div>
+    <div id="errorMessage" class="error-message">Failed to add customer. Please try again.</div>
 
     <h2>Customers</h2>
     <div class="search-bar-container">
@@ -219,9 +181,14 @@
     const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/customers";
 
     async function fetchCustomers(query = "") {
-        const response = await fetch(`${API_URL}?search=${query}`);
-        const customers = await response.json();
-        displayCustomers(customers);
+        try {
+            const response = await fetch(`${API_URL}?search=${query}`);
+            if (!response.ok) throw new Error("Failed to fetch customers");
+            const customers = await response.json();
+            displayCustomers(customers);
+        } catch (error) {
+            console.error("Error fetching customers:", error);
+        }
     }
 
     function displayCustomers(customers) {
@@ -248,21 +215,38 @@
     document.getElementById("customerForm").addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: new FormData(event.target)
-        });
+        const customerData = {
+            customer_name: document.getElementById("customerName").value,
+            business_email: document.getElementById("customerBusinessEmail").value,
+            phone_number: document.getElementById("customerPhoneNumber").value,
+            product_lines: document.getElementById("customerProductLines").value,
+            notes: document.getElementById("customerNotes").value
+        };
 
-        if (response.ok) {
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(customerData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Error Response:", errorData);
+                document.getElementById("errorMessage").style.display = "block";
+                setTimeout(() => document.getElementById("errorMessage").style.display = "none", 3000);
+                return;
+            }
+
             document.getElementById("successMessage").style.display = "block";
-            setTimeout(() => {
-                document.getElementById("successMessage").style.display = "none";
-            }, 3000);
+            setTimeout(() => document.getElementById("successMessage").style.display = "none", 3000);
+
             fetchCustomers();
             document.getElementById("customerForm").reset();
-        } else {
-            alert("Failed to add customer.");
+        } catch (error) {
+            console.error("Error adding customer:", error);
+            document.getElementById("errorMessage").style.display = "block";
+            setTimeout(() => document.getElementById("errorMessage").style.display = "none", 3000);
         }
     });
 
