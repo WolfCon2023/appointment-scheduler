@@ -253,46 +253,31 @@
 
         // **Fix Add Appointment Not Appearing in Calendar**
 addAppointmentButton.addEventListener('click', async () => {
-    const title = document.getElementById('appointmentTitle');
-    const date = document.getElementById('appointmentDate');
-    const location = document.getElementById('appointmentLocation');
-    const contactName = document.getElementById('contactName');
-    const contactPhone = document.getElementById('contactPhoneNumber');
-    const contactEmail = document.getElementById('contactEmail');
-    const scheduledBy = document.getElementById('scheduledBy');
-    const notes = document.getElementById('appointmentNotes');
+    const title = document.getElementById('appointmentTitle').value.trim();
+    const date = document.getElementById('appointmentDate').value;
+    const location = document.getElementById('appointmentLocation').value.trim();
+    const contactName = document.getElementById('contactName').value.trim();
+    const contactPhone = document.getElementById('contactPhoneNumber').value.trim();
+    const contactEmail = document.getElementById('contactEmail').value.trim();
+    const scheduledBy = document.getElementById('scheduledBy').value.trim();
+    const notes = document.getElementById('appointmentNotes').value.trim();
+
+    // ✅ Debug: Log the data before sending
+    console.log("📤 Sending Data:", { title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes });
 
     // **Check Required Fields**
-    const requiredFields = [title, date, location, contactName, contactPhone, contactEmail, scheduledBy];
-    let valid = true;
+    let missingFields = [];
+    if (!title) missingFields.push("title");
+    if (!date) missingFields.push("date");
+    if (!scheduledBy) missingFields.push("scheduledBy");
 
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            field.style.border = "2px solid red";
-            valid = false;
-        } else {
-            field.style.border = ""; // Reset border color if filled
-        }
-    });
-
-    if (!valid) {
-        alert("Please fill out all required fields.");
+    if (missingFields.length > 0) {
+        alert(`Please fill out all required fields: ${missingFields.join(", ")}`);
         return;
     }
 
     // **Create Appointment Object**
-    const newAppointment = {
-        title: title.value.trim(),
-        date: date.value,
-        location: location.value.trim(),
-        contactName: contactName.value.trim(),
-        contactPhone: contactPhone.value.trim(),
-        contactEmail: contactEmail.value.trim(),
-        scheduledBy: scheduledBy.value.trim(),
-        notes: notes.value.trim()
-    };
-
-    console.log("🔵 Sending appointment data:", newAppointment); // ✅ Log the data before sending
+    const newAppointment = { title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes };
 
     try {
         const response = await fetch(`${API_BASE_URL}/appointments`, {
@@ -302,27 +287,30 @@ addAppointmentButton.addEventListener('click', async () => {
         });
 
         const result = await response.json();
-        console.log("🟢 Server Response:", result); // ✅ Log server response
+        console.log("🟢 Server Response:", result);
 
-        if (!response.ok) {
-            throw new Error(result.message || "Failed to add appointment");
+        if (response.ok) {
+            alert("Appointment added successfully!");
+            await updateCalendarEvents();
+
+            // **Clear Form Fields After Successful Submission**
+            document.getElementById('appointmentTitle').value = "";
+            document.getElementById('appointmentDate').value = "";
+            document.getElementById('appointmentLocation').value = "";
+            document.getElementById('contactName').value = "";
+            document.getElementById('contactPhoneNumber').value = "";
+            document.getElementById('contactEmail').value = "";
+            document.getElementById('scheduledBy').value = "";
+            document.getElementById('appointmentNotes').value = "";
+
+        } else {
+            alert(`Failed to add appointment: ${result.message}`);
         }
-
-        alert("✅ Appointment added successfully!");
-
-        // **Refetch and update calendar with new data**
-        await updateCalendarEvents();
-
-        // **Clear Form Fields After Successful Submission**
-        requiredFields.forEach(field => field.value = "");
-        notes.value = "";
-
     } catch (error) {
-        console.error("🔴 Error adding appointment:", error);
-        alert(`🚨 Error adding appointment: ${error.message}`);
+        console.error("🔴 Error:", error);
+        alert("Error adding appointment. Please check your internet connection.");
     }
 });
-
     });
 </script>
 </body>
