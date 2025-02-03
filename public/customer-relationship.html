@@ -53,7 +53,7 @@
             margin-bottom: 5px;
         }
 
-        input, textarea {
+        input, textarea, select {
             padding: 10px;
             font-size: 16px;
             border-radius: 6px;
@@ -178,7 +178,12 @@
             </div>
             <div class="form-container">
                 <label for="customerProductLines">Product Lines</label>
-                <input type="text" id="customerProductLines">
+                <select id="customerProductLines">
+                    <option value="Agile Consulting">Agile Consulting</option>
+                    <option value="Business Consulting">Business Consulting</option>
+                    <option value="Network Consulting">Network Consulting</option>
+                    <option value="Software Consulting">Software Consulting</option>
+                </select>
             </div>
             <div class="form-container" style="grid-column: span 2;">
                 <label for="customerNotes">Interaction Notes</label>
@@ -198,22 +203,6 @@
         <!-- Customer records will be displayed here -->
     </div>
 
-    <!-- Interaction History Modal -->
-    <div id="interactionModal" class="modal">
-        <div class="modal-content">
-            <h2>Customer Interaction History</h2>
-            <button id="closeModal">Close</button>
-            <div id="interactionList"></div>
-
-            <h3>Add New Interaction</h3>
-            <form id="interactionForm">
-                <input type="hidden" id="interactionCustomerId">
-                <label for="interactionNotes">Interaction Notes:</label>
-                <textarea id="interactionNotes" required></textarea>
-                <button type="submit">Add Interaction</button>
-            </form>
-        </div>
-    </div>
 </div>
 
 <!-- Footer -->
@@ -239,37 +228,40 @@
                 <h3>${customer.customer_name}</h3>
                 <p><strong>Email:</strong> ${customer.business_email}</p>
                 <p><strong>Phone:</strong> ${customer.phone_number || "N/A"}</p>
-                <p><strong>Product Lines:</strong> ${customer.product_lines || "N/A"}</p>
+                <p><strong>Product Lines:</strong> ${customer.product_lines}</p>
                 <button onclick="viewCustomerHistory(${customer.id})">View History</button>
             `;
             customerList.appendChild(card);
         });
     }
 
-    function viewCustomerHistory(customerId) {
-        document.getElementById("interactionCustomerId").value = customerId;
-        fetchInteractionHistory(customerId);
-        document.getElementById("interactionModal").style.display = "flex";
-    }
-
-    async function fetchInteractionHistory(customerId) {
-        const response = await fetch(`${API_URL}/${customerId}/interactions`);
-        const interactions = await response.json();
-        const interactionList = document.getElementById("interactionList");
-        interactionList.innerHTML = interactions.map(interaction => `
-            <div class="interaction-card">
-                <p><strong>Date:</strong> ${interaction.contact_date}</p>
-                <p><strong>Notes:</strong> ${interaction.notes}</p>
-            </div>
-        `).join("");
-    }
-
     document.getElementById("searchButton").addEventListener("click", () => {
         fetchCustomers(document.getElementById("searchCustomer").value);
     });
 
-    document.getElementById("closeModal").addEventListener("click", () => {
-        document.getElementById("interactionModal").style.display = "none";
+    document.getElementById("customerForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const customerData = {
+            customer_name: document.getElementById("customerName").value,
+            business_email: document.getElementById("customerBusinessEmail").value,
+            phone_number: document.getElementById("customerPhoneNumber").value,
+            product_lines: document.getElementById("customerProductLines").value,
+            notes: document.getElementById("customerNotes").value
+        };
+
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(customerData)
+        });
+
+        if (response.ok) {
+            fetchCustomers();
+            document.getElementById("customerForm").reset();
+        } else {
+            alert("Failed to add customer.");
+        }
     });
 
     fetchCustomers();
