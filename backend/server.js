@@ -195,6 +195,47 @@ app.get("/api/tasks/:id", async (req, res) => {
     }
 });
 
+app.put("/api/tasks/:id", async (req, res) => {
+    console.log(`🔵 Received PUT /api/tasks/${req.params.id}`);
+    console.log("📩 Incoming Request Body:", req.body);
+
+    const { task_name, task_description, priority, deadline, assignee, status, category, progress } = req.body;
+
+    // ✅ Validate Required Fields
+    if (!task_name || !task_description || !priority || !status || !category) {
+        console.warn("⚠️ Missing required fields.");
+        return res.status(400).json({ message: "Missing required fields." });
+    }
+
+    try {
+        // ✅ Update Task in Database
+        const result = await pool.query(
+            `UPDATE tasks 
+             SET task_name = $1, 
+                 task_description = $2, 
+                 priority = $3, 
+                 deadline = CASE WHEN $4 = '' THEN NULL ELSE $4::DATE END, 
+                 assignee = $5, 
+                 status = $6, 
+                 category = $7, 
+                 progress = $8 
+             WHERE id = $9 RETURNING *`,
+            [task_name, task_description, priority, deadline || null, assignee, status, category, progress, req.params.id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Task not found" });
+        }
+
+        console.log("🟢 Task Updated Successfully:", result.rows[0]); // ✅ Log Updated Data
+        res.json({ message: "Task updated successfully!", task: result.rows[0] });
+
+    } catch (error) {
+        console.error("🔴 Database Error Updating Task:", error);
+        res.status(500).json({ message: "Database error updating task", error: error.message });
+    }
+});
+
 
 // ----------------------------------
 // ✅ Catch-All Route for Invalid API Requests
