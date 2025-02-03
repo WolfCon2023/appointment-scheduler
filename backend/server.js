@@ -325,6 +325,53 @@ app.post("/api/customers", async (req, res) => {
     }
 });
 
+// Search Customers by Name, Email, or Product Line (Partial Match)
+app.get("/api/customers", async (req, res) => {
+    console.log("🔵 Received GET /api/customers with search query:", req.query.search);
+
+    const searchQuery = req.query.search || "";
+
+    try {
+        const result = await pool.query(
+            `SELECT * FROM customers WHERE 
+                LOWER(first_name) LIKE LOWER($1) 
+                OR LOWER(last_name) LIKE LOWER($1)
+                OR LOWER(business_email) LIKE LOWER($1) 
+                OR LOWER(product_lines) LIKE LOWER($1) 
+            ORDER BY first_name ASC`,
+            [`%${searchQuery}%`]
+        );
+
+        if (result.rows.length === 0) {
+            return res.json({ message: "No customers found." });
+        }
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error("🔴 Database Error:", error);
+        res.status(500).json({ message: "Database error fetching customers", error: error.message });
+    }
+});
+
+// Fetch a Customer by ID
+app.get("/api/customers/:id", async (req, res) => {
+    console.log(`🔵 Received GET /api/customers/${req.params.id}`);
+
+    try {
+        const result = await pool.query("SELECT * FROM customers WHERE id = $1", [req.params.id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Customer not found" });
+        }
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("🔴 Database Error:", error);
+        res.status(500).json({ message: "Database error fetching customer", error: error.message });
+    }
+});
+
+
 // ✅ Log a new interaction for a customer
 app.post("/api/customers/:id/interactions", async (req, res) => {
     const customerId = req.params.id;
