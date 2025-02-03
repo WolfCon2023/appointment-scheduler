@@ -212,8 +212,16 @@
 
     async function loadIncompleteTasks() {
     try {
-        const response = await fetch(`${API_BASE_URL}/tasks?status=Pending,In%20Progress&limit=25`);
+        const response = await fetch(`${API_BASE_URL}/tasks?status=Pending,In Progress&limit=25`);
+        
+        if (!response.ok) {
+            console.error("🔴 API Error:", response.statusText);
+            alert("Failed to load tasks.");
+            return;
+        }
+
         const tasks = await response.json();
+        console.log("🟢 Incomplete Tasks Retrieved:", tasks);
 
         const taskTable = document.getElementById("taskList");
         taskTable.innerHTML = tasks.length > 0
@@ -224,13 +232,14 @@
                     <td>${task.priority}</td>
                     <td>${task.status}</td>
                     <td>${task.category}</td>
-                    <td>${task.deadline}</td>
+                    <td>${task.deadline ? new Date(task.deadline).toLocaleDateString() : "No Deadline"}</td>
                 </tr>
             `).join("")
             : `<tr><td colspan="6" style="text-align:center;">No Open Tasks</td></tr>`;
 
     } catch (error) {
-        console.error("Error fetching tasks:", error);
+        console.error("🔴 Error fetching tasks:", error);
+        alert("Error retrieving tasks.");
     }
 }
 
