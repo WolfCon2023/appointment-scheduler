@@ -91,8 +91,13 @@
         }
 
         function goBack() {
-            window.history.back();
-        }
+    const previousPage = document.referrer;
+    if (previousPage.includes("index.html") || previousPage.includes("your-main-crm-page.html")) {
+        window.history.back();
+    } else {
+        window.location.href = "index.html"; // Change to your CRM's main page file name
+    }
+}
 
         fetchCustomerDetails();
     </script>
