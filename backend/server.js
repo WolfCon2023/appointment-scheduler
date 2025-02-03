@@ -175,6 +175,26 @@ app.get("/api/tasks", async (req, res) => {
     }
 });
 
+app.get("/api/tasks/:id", async (req, res) => {
+    console.log(`🔵 Received GET /api/tasks/${req.params.id}`);
+
+    try {
+        const result = await pool.query("SELECT * FROM tasks WHERE id = $1", [req.params.id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Task not found" });
+        }
+
+        let task = result.rows[0];
+        task.deadline = task.deadline ? task.deadline.toISOString().split("T")[0] : "";
+
+        res.json(task);
+    } catch (error) {
+        console.error("🔴 Error fetching task:", error);
+        res.status(500).json({ message: "Database error fetching task" });
+    }
+});
+
 
 // ----------------------------------
 // ✅ Catch-All Route for Invalid API Requests
