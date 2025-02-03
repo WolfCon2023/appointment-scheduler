@@ -50,7 +50,7 @@
             cursor: pointer;
             border: none;
             border-radius: 6px;
-            padding: 8px 12px;
+            padding: 10px 16px;
             font-size: 14px;
         }
 
@@ -81,7 +81,7 @@
             justify-content: center;
             align-items: center;
             margin: 20px 0;
-            gap: 5px;
+            gap: 10px;
         }
 
         .search-bar {
@@ -94,19 +94,44 @@
             font-size: 14px;
         }
 
-        /* Customer Search Results */
-        .customer-results {
-            margin-top: 20px;
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
         }
 
-        .customer-id {
-            color: #007bff;
+        .modal-content {
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 18px;
             cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .customer-id:hover {
-            color: #0056b3;
         }
 
         .footer {
@@ -132,41 +157,29 @@
     <form id="customerForm">
         <h2>Add Customer</h2>
         <div class="form">
-            <div class="form-container">
-                <label for="firstName">First Name*</label>
-                <input type="text" id="firstName" required>
-            </div>
+            <label>First Name*</label>
+            <input type="text" id="firstName" required>
 
-            <div class="form-container">
-                <label for="lastName">Last Name*</label>
-                <input type="text" id="lastName" required>
-            </div>
+            <label>Last Name*</label>
+            <input type="text" id="lastName" required>
 
-            <div class="form-container">
-                <label for="customerBusinessEmail">Business Email*</label>
-                <input type="email" id="customerBusinessEmail" required>
-            </div>
+            <label>Business Email*</label>
+            <input type="email" id="customerBusinessEmail" required>
 
-            <div class="form-container">
-                <label for="customerPhoneNumber">Phone Number</label>
-                <input type="text" id="customerPhoneNumber">
-            </div>
+            <label>Phone Number</label>
+            <input type="text" id="customerPhoneNumber">
 
-            <div class="form-container">
-                <label for="customerProductLines">Product Lines*</label>
-                <select id="customerProductLines" required>
-                    <option value="" disabled selected>Select a Product Line</option>
-                    <option value="Agile Consulting">Agile Consulting</option>
-                    <option value="Business Consulting">Business Consulting</option>
-                    <option value="Network Consulting">Network Consulting</option>
-                    <option value="Software Consulting">Software Consulting</option>
-                </select>
-            </div>
+            <label>Product Lines*</label>
+            <select id="customerProductLines" required>
+                <option value="" disabled selected>Select a Product Line</option>
+                <option value="Agile Consulting">Agile Consulting</option>
+                <option value="Business Consulting">Business Consulting</option>
+                <option value="Network Consulting">Network Consulting</option>
+                <option value="Software Consulting">Software Consulting</option>
+            </select>
 
-            <div class="form-container" style="grid-column: span 2;">
-                <label for="customerNotes">Interaction Notes</label>
-                <textarea id="customerNotes"></textarea>
-            </div>
+            <label>Interaction Notes</label>
+            <textarea id="customerNotes"></textarea>
         </div>
         <button type="submit">Add Customer</button>
     </form>
@@ -179,8 +192,28 @@
         <input type="text" id="searchCustomer" class="search-bar" placeholder="Search by name, email, or product line">
         <button id="searchButton" class="search-button">Search</button>
     </div>
+</div>
 
-    <div id="customerResults" class="customer-results"></div>
+<!-- Search Results Modal -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Search Results</h3>
+            <button class="close-button" onclick="closeModal('searchModal')">&times;</button>
+        </div>
+        <div id="customerResults"></div>
+    </div>
+</div>
+
+<!-- Customer Details Modal -->
+<div id="customerModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Customer Details</h3>
+            <button class="close-button" onclick="closeModal('customerModal')">&times;</button>
+        </div>
+        <div id="customerDetails"></div>
+    </div>
 </div>
 
 <div class="footer">Powered by Vital iNet</div>
@@ -197,72 +230,45 @@
             resultsContainer.innerHTML = "";
 
             if (result.message || result.length === 0) {
-                alert("No customers found.");
+                resultsContainer.innerHTML = "<p>No customers found.</p>";
                 return;
             }
 
             result.forEach(customer => {
                 const customerDiv = document.createElement("div");
                 customerDiv.innerHTML = `
-                    <p><strong>ID:</strong> <span class="customer-id" onclick="openCustomer(${customer.id})">${customer.id}</span> - <strong>${customer.first_name} ${customer.last_name}</strong></p>
+                    <p><strong>ID:</strong> <span class="customer-id" onclick="fetchCustomer(${customer.id})">${customer.id}</span> - <strong>${customer.first_name} ${customer.last_name}</strong></p>
                 `;
                 resultsContainer.appendChild(customerDiv);
             });
+
+            openModal("searchModal");
         } catch (error) {
             console.error("Error searching customers:", error);
         }
     }
 
-    document.getElementById("searchButton").addEventListener("click", () => {
-        const query = document.getElementById("searchCustomer").value.trim();
-        if (!query) {
-            alert("Please enter a search term.");
-            return;
-        }
-        fetchCustomers(query);
-    });
-
-    document.getElementById("customerForm").addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        const customerData = {
-            first_name: document.getElementById("firstName").value,
-            last_name: document.getElementById("lastName").value,
-            business_email: document.getElementById("customerBusinessEmail").value,
-            phone_number: document.getElementById("customerPhoneNumber").value,
-            product_lines: document.getElementById("customerProductLines").value,
-            notes: document.getElementById("customerNotes").value
-        };
-
-        console.log("📤 Sending Request:", customerData);
-
-        try {
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(customerData)
+    function fetchCustomer(customerId) {
+        fetch(`${API_URL}/${customerId}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("customerDetails").innerHTML = `
+                    <p><strong>Name:</strong> ${data.first_name} ${data.last_name}</p>
+                    <p><strong>Email:</strong> ${data.business_email}</p>
+                    <p><strong>Phone:</strong> ${data.phone_number || "N/A"}</p>
+                    <p><strong>Product Line:</strong> ${data.product_lines}</p>
+                    <p><strong>Notes:</strong> ${data.notes}</p>
+                `;
+                openModal("customerModal");
             });
+    }
 
-            const result = await response.json();
+    function openModal(id) {
+        document.getElementById(id).style.display = "flex";
+    }
 
-            if (!response.ok) {
-                console.error("🔴 Server Error:", result);
-                document.getElementById("errorMessage").textContent = `Error: ${result.message || "Failed to add customer."}`;
-                document.getElementById("errorMessage").style.display = "block";
-                return;
-            }
-
-            document.getElementById("successMessage").style.display = "block";
-            setTimeout(() => document.getElementById("successMessage").style.display = "none", 3000);
-
-            document.getElementById("customerForm").reset();
-        } catch (error) {
-            console.error("🔴 Fetch Error:", error);
-        }
-    });
-
-    function openCustomer(customerId) {
-        window.open(`${API_URL}/${customerId}`, "_blank");
+    function closeModal(id) {
+        document.getElementById(id).style.display = "none";
     }
 </script>
 </body>
