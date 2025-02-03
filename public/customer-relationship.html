@@ -53,7 +53,7 @@
             margin-bottom: 5px;
         }
 
-        input, textarea, button {
+        input, textarea {
             padding: 10px;
             font-size: 16px;
             border-radius: 6px;
@@ -71,6 +71,9 @@
             color: white;
             cursor: pointer;
             border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
         }
 
         button:hover {
@@ -82,11 +85,17 @@
             justify-content: center;
             align-items: center;
             margin: 20px 0;
-            gap: 10px;
+            gap: 5px;
         }
 
         .search-bar {
-            width: 50%;
+            width: 70%; /* Increased input field width */
+            padding: 10px;
+        }
+
+        .search-button {
+            padding: 8px 12px; /* Smaller button */
+            font-size: 14px;
         }
 
         .customer-list {
@@ -182,7 +191,7 @@
     <h2>Customers</h2>
     <div class="search-bar-container">
         <input type="text" id="searchCustomer" class="search-bar" placeholder="Search customers">
-        <button id="searchButton">Search</button>
+        <button id="searchButton" class="search-button">Search</button>
     </div>
 
     <div id="customerList" class="customer-list">
