@@ -58,32 +58,40 @@ app.get("/api/appointments/:id", async (req, res) => {
 });
 
 // ✅ Create a New Appointment (POST)
-app.post("/api/appointments", async (req, res) => {
-    console.log("Received POST /api/appointments");
+// ✅ Add New Appointment
+app.post(`${API_BASE_URL}/appointments`, async (req, res) => {
+    console.log("🔵 Received POST /api/appointments");
+    console.log("📩 Incoming Request Body:", req.body); // ✅ Log received data
 
-    const { title, date, location, notes, scheduled_by } = req.body;
+    const { title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes } = req.body;
 
-    if (!title || !date || !scheduled_by) {
-        return res.status(400).json({ message: "Missing required fields: title, date, scheduled_by" });
+    // ✅ Validate Required Fields
+    let missingFields = [];
+    if (!title) missingFields.push("title");
+    if (!date) missingFields.push("date");
+    if (!scheduledBy) missingFields.push("scheduled_by"); // ✅ Check required fields
+
+    if (missingFields.length > 0) {
+        console.warn("⚠️ Missing required fields:", missingFields);
+        return res.status(400).json({ message: `Missing required fields: ${missingFields.join(", ")}` });
     }
 
     try {
         const result = await pool.query(
-            `INSERT INTO appointments (title, date, location, notes, scheduled_by) 
-             VALUES ($1, $2, $3, $4, $5) RETURNING id, title, date`,
-            [title, date, location, notes, scheduled_by]
+            `INSERT INTO appointments (title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+            [title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes || ""]
         );
 
-        res.status(201).json({ 
-            message: "Appointment created successfully!", 
-            appointment: result.rows[0] 
-        });
+        console.log("🟢 Appointment Added:", result.rows[0]); // ✅ Log inserted data
+        res.status(201).json({ message: "Appointment added successfully!", appointment: result.rows[0] });
 
     } catch (error) {
-        console.error("Error adding appointment:", error);
-        res.status(500).json({ message: "Database error adding appointment" });
+        console.error("🔴 Database Error:", error); // ✅ Log full DB error
+        res.status(500).json({ message: "Database error adding appointment", error: error.message });
     }
 });
+
 
 // ----------------------------------
 // ✅ EVENTS API ROUTES
