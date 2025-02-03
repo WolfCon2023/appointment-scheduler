@@ -6,7 +6,7 @@ const { Pool } = require("pg");
 
 const app = express();
 const port = process.env.PORT || 3000;
-const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api"; // ✅ Kept the original API_BASE_URL
+const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api"; // ✅ Keep for frontend use
 
 // Middleware
 app.use(cors());
@@ -25,11 +25,11 @@ app.get("/", (req, res) => {
 });
 
 // ----------------------------------
-// ✅ TASKS API ROUTES
+// ✅ TASKS API ROUTES (Corrected)
 // ----------------------------------
 
 // ✅ Fetch All Tasks
-app.get(`${API_BASE_URL}/tasks`, async (req, res) => {
+app.get("/api/tasks", async (req, res) => {
     console.log("Received GET /api/tasks");
 
     try {
@@ -41,8 +41,8 @@ app.get(`${API_BASE_URL}/tasks`, async (req, res) => {
     }
 });
 
-// ✅ Fetch Task Details by ID
-app.get(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
+// ✅ Fetch Task by ID
+app.get("/api/tasks/:id", async (req, res) => {
     console.log(`Received GET /api/tasks/${req.params.id}`);
 
     try {
@@ -53,7 +53,7 @@ app.get(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
         }
 
         let task = result.rows[0];
-        task.deadline = task.deadline ? task.deadline.toISOString().split("T")[0] : ""; // ✅ Convert NULL to empty string
+        task.deadline = task.deadline ? task.deadline.toISOString().split("T")[0] : "";
 
         res.json(task);
     } catch (error) {
@@ -62,8 +62,8 @@ app.get(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
     }
 });
 
-// ✅ Update Task by ID (Handles NULL deadline)
-app.put(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
+// ✅ Update Task by ID
+app.put("/api/tasks/:id", async (req, res) => {
     console.log(`Received PUT /api/tasks/${req.params.id}`);
 
     const { task_name, task_description, priority, deadline, assignee, status, category, progress } = req.body;
@@ -99,8 +99,12 @@ app.put(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
     }
 });
 
+// ----------------------------------
+// ✅ APPOINTMENTS & EVENTS API ROUTES (Corrected)
+// ----------------------------------
+
 // ✅ Fetch All Appointments
-app.get(`${API_BASE_URL}/appointments`, async (req, res) => {
+app.get("/api/appointments", async (req, res) => {
     console.log("Received GET /api/appointments");
     try {
         const result = await pool.query("SELECT * FROM appointments ORDER BY date ASC");
@@ -112,7 +116,7 @@ app.get(`${API_BASE_URL}/appointments`, async (req, res) => {
 });
 
 // ✅ Fetch All Events
-app.get(`${API_BASE_URL}/events`, async (req, res) => {
+app.get("/api/events", async (req, res) => {
     console.log("Received GET /api/events");
     try {
         const result = await pool.query("SELECT * FROM events ORDER BY date ASC");
