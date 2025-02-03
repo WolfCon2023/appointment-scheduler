@@ -169,26 +169,39 @@
 
     try {
         const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`);
-        const task = await response.json();
 
         if (!response.ok) {
-            alert(task.message);
+            const errorMessage = await response.text(); // ✅ Capture actual error
+            console.error(`Error Fetching Task: ${errorMessage}`);
+            alert(`Error: ${errorMessage}`);
             return;
         }
 
-        document.getElementById("taskId").value = task.id;  // ✅ Populate Task ID
-        document.getElementById("taskName").value = task.task_name;
-        document.getElementById("taskDescription").value = task.task_description;
-        document.getElementById("taskPriority").value = task.priority;
-        document.getElementById("taskStatus").value = task.status;
-        document.getElementById("taskCategory").value = task.category;
-        document.getElementById("taskDeadline").value = task.deadline ? task.deadline.split("T")[0] : ""; 
-        document.getElementById("taskProgress").value = task.progress;
-        document.getElementById("taskAssignee").value = task.assignee;
-        
+        const task = await response.json();
+
+        // ✅ Check if the task data is properly received
+        if (!task || Object.keys(task).length === 0) {
+            console.error("Task data is empty:", task);
+            alert("Error: Task data is empty or not found.");
+            return;
+        }
+
+        console.log("🟢 Task Data Loaded:", task);
+
+        // ✅ Populate Task Form Fields
+        document.getElementById("taskId").value = task.id || "";
+        document.getElementById("taskName").value = task.task_name || "";
+        document.getElementById("taskDescription").value = task.task_description || "";
+        document.getElementById("taskPriority").value = task.priority || "Low";
+        document.getElementById("taskStatus").value = task.status || "Pending";
+        document.getElementById("taskCategory").value = task.category || "IT";
+        document.getElementById("taskDeadline").value = task.deadline ? task.deadline.split("T")[0] : "";
+        document.getElementById("taskAssignee").value = task.assignee || "";
+        document.getElementById("taskProgress").value = task.progress || 0;
+
     } catch (error) {
-        console.error("Error loading task:", error);
-        alert("Error loading task details.");
+        console.error("🔴 Error loading task:", error);
+        alert("An error occurred while loading the task details.");
     }
 }
 
