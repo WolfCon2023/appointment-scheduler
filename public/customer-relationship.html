@@ -3,155 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM Tool - Customer Management & Interaction History</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Customer Relationship Management | Business Flow</title>
+    <style>
+        /* Full Page Layout */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f7f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1, h2 {
+            color: #004080;
+            text-align: center;
+        }
+
+        .form {
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 0 auto;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input, textarea, button {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            width: 100%;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .search-bar {
+            margin: 20px 0;
+            width: 50%;
+        }
+
+        .customer-list {
+            margin-top: 20px;
+        }
+
+        .customer-card {
+            background-color: #f4f4f4;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .customer-card button {
+            margin-top: 10px;
+            background-color: #6c757d;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 700px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        /* Footer Styling */
+        .footer {
+            width: 100%;
+            height: 40px;
+            background-color: #004080;
+            color: white;
+            text-align: center;
+            line-height: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Customer Relationship Management (CRM) Tool</h1>
 
-        <form id="customerForm" aria-labelledby="form-title">
-            <h2 id="form-title">Add Customer</h2>
-            <label for="customerName">Customer Name*</label>
-            <input type="text" id="customerName" required>
+<div class="container">
+    <h1>Customer Relationship Management (CRM)</h1>
 
-            <label for="customerBusinessEmail">Business Email*</label>
-            <input type="email" id="customerBusinessEmail" required>
-
-            <label for="customerPhoneNumber">Phone Number</label>
-            <input type="text" id="customerPhoneNumber">
-
-            <label for="customerProductLines">Product Lines</label>
-            <input type="text" id="customerProductLines">
-
-            <button type="submit">Add Customer</button>
-        </form>
-
-        <h2>Customers</h2>
-        <div class="search-bar">
-            <input type="text" id="searchCustomer" placeholder="Search customers">
-        </div>
-
-        <div id="customerList" aria-live="polite">
-            <!-- Customers will be displayed here -->
-        </div>
-
-        <!-- Interaction History Modal -->
-        <div id="interactionModal" class="modal">
-            <div class="modal-content">
-                <h2>Customer Interaction History</h2>
-                <button id="closeModal">Close</button>
-                <div id="interactionList"></div>
-
-                <h3>Add New Interaction</h3>
-                <form id="interactionForm">
-                    <input type="hidden" id="interactionCustomerId">
-                    <label for="interactionNotes">Interaction Notes:</label>
-                    <textarea id="interactionNotes" required></textarea>
-                    <button type="submit">Add Interaction</button>
-                </form>
+    <form id="customerForm">
+        <h2>Add Customer</h2>
+        <div class="form">
+            <div class="form-container">
+                <label for="customerName">Customer Name*</label>
+                <input type="text" id="customerName" required>
+            </div>
+            <div class="form-container">
+                <label for="customerBusinessEmail">Business Email*</label>
+                <input type="email" id="customerBusinessEmail" required>
+            </div>
+            <div class="form-container">
+                <label for="customerPhoneNumber">Phone Number</label>
+                <input type="text" id="customerPhoneNumber">
+            </div>
+            <div class="form-container">
+                <label for="customerProductLines">Product Lines</label>
+                <input type="text" id="customerProductLines">
             </div>
         </div>
+        <button type="submit">Add Customer</button>
+    </form>
+
+    <h2>Customers</h2>
+    <input type="text" id="searchCustomer" class="search-bar" placeholder="Search customers">
+
+    <div id="customerList" class="customer-list">
+        <!-- Customer records will be displayed here -->
     </div>
 
-    <script>
-        const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/customers";
+    <!-- Interaction History Modal -->
+    <div id="interactionModal" class="modal">
+        <div class="modal-content">
+            <h2>Customer Interaction History</h2>
+            <button id="closeModal">Close</button>
+            <div id="interactionList"></div>
 
-        async function fetchCustomers(query = "") {
-            const response = await fetch(`${API_URL}?search=${query}`);
-            const customers = await response.json();
-            displayCustomers(customers);
-        }
+            <h3>Add New Interaction</h3>
+            <form id="interactionForm">
+                <input type="hidden" id="interactionCustomerId">
+                <label for="interactionNotes">Interaction Notes:</label>
+                <textarea id="interactionNotes" required></textarea>
+                <button type="submit">Add Interaction</button>
+            </form>
+        </div>
+    </div>
+</div>
 
-        function displayCustomers(customers) {
-            const customerList = document.getElementById('customerList');
-            customerList.innerHTML = "";
+<!-- Footer -->
+<div class="footer">Powered by Vital iNet</div>
 
-            customers.forEach(customer => {
-                const card = document.createElement('div');
-                card.classList.add('customer-card');
-                card.innerHTML = `
-                    <h3>${customer.customer_name}</h3>
-                    <p><strong>Email:</strong> ${customer.business_email}</p>
-                    <p><strong>Phone:</strong> ${customer.phone_number || "N/A"}</p>
-                    <p><strong>Product Lines:</strong> ${customer.product_lines || "N/A"}</p>
-                    <button onclick="viewCustomerHistory(${customer.id})">View History</button>
-                `;
-                customerList.appendChild(card);
-            });
-        }
+<script>
+    const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/customers";
 
-        function viewCustomerHistory(customerId) {
-            document.getElementById("interactionCustomerId").value = customerId;
-            fetchInteractionHistory(customerId);
-            document.getElementById("interactionModal").style.display = "block";
-        }
+    async function fetchCustomers(query = "") {
+        const response = await fetch(`${API_URL}?search=${query}`);
+        const customers = await response.json();
+        displayCustomers(customers);
+    }
 
-        async function fetchInteractionHistory(customerId) {
-            const response = await fetch(`${API_URL}/${customerId}/interactions`);
-            const interactions = await response.json();
-            const interactionList = document.getElementById("interactionList");
-            interactionList.innerHTML = interactions.map(interaction => `
-                <div class="interaction-card">
-                    <p><strong>Date:</strong> ${interaction.contact_date}</p>
-                    <p><strong>Notes:</strong> ${interaction.notes}</p>
-                </div>
-            `).join("");
-        }
+    function displayCustomers(customers) {
+        const customerList = document.getElementById('customerList');
+        customerList.innerHTML = "";
 
-        document.getElementById("customerForm").addEventListener("submit", async (event) => {
-            event.preventDefault();
+        customers.forEach(customer => {
+            const card = document.createElement('div');
+            card.classList.add('customer-card');
+            card.innerHTML = `
+                <h3>${customer.customer_name}</h3>
+                <p><strong>Email:</strong> ${customer.business_email}</p>
+                <p><strong>Phone:</strong> ${customer.phone_number || "N/A"}</p>
+                <p><strong>Product Lines:</strong> ${customer.product_lines || "N/A"}</p>
+                <button onclick="viewCustomerHistory(${customer.id})">View History</button>
+            `;
+            customerList.appendChild(card);
+        });
+    }
 
-            const customerData = {
-                customer_name: document.getElementById("customerName").value,
-                business_email: document.getElementById("customerBusinessEmail").value,
-                phone_number: document.getElementById("customerPhoneNumber").value,
-                product_lines: document.getElementById("customerProductLines").value
-            };
+    function viewCustomerHistory(customerId) {
+        document.getElementById("interactionCustomerId").value = customerId;
+        fetchInteractionHistory(customerId);
+        document.getElementById("interactionModal").style.display = "flex";
+    }
 
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(customerData)
-            });
+    async function fetchInteractionHistory(customerId) {
+        const response = await fetch(`${API_URL}/${customerId}/interactions`);
+        const interactions = await response.json();
+        const interactionList = document.getElementById("interactionList");
+        interactionList.innerHTML = interactions.map(interaction => `
+            <div class="interaction-card">
+                <p><strong>Date:</strong> ${interaction.contact_date}</p>
+                <p><strong>Notes:</strong> ${interaction.notes}</p>
+            </div>
+        `).join("");
+    }
 
-            if (response.ok) {
-                fetchCustomers();
-                document.getElementById("customerForm").reset();
-            } else {
-                alert("Failed to add customer.");
-            }
+    document.getElementById("customerForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const customerData = {
+            customer_name: document.getElementById("customerName").value,
+            business_email: document.getElementById("customerBusinessEmail").value,
+            phone_number: document.getElementById("customerPhoneNumber").value,
+            product_lines: document.getElementById("customerProductLines").value
+        };
+
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(customerData)
         });
 
-        document.getElementById("interactionForm").addEventListener("submit", async (event) => {
-            event.preventDefault();
+        if (response.ok) {
+            fetchCustomers();
+            document.getElementById("customerForm").reset();
+        } else {
+            alert("Failed to add customer.");
+        }
+    });
 
-            const customerId = document.getElementById("interactionCustomerId").value;
-            const notes = document.getElementById("interactionNotes").value;
+    document.getElementById("closeModal").addEventListener("click", () => {
+        document.getElementById("interactionModal").style.display = "none";
+    });
 
-            const response = await fetch(`${API_URL}/${customerId}/interactions`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ notes })
-            });
-
-            if (response.ok) {
-                fetchInteractionHistory(customerId);
-                document.getElementById("interactionNotes").value = "";
-            } else {
-                alert("Failed to add interaction.");
-            }
-        });
-
-        document.getElementById("searchCustomer").addEventListener("input", (event) => {
-            fetchCustomers(event.target.value);
-        });
-
-        document.getElementById("closeModal").addEventListener("click", () => {
-            document.getElementById("interactionModal").style.display = "none";
-        });
-
-        fetchCustomers();
-    </script>
+    fetchCustomers();
+</script>
 </body>
 </html>
