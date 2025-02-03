@@ -77,8 +77,15 @@
             background-color: #0056b3;
         }
 
-        .search-bar {
+        .search-bar-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin: 20px 0;
+            gap: 10px;
+        }
+
+        .search-bar {
             width: 50%;
         }
 
@@ -173,7 +180,10 @@
     </form>
 
     <h2>Customers</h2>
-    <input type="text" id="searchCustomer" class="search-bar" placeholder="Search customers">
+    <div class="search-bar-container">
+        <input type="text" id="searchCustomer" class="search-bar" placeholder="Search customers">
+        <button id="searchButton">Search</button>
+    </div>
 
     <div id="customerList" class="customer-list">
         <!-- Customer records will be displayed here -->
@@ -245,9 +255,8 @@
         `).join("");
     }
 
-    document.getElementById("customerForm").addEventListener("submit", async (event) => {
-        event.preventDefault();
-        fetchCustomers();
+    document.getElementById("searchButton").addEventListener("click", () => {
+        fetchCustomers(document.getElementById("searchCustomer").value);
     });
 
     document.getElementById("closeModal").addEventListener("click", () => {
