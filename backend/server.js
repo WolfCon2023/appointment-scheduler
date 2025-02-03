@@ -61,17 +61,17 @@ app.get("/api/appointments/:id", async (req, res) => {
 app.post("/api/appointments", async (req, res) => {
     console.log("Received POST /api/appointments");
 
-    const { title, date, location, notes, scheduledBy } = req.body;
+    const { title, date, location, notes, scheduled_by } = req.body;
 
-    if (!title || !date || !scheduledBy) {
-        return res.status(400).json({ message: "Missing required fields: title, date, scheduledBy" });
+    if (!title || !date || !scheduled_by) {
+        return res.status(400).json({ message: "Missing required fields: title, date, scheduled_by" });
     }
 
     try {
         const result = await pool.query(
-            `INSERT INTO appointments (title, date, location, notes, scheduledBy) 
+            `INSERT INTO appointments (title, date, location, notes, scheduled_by) 
              VALUES ($1, $2, $3, $4, $5) RETURNING id, title, date`,
-            [title, date, location, notes, scheduledBy]
+            [title, date, location, notes, scheduled_by]
         );
 
         res.status(201).json({ 
