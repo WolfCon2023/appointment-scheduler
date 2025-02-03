@@ -106,6 +106,9 @@
             border-radius: 6px;
             margin-top: 15px;
             display: none;
+            width: 100%;
+            font-size: 14px;
+            font-weight: bold;
         }
 
         .success-message {
@@ -161,37 +164,27 @@
         <h2>Add Customer</h2>
         <div class="form">
             <div class="form-container">
-                <label for="firstName">First Name* 
-                    <span class="help-icon" title="Enter the customer's first name.">?</span>
-                </label>
+                <label for="firstName">First Name* <span class="help-icon" title="Enter the customer's first name.">?</span></label>
                 <input type="text" id="firstName" required>
             </div>
 
             <div class="form-container">
-                <label for="lastName">Last Name* 
-                    <span class="help-icon" title="Enter the customer's last name.">?</span>
-                </label>
+                <label for="lastName">Last Name* <span class="help-icon" title="Enter the customer's last name.">?</span></label>
                 <input type="text" id="lastName" required>
             </div>
 
             <div class="form-container">
-                <label for="customerBusinessEmail">Business Email* 
-                    <span class="help-icon" title="Enter the customer's business email address.">?</span>
-                </label>
+                <label for="customerBusinessEmail">Business Email* <span class="help-icon" title="Enter the customer's business email address.">?</span></label>
                 <input type="email" id="customerBusinessEmail" required>
             </div>
 
             <div class="form-container">
-                <label for="customerPhoneNumber">Phone Number 
-                    <span class="help-icon" title="Enter the customer's phone number.">?</span>
-                </label>
+                <label for="customerPhoneNumber">Phone Number <span class="help-icon" title="Enter the customer's phone number.">?</span></label>
                 <input type="text" id="customerPhoneNumber">
             </div>
 
             <div class="form-container">
-                <label for="customerProductLines">Product Lines* 
-                    <span class="help-icon" title="Select the product or service the customer is interested in.">?</span>
-                </label>
+                <label for="customerProductLines">Product Lines* <span class="help-icon" title="Select the product or service the customer is interested in.">?</span></label>
                 <select id="customerProductLines" required>
                     <option value="" disabled selected>Select a Product Line</option>
                     <option value="Agile Consulting">Agile Consulting</option>
@@ -202,23 +195,16 @@
             </div>
 
             <div class="form-container" style="grid-column: span 2;">
-                <label for="customerNotes">Interaction Notes 
-                    <span class="help-icon" title="Enter any additional notes about this customer.">?</span>
-                </label>
+                <label for="customerNotes">Interaction Notes <span class="help-icon" title="Enter any additional notes about this customer.">?</span></label>
                 <textarea id="customerNotes"></textarea>
             </div>
         </div>
         <button type="submit">Add Customer</button>
     </form>
 
-    <div id="successMessage" class="success-message">Customer has been successfully added.</div>
-    <div id="errorMessage" class="error-message"></div>
+    <div id="successMessage" class="success-message" role="alert">Customer has been successfully added.</div>
+    <div id="errorMessage" class="error-message" role="alert"></div>
 
-    <h2>Search Customers</h2>
-    <div class="search-bar-container">
-        <input type="text" id="searchCustomer" class="search-bar" placeholder="Search by name, email, or product line">
-        <button id="searchButton" class="search-button">Search</button>
-    </div>
 </div>
 
 <div class="footer">Powered by Vital iNet</div>
@@ -230,12 +216,12 @@
         event.preventDefault();
 
         const customerData = {
-            first_name: document.getElementById("firstName").value,
-            last_name: document.getElementById("lastName").value,
-            business_email: document.getElementById("customerBusinessEmail").value,
-            phone_number: document.getElementById("customerPhoneNumber").value,
+            first_name: document.getElementById("firstName").value.trim(),
+            last_name: document.getElementById("lastName").value.trim(),
+            business_email: document.getElementById("customerBusinessEmail").value.trim(),
+            phone_number: document.getElementById("customerPhoneNumber").value.trim(),
             product_lines: document.getElementById("customerProductLines").value,
-            notes: document.getElementById("customerNotes").value
+            notes: document.getElementById("customerNotes").value.trim()
         };
 
         console.log("📤 Sending Request:", customerData);
@@ -247,16 +233,24 @@
                 body: JSON.stringify(customerData)
             });
 
+            const result = await response.json();
+
             if (!response.ok) {
+                console.error("🔴 Server Error:", result);
+                document.getElementById("errorMessage").textContent = `Error: ${result.message || "Failed to add customer."}`;
                 document.getElementById("errorMessage").style.display = "block";
                 return;
             }
 
             document.getElementById("successMessage").style.display = "block";
+            document.getElementById("errorMessage").style.display = "none";
+
             setTimeout(() => document.getElementById("successMessage").style.display = "none", 3000);
             document.getElementById("customerForm").reset();
         } catch (error) {
-            console.error("🔴 Error:", error);
+            console.error("🔴 Fetch Error:", error);
+            document.getElementById("errorMessage").textContent = "Network error. Please try again.";
+            document.getElementById("errorMessage").style.display = "block";
         }
     });
 </script>
