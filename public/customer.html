@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Details | CRM</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 50%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #004080;
+        }
+
+        .details p {
+            font-size: 18px;
+            margin: 8px 0;
+        }
+
+        .back-button {
+            margin-top: 20px;
+            padding: 10px 16px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Customer Details</h1>
+        <div id="customerDetails" class="details">
+            <p>Loading customer details...</p>
+        </div>
+        <button class="back-button" onclick="goBack()">← Back</button>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const customerId = params.get("id");
+
+        async function fetchCustomerDetails() {
+            if (!customerId) {
+                document.getElementById("customerDetails").innerHTML = "<p>Error: No customer ID provided.</p>";
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://vital-backoffice-apps-production-8f97.up.railway.app/api/customers/${customerId}`);
+                const customer = await response.json();
+
+                document.getElementById("customerDetails").innerHTML = `
+                    <p><strong>First Name:</strong> ${customer.first_name}</p>
+                    <p><strong>Last Name:</strong> ${customer.last_name}</p>
+                    <p><strong>Email:</strong> ${customer.business_email}</p>
+                    <p><strong>Phone Number:</strong> ${customer.phone_number || "N/A"}</p>
+                    <p><strong>Product Line:</strong> ${customer.product_lines}</p>
+                    <p><strong>Notes:</strong> ${customer.notes || "No notes available"}</p>
+                    <p><strong>Created At:</strong> ${new Date(customer.created_at).toLocaleString()}</p>
+                `;
+            } catch (error) {
+                console.error("🔴 Error fetching customer details:", error);
+                document.getElementById("customerDetails").innerHTML = "<p>Error fetching customer details.</p>";
+            }
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        fetchCustomerDetails();
+    </script>
+
+</body>
+</html>
