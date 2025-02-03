@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Relationship Management | Business Flow</title>
     <style>
-        /* Full Page Layout */
         html, body {
             height: 100%;
             margin: 0;
@@ -51,8 +50,6 @@
         label {
             font-weight: bold;
             margin-bottom: 5px;
-            display: flex;
-            align-items: center;
         }
 
         input, textarea, select {
@@ -102,7 +99,6 @@
             display: none;
         }
 
-        /* Footer Styling */
         .footer {
             width: 100%;
             height: 40px;
@@ -161,14 +157,9 @@
     </form>
 
     <div id="successMessage" class="success-message">Customer has been successfully added.</div>
-    <div id="errorMessage" class="error-message">Failed to add customer. Please try again.</div>
+    <div id="errorMessage" class="error-message"></div>
 
     <h2>Customers</h2>
-    <div class="search-bar-container">
-        <input type="text" id="searchCustomer" class="search-bar" placeholder="Search customers">
-        <button id="searchButton" class="search-button">Search</button>
-    </div>
-
     <div id="customerList">
         <!-- Customer records will be displayed here -->
     </div>
@@ -180,9 +171,9 @@
 <script>
     const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/customers";
 
-    async function fetchCustomers(query = "") {
+    async function fetchCustomers() {
         try {
-            const response = await fetch(`${API_URL}?search=${query}`);
+            const response = await fetch(API_URL);
             if (!response.ok) throw new Error("Failed to fetch customers");
             const customers = await response.json();
             displayCustomers(customers);
@@ -208,10 +199,6 @@
         });
     }
 
-    document.getElementById("searchButton").addEventListener("click", () => {
-        fetchCustomers(document.getElementById("searchCustomer").value);
-    });
-
     document.getElementById("customerForm").addEventListener("submit", async (event) => {
         event.preventDefault();
 
@@ -223,6 +210,8 @@
             notes: document.getElementById("customerNotes").value
         };
 
+        console.log("📤 Sending Request:", customerData); // ✅ Debugging
+
         try {
             const response = await fetch(API_URL, {
                 method: "POST",
@@ -230,23 +219,26 @@
                 body: JSON.stringify(customerData)
             });
 
+            const result = await response.json();
+
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Error Response:", errorData);
+                console.error("🔴 Server Error:", result);
+                document.getElementById("errorMessage").textContent = `Error: ${result.message || "Failed to add customer."}`;
                 document.getElementById("errorMessage").style.display = "block";
-                setTimeout(() => document.getElementById("errorMessage").style.display = "none", 3000);
+                setTimeout(() => document.getElementById("errorMessage").style.display = "none", 5000);
                 return;
             }
 
+            console.log("🟢 Customer Added:", result);
             document.getElementById("successMessage").style.display = "block";
             setTimeout(() => document.getElementById("successMessage").style.display = "none", 3000);
 
             fetchCustomers();
             document.getElementById("customerForm").reset();
         } catch (error) {
-            console.error("Error adding customer:", error);
+            console.error("🔴 Fetch Error:", error);
+            document.getElementById("errorMessage").textContent = "Network error. Please try again.";
             document.getElementById("errorMessage").style.display = "block";
-            setTimeout(() => document.getElementById("errorMessage").style.display = "none", 3000);
         }
     });
 
