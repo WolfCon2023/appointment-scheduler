@@ -171,62 +171,69 @@
     const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
 
     async function searchTasks() {
-        const taskId = document.getElementById("taskId").value;
-        const priority = document.getElementById("taskPriority").value;
-        const status = document.getElementById("taskStatus").value;
-        const category = document.getElementById("taskCategory").value;
-        const deadline = document.getElementById("taskDeadline").value;
+    const taskId = document.getElementById("taskId").value;
+    const priority = document.getElementById("taskPriority").value;
+    const status = document.getElementById("taskStatus").value;
+    const category = document.getElementById("taskCategory").value;
+    const deadline = document.getElementById("taskDeadline").value;
 
-        let queryParams = `?priority=${priority}&status=${status}&category=${category}&deadline=${deadline}`;
-        if (taskId) queryParams = `?id=${taskId}`;
+    let queryParams = [];
+    if (taskId) queryParams.push(`id=${encodeURIComponent(taskId)}`);
+    if (priority) queryParams.push(`priority=${encodeURIComponent(priority)}`);
+    if (status) queryParams.push(`status=${encodeURIComponent(status)}`);
+    if (category) queryParams.push(`category=${encodeURIComponent(category)}`);
+    if (deadline) queryParams.push(`deadline=${encodeURIComponent(deadline)}`);
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/tasks${queryParams}`);
-            const tasks = await response.json();
-            const resultsTable = document.getElementById("searchResults");
+    let queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
 
-            resultsTable.innerHTML = tasks.length > 0
-                ? tasks.map(task => `
-                    <tr>
-                        <td><a href="task-details.html?id=${task.id}" style="color:blue; text-decoration:underline;">${task.id}</a></td>
-                        <td>${task.task_name}</td>
-                        <td>${task.priority}</td>
-                        <td>${task.status}</td>
-                        <td>${task.category}</td>
-                        <td>${task.deadline}</td>
-                    </tr>
-                `).join("")
-                : `<tr><td colspan="6" style="text-align:center;">No Records Found</td></tr>`;
+    try {
+        const response = await fetch(`${API_BASE_URL}/tasks${queryString}`);
+        const tasks = await response.json();
+        const resultsTable = document.getElementById("searchResults");
 
-        } catch (error) {
-            console.error("Error fetching tasks:", error);
-            alert("Error retrieving search results.");
-        }
+        resultsTable.innerHTML = tasks.length > 0
+            ? tasks.map(task => `
+                <tr>
+                    <td><a href="task-details.html?id=${task.id}" style="color:blue; text-decoration:underline;">${task.id}</a></td>
+                    <td>${task.task_name}</td>
+                    <td>${task.priority}</td>
+                    <td>${task.status}</td>
+                    <td>${task.category}</td>
+                    <td>${task.deadline}</td>
+                </tr>
+            `).join("")
+            : `<tr><td colspan="6" style="text-align:center;">No Records Found</td></tr>`;
+
+    } catch (error) {
+        console.error("Error fetching tasks:", error);
+        alert("Error retrieving search results.");
     }
+}
 
     async function loadIncompleteTasks() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/tasks?status=Pending,In Progress&limit=25`);
-            const tasks = await response.json();
+    try {
+        const response = await fetch(`${API_BASE_URL}/tasks?status=Pending,In%20Progress&limit=25`);
+        const tasks = await response.json();
 
-            const taskTable = document.getElementById("taskList");
-            taskTable.innerHTML = tasks.length > 0
-                ? tasks.map(task => `
-                    <tr>
-                        <td><a href="task-details.html?id=${task.id}" style="color:blue; text-decoration:underline;">${task.id}</a></td>
-                        <td>${task.task_name}</td>
-                        <td>${task.priority}</td>
-                        <td>${task.status}</td>
-                        <td>${task.category}</td>
-                        <td>${task.deadline}</td>
-                    </tr>
-                `).join("")
-                : `<tr><td colspan="6" style="text-align:center;">No Open Tasks</td></tr>`;
+        const taskTable = document.getElementById("taskList");
+        taskTable.innerHTML = tasks.length > 0
+            ? tasks.map(task => `
+                <tr>
+                    <td><a href="task-details.html?id=${task.id}" style="color:blue; text-decoration:underline;">${task.id}</a></td>
+                    <td>${task.task_name}</td>
+                    <td>${task.priority}</td>
+                    <td>${task.status}</td>
+                    <td>${task.category}</td>
+                    <td>${task.deadline}</td>
+                </tr>
+            `).join("")
+            : `<tr><td colspan="6" style="text-align:center;">No Open Tasks</td></tr>`;
 
-        } catch (error) {
-            console.error("Error fetching tasks:", error);
-        }
+    } catch (error) {
+        console.error("Error fetching tasks:", error);
     }
+}
+
 
     loadIncompleteTasks();
 </script>
