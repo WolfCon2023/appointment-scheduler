@@ -262,7 +262,7 @@ addAppointmentButton.addEventListener('click', async () => {
     const scheduledBy = document.getElementById('scheduledBy').value.trim();
     const notes = document.getElementById('appointmentNotes').value.trim();
 
-    // ✅ Debug: Log the data before sending
+    // ✅ Log request before sending
     console.log("📤 Sending Data:", { title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes });
 
     // **Check Required Fields**
@@ -286,31 +286,43 @@ addAppointmentButton.addEventListener('click', async () => {
             body: JSON.stringify(newAppointment)
         });
 
-        const result = await response.json();
+        // ✅ Check if response is valid JSON
+        let result;
+        try {
+            result = await response.json();
+        } catch (parseError) {
+            console.error("🔴 Failed to parse JSON response", parseError);
+            alert("Error: Received an invalid server response.");
+            return;
+        }
+
         console.log("🟢 Server Response:", result);
 
-        if (response.ok) {
-            alert("Appointment added successfully!");
-            await updateCalendarEvents();
-
-            // **Clear Form Fields After Successful Submission**
-            document.getElementById('appointmentTitle').value = "";
-            document.getElementById('appointmentDate').value = "";
-            document.getElementById('appointmentLocation').value = "";
-            document.getElementById('contactName').value = "";
-            document.getElementById('contactPhoneNumber').value = "";
-            document.getElementById('contactEmail').value = "";
-            document.getElementById('scheduledBy').value = "";
-            document.getElementById('appointmentNotes').value = "";
-
-        } else {
-            alert(`Failed to add appointment: ${result.message}`);
+        if (!response.ok) {
+            console.error("🔴 Server Error:", result);
+            alert(`Failed to add appointment: ${result.message || "Unknown error occurred"}`);
+            return;
         }
+
+        alert("Appointment added successfully!");
+        await updateCalendarEvents();
+
+        // ✅ Clear Form Fields
+        document.getElementById('appointmentTitle').value = "";
+        document.getElementById('appointmentDate').value = "";
+        document.getElementById('appointmentLocation').value = "";
+        document.getElementById('contactName').value = "";
+        document.getElementById('contactPhoneNumber').value = "";
+        document.getElementById('contactEmail').value = "";
+        document.getElementById('scheduledBy').value = "";
+        document.getElementById('appointmentNotes').value = "";
+
     } catch (error) {
         console.error("🔴 Error:", error);
-        alert("Error adding appointment. Please check your internet connection.");
+        alert(`Error adding appointment: ${error.message || "Unknown error"}`);
     }
 });
+
     });
 </script>
 </body>
