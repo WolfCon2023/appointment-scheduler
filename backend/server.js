@@ -77,7 +77,7 @@ app.post("/api/appointments", async (req, res) => { // ✅ Corrected Route Defin
 
     try {
         const result = await pool.query(
-            `INSERT INTO appointments (title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes) 
+            `INSERT INTO appointments (title, date, location, contact_name, contact_phone, contact_email, scheduled_by, notes) 
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
             [title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes || ""]
         );
