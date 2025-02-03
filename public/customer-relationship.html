@@ -173,46 +173,47 @@
     <h1>Customer Relationship Management (CRM)</h1>
 
     <form id="customerForm">
-        <h2>Add Customer</h2>
-        <div class="form">
-            <div class="form-container">
-                <label for="firstName">First Name*</label>
-                <input type="text" id="firstName" required>
-            </div>
-
-            <div class="form-container">
-                <label for="lastName">Last Name*</label>
-                <input type="text" id="lastName" required>
-            </div>
-
-            <div class="form-container">
-                <label for="customerBusinessEmail">Business Email*</label>
-                <input type="email" id="customerBusinessEmail" required>
-            </div>
-
-            <div class="form-container">
-                <label for="customerPhoneNumber">Phone Number</label>
-                <input type="text" id="customerPhoneNumber">
-            </div>
-
-            <div class="form-container">
-                <label for="customerProductLines">Product Lines*</label>
-                <select id="customerProductLines" required>
-                    <option value="" disabled selected>Select a Product Line</option>
-                    <option value="Agile Consulting">Agile Consulting</option>
-                    <option value="Business Consulting">Business Consulting</option>
-                    <option value="Network Consulting">Network Consulting</option>
-                    <option value="Software Consulting">Software Consulting</option>
-                </select>
-            </div>
-
-            <div class="form-container" style="grid-column: span 2;">
-                <label for="customerNotes">Interaction Notes</label>
-                <textarea id="customerNotes"></textarea>
-            </div>
+    <h2>Add Customer</h2>
+    <div class="form">
+        <div class="form-container">
+            <label for="firstName">First Name*</label>
+            <input type="text" id="firstName" required>
         </div>
-        <button type="submit">Add Customer</button>
-    </form>
+
+        <div class="form-container">
+            <label for="lastName">Last Name*</label>
+            <input type="text" id="lastName" required>
+        </div>
+
+        <div class="form-container">
+            <label for="customerBusinessEmail">Business Email*</label>
+            <input type="email" id="customerBusinessEmail" required>
+        </div>
+
+        <div class="form-container">
+            <label for="customerPhoneNumber">Phone Number</label>
+            <input type="text" id="customerPhoneNumber">
+        </div>
+
+        <div class="form-container">
+            <label for="customerProductLines">Product Lines*</label>
+            <select id="customerProductLines" required>
+                <option value="" disabled selected>Select a Product Line</option>
+                <option value="Agile Consulting">Agile Consulting</option>
+                <option value="Business Consulting">Business Consulting</option>
+                <option value="Network Consulting">Network Consulting</option>
+                <option value="Software Consulting">Software Consulting</option>
+            </select>
+        </div>
+
+        <div class="form-container" style="grid-column: span 2;">
+            <label for="customerNotes">Interaction Notes</label>
+            <textarea id="customerNotes"></textarea>
+        </div>
+    </div>
+    <button type="submit">Add Customer</button>
+</form>
+
 
     <div id="successMessage" class="success-message">Customer has been successfully added.</div>
     <div id="errorMessage" class="error-message"></div>
