@@ -400,6 +400,10 @@ app.post("/api/customers/:id/interactions", async (req, res) => {
     }
 });
 
+// ✅ FUNCTION TO OPEN CUSTOMER DETAILS IN A NEW PAGE
+function fetchCustomer(customerId) {
+    window.open(`customer.html?id=${customerId}`, "_blank");
+}
 
 
 // ----------------------------------
