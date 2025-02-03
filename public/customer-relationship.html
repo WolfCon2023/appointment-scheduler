@@ -112,13 +112,23 @@
         }
 
         .search-bar {
-            width: 70%; /* Increased input field width */
+            width: 70%;
             padding: 10px;
         }
 
         .search-button {
-            padding: 8px 12px; /* Smaller button */
+            padding: 8px 12px;
             font-size: 14px;
+        }
+
+        /* Success Message */
+        .success-message {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: none;
         }
 
         /* Footer Styling */
@@ -189,6 +199,8 @@
         <button type="submit">Add Customer</button>
     </form>
 
+    <div id="successMessage" class="success-message">Customer has been successfully added.</div>
+
     <h2>Customers</h2>
     <div class="search-bar-container">
         <input type="text" id="searchCustomer" class="search-bar" placeholder="Search customers">
@@ -236,27 +248,17 @@
     document.getElementById("customerForm").addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        const productLine = document.getElementById("customerProductLines").value;
-        if (!productLine) {
-            alert("Please select a Product Line.");
-            return;
-        }
-
-        const customerData = {
-            customer_name: document.getElementById("customerName").value,
-            business_email: document.getElementById("customerBusinessEmail").value,
-            phone_number: document.getElementById("customerPhoneNumber").value,
-            product_lines: productLine,
-            notes: document.getElementById("customerNotes").value
-        };
-
         const response = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(customerData)
+            body: new FormData(event.target)
         });
 
         if (response.ok) {
+            document.getElementById("successMessage").style.display = "block";
+            setTimeout(() => {
+                document.getElementById("successMessage").style.display = "none";
+            }, 3000);
             fetchCustomers();
             document.getElementById("customerForm").reset();
         } else {
