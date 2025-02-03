@@ -32,6 +32,28 @@
             color: #004080;
         }
 
+        .form {
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 0 auto;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
         input, select, textarea {
             padding: 10px;
             font-size: 16px;
@@ -41,7 +63,9 @@
         }
 
         textarea {
-            height: 80px;
+            height: 120px;
+            resize: vertical;
+            grid-column: span 2;
         }
 
         button {
@@ -56,6 +80,25 @@
 
         button:hover {
             background-color: #0056b3;
+        }
+
+        /* Help Icons */
+        .help-icon {
+            margin-left: 5px;
+            font-size: 14px;
+            color: #007bff;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #e7f0fe;
+        }
+
+        .help-icon:hover {
+            background-color: #cce0ff;
         }
 
         .success-message, .error-message {
@@ -94,46 +137,6 @@
             font-size: 14px;
         }
 
-        /* Modals */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            width: 90%;
-            max-width: 600px;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            text-align: left;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
-
-        .close-button {
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
         .footer {
             width: 100%;
             height: 40px;
@@ -157,29 +160,53 @@
     <form id="customerForm">
         <h2>Add Customer</h2>
         <div class="form">
-            <label>First Name*</label>
-            <input type="text" id="firstName" required>
+            <div class="form-container">
+                <label for="firstName">First Name* 
+                    <span class="help-icon" title="Enter the customer's first name.">?</span>
+                </label>
+                <input type="text" id="firstName" required>
+            </div>
 
-            <label>Last Name*</label>
-            <input type="text" id="lastName" required>
+            <div class="form-container">
+                <label for="lastName">Last Name* 
+                    <span class="help-icon" title="Enter the customer's last name.">?</span>
+                </label>
+                <input type="text" id="lastName" required>
+            </div>
 
-            <label>Business Email*</label>
-            <input type="email" id="customerBusinessEmail" required>
+            <div class="form-container">
+                <label for="customerBusinessEmail">Business Email* 
+                    <span class="help-icon" title="Enter the customer's business email address.">?</span>
+                </label>
+                <input type="email" id="customerBusinessEmail" required>
+            </div>
 
-            <label>Phone Number</label>
-            <input type="text" id="customerPhoneNumber">
+            <div class="form-container">
+                <label for="customerPhoneNumber">Phone Number 
+                    <span class="help-icon" title="Enter the customer's phone number.">?</span>
+                </label>
+                <input type="text" id="customerPhoneNumber">
+            </div>
 
-            <label>Product Lines*</label>
-            <select id="customerProductLines" required>
-                <option value="" disabled selected>Select a Product Line</option>
-                <option value="Agile Consulting">Agile Consulting</option>
-                <option value="Business Consulting">Business Consulting</option>
-                <option value="Network Consulting">Network Consulting</option>
-                <option value="Software Consulting">Software Consulting</option>
-            </select>
+            <div class="form-container">
+                <label for="customerProductLines">Product Lines* 
+                    <span class="help-icon" title="Select the product or service the customer is interested in.">?</span>
+                </label>
+                <select id="customerProductLines" required>
+                    <option value="" disabled selected>Select a Product Line</option>
+                    <option value="Agile Consulting">Agile Consulting</option>
+                    <option value="Business Consulting">Business Consulting</option>
+                    <option value="Network Consulting">Network Consulting</option>
+                    <option value="Software Consulting">Software Consulting</option>
+                </select>
+            </div>
 
-            <label>Interaction Notes</label>
-            <textarea id="customerNotes"></textarea>
+            <div class="form-container" style="grid-column: span 2;">
+                <label for="customerNotes">Interaction Notes 
+                    <span class="help-icon" title="Enter any additional notes about this customer.">?</span>
+                </label>
+                <textarea id="customerNotes"></textarea>
+            </div>
         </div>
         <button type="submit">Add Customer</button>
     </form>
@@ -194,82 +221,44 @@
     </div>
 </div>
 
-<!-- Search Results Modal -->
-<div id="searchModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Search Results</h3>
-            <button class="close-button" onclick="closeModal('searchModal')">&times;</button>
-        </div>
-        <div id="customerResults"></div>
-    </div>
-</div>
-
-<!-- Customer Details Modal -->
-<div id="customerModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Customer Details</h3>
-            <button class="close-button" onclick="closeModal('customerModal')">&times;</button>
-        </div>
-        <div id="customerDetails"></div>
-    </div>
-</div>
-
 <div class="footer">Powered by Vital iNet</div>
 
 <script>
     const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/customers";
 
-    async function fetchCustomers(query = "") {
+    document.getElementById("customerForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const customerData = {
+            first_name: document.getElementById("firstName").value,
+            last_name: document.getElementById("lastName").value,
+            business_email: document.getElementById("customerBusinessEmail").value,
+            phone_number: document.getElementById("customerPhoneNumber").value,
+            product_lines: document.getElementById("customerProductLines").value,
+            notes: document.getElementById("customerNotes").value
+        };
+
+        console.log("📤 Sending Request:", customerData);
+
         try {
-            const response = await fetch(`${API_URL}?search=${query}`);
-            const result = await response.json();
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(customerData)
+            });
 
-            const resultsContainer = document.getElementById("customerResults");
-            resultsContainer.innerHTML = "";
-
-            if (result.message || result.length === 0) {
-                resultsContainer.innerHTML = "<p>No customers found.</p>";
+            if (!response.ok) {
+                document.getElementById("errorMessage").style.display = "block";
                 return;
             }
 
-            result.forEach(customer => {
-                const customerDiv = document.createElement("div");
-                customerDiv.innerHTML = `
-                    <p><strong>ID:</strong> <span class="customer-id" onclick="fetchCustomer(${customer.id})">${customer.id}</span> - <strong>${customer.first_name} ${customer.last_name}</strong></p>
-                `;
-                resultsContainer.appendChild(customerDiv);
-            });
-
-            openModal("searchModal");
+            document.getElementById("successMessage").style.display = "block";
+            setTimeout(() => document.getElementById("successMessage").style.display = "none", 3000);
+            document.getElementById("customerForm").reset();
         } catch (error) {
-            console.error("Error searching customers:", error);
+            console.error("🔴 Error:", error);
         }
-    }
-
-    function fetchCustomer(customerId) {
-        fetch(`${API_URL}/${customerId}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("customerDetails").innerHTML = `
-                    <p><strong>Name:</strong> ${data.first_name} ${data.last_name}</p>
-                    <p><strong>Email:</strong> ${data.business_email}</p>
-                    <p><strong>Phone:</strong> ${data.phone_number || "N/A"}</p>
-                    <p><strong>Product Line:</strong> ${data.product_lines}</p>
-                    <p><strong>Notes:</strong> ${data.notes}</p>
-                `;
-                openModal("customerModal");
-            });
-    }
-
-    function openModal(id) {
-        document.getElementById(id).style.display = "flex";
-    }
-
-    function closeModal(id) {
-        document.getElementById(id).style.display = "none";
-    }
+    });
 </script>
 </body>
 </html>
