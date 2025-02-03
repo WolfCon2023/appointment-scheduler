@@ -231,40 +231,51 @@
 <script>
     const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/customers";
 
-    document.getElementById("searchButton").addEventListener("click", async () => {
-        const query = document.getElementById("searchCustomer").value.trim();
-        if (!query) {
-            alert("Please enter a search term.");
-            return;
-        }
+    document.getElementById("customerForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const customerData = {
+            first_name: document.getElementById("firstName").value.trim(),
+            last_name: document.getElementById("lastName").value.trim(),
+            business_email: document.getElementById("customerBusinessEmail").value.trim(),
+            phone_number: document.getElementById("customerPhoneNumber").value.trim(),
+            product_lines: document.getElementById("customerProductLines").value,
+            notes: document.getElementById("customerNotes").value.trim()
+        };
+
+        console.log("📤 Sending Request:", customerData);
 
         try {
-            const response = await fetch(`${API_URL}?search=${query}`);
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(customerData)
+            });
+
             const result = await response.json();
+            console.log("🔵 Server Response:", result);
 
-            const resultsContainer = document.getElementById("customerResults");
-            resultsContainer.innerHTML = "";
-
-            if (result.message || result.length === 0) {
-                alert("No customers found.");
+            if (!response.ok) {
+                console.error("🔴 Error from server:", result);
+                document.getElementById("errorMessage").textContent = `Error: ${result.message || "Failed to add customer."}`;
+                document.getElementById("errorMessage").style.display = "block";
                 return;
             }
 
-            result.forEach(customer => {
-                const customerDiv = document.createElement("div");
-                customerDiv.innerHTML = `
-                    <p><strong>ID:</strong> <span class="customer-id" onclick="fetchCustomer(${customer.id})">${customer.id}</span> - <strong>${customer.first_name} ${customer.last_name}</strong></p>
-                `;
-                resultsContainer.appendChild(customerDiv);
-            });
+            document.getElementById("successMessage").textContent = "Customer has been successfully added.";
+            document.getElementById("successMessage").style.display = "block";
+            document.getElementById("errorMessage").style.display = "none";
+
+            setTimeout(() => document.getElementById("successMessage").style.display = "none", 3000);
+            document.getElementById("customerForm").reset();
+
         } catch (error) {
-            console.error("Error searching customers:", error);
+            console.error("🔴 Fetch Error:", error);
+            document.getElementById("errorMessage").textContent = "Network error. Please try again.";
+            document.getElementById("errorMessage").style.display = "block";
         }
     });
-
-    function fetchCustomer(customerId) {
-        window.open(`${API_URL}/${customerId}`, "_blank");
-    }
 </script>
+
 </body>
 </html>
