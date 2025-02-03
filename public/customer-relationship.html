@@ -102,24 +102,23 @@
             background-color: #cce0ff;
         }
 
-        /* Tooltip */
-        .tooltip {
-            position: absolute;
-            background-color: #004080;
-            color: white;
-            padding: 8px;
-            border-radius: 5px;
-            font-size: 12px;
-            display: none;
-            width: 220px;
-            text-align: center;
-            top: 100%;
-            left: 0;
-            z-index: 10;
+        /* Search Bar Container */
+        .search-bar-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            gap: 5px;
         }
 
-        .help-icon:hover + .tooltip {
-            display: block;
+        .search-bar {
+            width: 70%; /* Increased input field width */
+            padding: 10px;
+        }
+
+        .search-button {
+            padding: 8px 12px; /* Smaller button */
+            font-size: 14px;
         }
 
         /* Footer Styling */
@@ -191,6 +190,11 @@
     </form>
 
     <h2>Customers</h2>
+    <div class="search-bar-container">
+        <input type="text" id="searchCustomer" class="search-bar" placeholder="Search customers">
+        <button id="searchButton" class="search-button">Search</button>
+    </div>
+
     <div id="customerList">
         <!-- Customer records will be displayed here -->
     </div>
@@ -202,8 +206,8 @@
 <script>
     const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/customers";
 
-    async function fetchCustomers() {
-        const response = await fetch(API_URL);
+    async function fetchCustomers(query = "") {
+        const response = await fetch(`${API_URL}?search=${query}`);
         const customers = await response.json();
         displayCustomers(customers);
     }
@@ -224,6 +228,10 @@
             customerList.appendChild(card);
         });
     }
+
+    document.getElementById("searchButton").addEventListener("click", () => {
+        fetchCustomers(document.getElementById("searchCustomer").value);
+    });
 
     document.getElementById("customerForm").addEventListener("submit", async (event) => {
         event.preventDefault();
