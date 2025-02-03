@@ -235,7 +235,7 @@
 
 <div class="footer">Powered by Vital iNet</div>
 
-    <script>
+<script>
     const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/customers";
 
     // ✅ CUSTOMER ADDITION FUNCTIONALITY (POST)
@@ -328,7 +328,15 @@
     function fetchCustomer(customerId) {
         window.open(`${API_URL}/${customerId}`, "_blank");
     }
+
+    // ✅ CLEAR SEARCH FUNCTIONALITY
+    document.getElementById("clearSearchButton").addEventListener("click", () => {
+        document.getElementById("searchCustomer").value = ""; // Clear input field
+        document.getElementById("customerResults").innerHTML = ""; // Clear search results
+        console.log("🔵 Search cleared");
+    });
 </script>
+
 
 
 </body>
