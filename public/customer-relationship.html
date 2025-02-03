@@ -46,11 +46,14 @@
         .form-container {
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         label {
             font-weight: bold;
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
         }
 
         input, textarea, select {
@@ -80,64 +83,43 @@
             background-color: #0056b3;
         }
 
-        .search-bar-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 20px 0;
-            gap: 5px;
-        }
-
-        .search-bar {
-            width: 70%; /* Increased input field width */
-            padding: 10px;
-        }
-
-        .search-button {
-            padding: 8px 12px; /* Smaller button */
+        /* Help Icon Style */
+        .help-icon {
+            margin-left: 5px;
             font-size: 14px;
-        }
-
-        .customer-list {
-            margin-top: 20px;
-        }
-
-        .customer-card {
-            background-color: #f4f4f4;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            text-align: left;
-        }
-
-        .customer-card button {
-            margin-top: 10px;
-            background-color: #6c757d;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            color: #007bff;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
             justify-content: center;
             align-items: center;
-            overflow-y: auto;
+            background-color: #e7f0fe;
         }
 
-        .modal-content {
-            width: 90%;
-            max-width: 700px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            text-align: left;
-            max-height: 80vh;
-            overflow-y: auto; /* Enables scrolling within the modal */
+        .help-icon:hover {
+            background-color: #cce0ff;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background-color: #004080;
+            color: white;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            display: none;
+            width: 220px;
+            text-align: center;
+            top: 100%;
+            left: 0;
+            z-index: 10;
+        }
+
+        .help-icon:hover + .tooltip {
+            display: block;
         }
 
         /* Footer Styling */
@@ -165,28 +147,43 @@
         <h2>Add Customer</h2>
         <div class="form">
             <div class="form-container">
-                <label for="customerName">Customer Name*</label>
+                <label for="customerName">Customer Name* 
+                    <span class="help-icon" title="Enter the full name of the customer">?</span>
+                </label>
                 <input type="text" id="customerName" required>
             </div>
+
             <div class="form-container">
-                <label for="customerBusinessEmail">Business Email*</label>
+                <label for="customerBusinessEmail">Business Email* 
+                    <span class="help-icon" title="Enter the customer's business email address">?</span>
+                </label>
                 <input type="email" id="customerBusinessEmail" required>
             </div>
+
             <div class="form-container">
-                <label for="customerPhoneNumber">Phone Number</label>
+                <label for="customerPhoneNumber">Phone Number 
+                    <span class="help-icon" title="Enter the customer's contact phone number">?</span>
+                </label>
                 <input type="text" id="customerPhoneNumber">
             </div>
+
             <div class="form-container">
-                <label for="customerProductLines">Product Lines</label>
-                <select id="customerProductLines">
+                <label for="customerProductLines">Product Lines* 
+                    <span class="help-icon" title="Select the type of consulting services the customer is interested in">?</span>
+                </label>
+                <select id="customerProductLines" required>
+                    <option value="" disabled selected>Select a Product Line</option>
                     <option value="Agile Consulting">Agile Consulting</option>
                     <option value="Business Consulting">Business Consulting</option>
                     <option value="Network Consulting">Network Consulting</option>
                     <option value="Software Consulting">Software Consulting</option>
                 </select>
             </div>
+
             <div class="form-container" style="grid-column: span 2;">
-                <label for="customerNotes">Interaction Notes</label>
+                <label for="customerNotes">Interaction Notes 
+                    <span class="help-icon" title="Add notes about interactions with the customer">?</span>
+                </label>
                 <textarea id="customerNotes"></textarea>
             </div>
         </div>
@@ -194,15 +191,9 @@
     </form>
 
     <h2>Customers</h2>
-    <div class="search-bar-container">
-        <input type="text" id="searchCustomer" class="search-bar" placeholder="Search customers">
-        <button id="searchButton" class="search-button">Search</button>
-    </div>
-
-    <div id="customerList" class="customer-list">
+    <div id="customerList">
         <!-- Customer records will be displayed here -->
     </div>
-
 </div>
 
 <!-- Footer -->
@@ -211,8 +202,8 @@
 <script>
     const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/customers";
 
-    async function fetchCustomers(query = "") {
-        const response = await fetch(`${API_URL}?search=${query}`);
+    async function fetchCustomers() {
+        const response = await fetch(API_URL);
         const customers = await response.json();
         displayCustomers(customers);
     }
@@ -229,24 +220,25 @@
                 <p><strong>Email:</strong> ${customer.business_email}</p>
                 <p><strong>Phone:</strong> ${customer.phone_number || "N/A"}</p>
                 <p><strong>Product Lines:</strong> ${customer.product_lines}</p>
-                <button onclick="viewCustomerHistory(${customer.id})">View History</button>
             `;
             customerList.appendChild(card);
         });
     }
 
-    document.getElementById("searchButton").addEventListener("click", () => {
-        fetchCustomers(document.getElementById("searchCustomer").value);
-    });
-
     document.getElementById("customerForm").addEventListener("submit", async (event) => {
         event.preventDefault();
+
+        const productLine = document.getElementById("customerProductLines").value;
+        if (!productLine) {
+            alert("Please select a Product Line.");
+            return;
+        }
 
         const customerData = {
             customer_name: document.getElementById("customerName").value,
             business_email: document.getElementById("customerBusinessEmail").value,
             phone_number: document.getElementById("customerPhoneNumber").value,
-            product_lines: document.getElementById("customerProductLines").value,
+            product_lines: productLine,
             notes: document.getElementById("customerNotes").value
         };
 
