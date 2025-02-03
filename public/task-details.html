@@ -207,55 +207,55 @@
 
 
     async function updateTask() {
-        if (!taskId) {
-            alert("Task ID is missing.");
-            return;
-        }
-
-        const task_name = document.getElementById("taskName").value;
-        const task_description = document.getElementById("taskDescription").value;
-        const priority = document.getElementById("taskPriority").value;
-        const deadline = document.getElementById("taskDeadline").value;
-        const assignee = document.getElementById("taskAssignee").value; 
-        const status = document.getElementById("taskStatus").value;
-        const category = document.getElementById("taskCategory").value;
-        const progress = document.getElementById("taskProgress").value;
-
-        const taskData = {
-            task_name,
-            task_description,
-            priority,
-            deadline,
-            assignee,
-            status,
-            category,
-            progress: progress ? parseInt(progress) : 0
-        };
-
-        console.log("Updating Task:", taskData);
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(taskData)
-            });
-
-            const result = await response.json();
-            console.log("Server Response:", result);
-
-            if (!response.ok) {
-                throw new Error(result.message || "Failed to update task");
-            }
-
-            alert("Task updated successfully!");
-            window.location.reload();
-
-        } catch (error) {
-            console.error("Error updating task:", error);
-            alert(`Error updating task: ${error.message}`);
-        }
+    if (!taskId) {
+        alert("Task ID is missing.");
+        return;
     }
+
+    const task_name = document.getElementById("taskName").value;
+    const task_description = document.getElementById("taskDescription").value;
+    const priority = document.getElementById("taskPriority").value;
+    const deadline = document.getElementById("taskDeadline").value;
+    const assignee = document.getElementById("taskAssignee").value;
+    const status = document.getElementById("taskStatus").value;
+    const category = document.getElementById("taskCategory").value;
+    const progress = document.getElementById("taskProgress").value;
+
+    const taskData = {
+        task_name,
+        task_description,
+        priority,
+        deadline,
+        assignee,
+        status,
+        category,
+        progress: progress ? parseInt(progress) : 0
+    };
+
+    console.log("Updating Task:", taskData);
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {  // ✅ Fixed API Route
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(taskData)
+        });
+
+        const result = await response.json();
+        console.log("Server Response:", result);
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to update task");
+        }
+
+        alert("Task updated successfully!");
+        window.location.reload();
+
+    } catch (error) {
+        console.error("Error updating task:", error);
+        alert(`Error updating task: ${error.message}`);
+    }
+}
 
     function goBack() {
         window.history.back();
