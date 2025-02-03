@@ -97,43 +97,6 @@ app.get(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
     }
 });
 
-// ✅ Update Task by ID (Handles NULL deadline)
-app.put(`${API_BASE_URL}/tasks/:id`, async (req, res) => {
-    console.log(`Received PUT /api/tasks/${req.params.id}`);
-
-    const { task_name, task_description, priority, deadline, assignee, status, category, progress } = req.body;
-
-    if (!task_name || !task_description || !priority || !status || !category) {
-        return res.status(400).json({ message: "Missing required fields." });
-    }
-
-    try {
-        const result = await pool.query(
-            `UPDATE tasks 
-             SET task_name = $1, 
-                 task_description = $2, 
-                 priority = $3, 
-                 deadline = CASE WHEN $4 = '' THEN NULL ELSE $4::DATE END, 
-                 assignee = $5, 
-                 status = $6, 
-                 category = $7, 
-                 progress = $8 
-             WHERE id = $9 RETURNING *`,
-            [task_name, task_description, priority, deadline || null, assignee, status, category, progress, req.params.id]
-        );
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ message: "Task not found" });
-        }
-
-        res.json({ message: "Task updated successfully!", task: result.rows[0] });
-
-    } catch (error) {
-        console.error("Error updating task:", error);
-        res.status(500).json({ message: `Database error updating task: ${error.message}` });
-    }
-});
-
 // ----------------------------------
 // ✅ APPOINTMENTS & EVENTS API ROUTES
 // ----------------------------------
