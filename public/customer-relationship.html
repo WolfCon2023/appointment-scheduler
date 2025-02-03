@@ -28,16 +28,20 @@
             margin-bottom: 50px;
         }
 
-        h1 {
+        h1, h2 {
             color: #004080;
         }
 
-        input, select {
+        input, select, textarea {
             padding: 10px;
             font-size: 16px;
             border-radius: 6px;
             border: 1px solid #ddd;
             width: 100%;
+        }
+
+        textarea {
+            height: 80px;
         }
 
         button {
@@ -54,7 +58,24 @@
             background-color: #0056b3;
         }
 
-        /* Search Bar */
+        .success-message, .error-message {
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .success-message {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .error-message {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        /* Search Bar Styling */
         .search-bar-container {
             display: flex;
             justify-content: center;
@@ -108,6 +129,51 @@
 <div class="container">
     <h1>Customer Relationship Management (CRM)</h1>
 
+    <form id="customerForm">
+        <h2>Add Customer</h2>
+        <div class="form">
+            <div class="form-container">
+                <label for="firstName">First Name*</label>
+                <input type="text" id="firstName" required>
+            </div>
+
+            <div class="form-container">
+                <label for="lastName">Last Name*</label>
+                <input type="text" id="lastName" required>
+            </div>
+
+            <div class="form-container">
+                <label for="customerBusinessEmail">Business Email*</label>
+                <input type="email" id="customerBusinessEmail" required>
+            </div>
+
+            <div class="form-container">
+                <label for="customerPhoneNumber">Phone Number</label>
+                <input type="text" id="customerPhoneNumber">
+            </div>
+
+            <div class="form-container">
+                <label for="customerProductLines">Product Lines*</label>
+                <select id="customerProductLines" required>
+                    <option value="" disabled selected>Select a Product Line</option>
+                    <option value="Agile Consulting">Agile Consulting</option>
+                    <option value="Business Consulting">Business Consulting</option>
+                    <option value="Network Consulting">Network Consulting</option>
+                    <option value="Software Consulting">Software Consulting</option>
+                </select>
+            </div>
+
+            <div class="form-container" style="grid-column: span 2;">
+                <label for="customerNotes">Interaction Notes</label>
+                <textarea id="customerNotes"></textarea>
+            </div>
+        </div>
+        <button type="submit">Add Customer</button>
+    </form>
+
+    <div id="successMessage" class="success-message">Customer has been successfully added.</div>
+    <div id="errorMessage" class="error-message"></div>
+
     <h2>Search Customers</h2>
     <div class="search-bar-container">
         <input type="text" id="searchCustomer" class="search-bar" placeholder="Search by name, email, or product line">
@@ -122,13 +188,7 @@
 <script>
     const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/customers";
 
-    document.getElementById("searchButton").addEventListener("click", async () => {
-        const query = document.getElementById("searchCustomer").value.trim();
-        if (!query) {
-            alert("Please enter a search term.");
-            return;
-        }
-
+    async function fetchCustomers(query = "") {
         try {
             const response = await fetch(`${API_URL}?search=${query}`);
             const result = await response.json();
@@ -136,7 +196,7 @@
             const resultsContainer = document.getElementById("customerResults");
             resultsContainer.innerHTML = "";
 
-            if (result.message) {
+            if (result.message || result.length === 0) {
                 alert("No customers found.");
                 return;
             }
@@ -150,6 +210,54 @@
             });
         } catch (error) {
             console.error("Error searching customers:", error);
+        }
+    }
+
+    document.getElementById("searchButton").addEventListener("click", () => {
+        const query = document.getElementById("searchCustomer").value.trim();
+        if (!query) {
+            alert("Please enter a search term.");
+            return;
+        }
+        fetchCustomers(query);
+    });
+
+    document.getElementById("customerForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const customerData = {
+            first_name: document.getElementById("firstName").value,
+            last_name: document.getElementById("lastName").value,
+            business_email: document.getElementById("customerBusinessEmail").value,
+            phone_number: document.getElementById("customerPhoneNumber").value,
+            product_lines: document.getElementById("customerProductLines").value,
+            notes: document.getElementById("customerNotes").value
+        };
+
+        console.log("📤 Sending Request:", customerData);
+
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(customerData)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                console.error("🔴 Server Error:", result);
+                document.getElementById("errorMessage").textContent = `Error: ${result.message || "Failed to add customer."}`;
+                document.getElementById("errorMessage").style.display = "block";
+                return;
+            }
+
+            document.getElementById("successMessage").style.display = "block";
+            setTimeout(() => document.getElementById("successMessage").style.display = "none", 3000);
+
+            document.getElementById("customerForm").reset();
+        } catch (error) {
+            console.error("🔴 Fetch Error:", error);
         }
     });
 
