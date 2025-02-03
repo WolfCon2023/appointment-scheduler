@@ -30,19 +30,19 @@ app.get("/", (req, res) => {
 
 // ✅ Fetch All Appointments
 app.get("/api/appointments", async (req, res) => {
-    console.log("Received GET /api/appointments");
+    console.log("🔵 Received GET /api/appointments");
     try {
         const result = await pool.query("SELECT * FROM appointments ORDER BY date ASC");
         res.json(result.rows);
     } catch (error) {
-        console.error("Error fetching appointments:", error);
+        console.error("🔴 Error fetching appointments:", error);
         res.status(500).json({ message: "Database error fetching appointments" });
     }
 });
 
 // ✅ Fetch Appointment by ID
 app.get("/api/appointments/:id", async (req, res) => {
-    console.log(`Received GET /api/appointments/${req.params.id}`);
+    console.log(`🔵 Received GET /api/appointments/${req.params.id}`);
     try {
         const result = await pool.query("SELECT * FROM appointments WHERE id = $1", [req.params.id]);
 
@@ -52,17 +52,15 @@ app.get("/api/appointments/:id", async (req, res) => {
 
         res.json(result.rows[0]);
     } catch (error) {
-        console.error("Error fetching appointment:", error);
+        console.error("🔴 Error fetching appointment:", error);
         res.status(500).json({ message: "Database error fetching appointment" });
     }
 });
 
 // ✅ Create a New Appointment (POST)
-// ✅ Add New Appointment
-// ✅ Add New Appointment
-app.post(`${API_BASE_URL}/appointments`, async (req, res) => {
+app.post("/api/appointments", async (req, res) => { // ✅ Corrected Route Definition
     console.log("🔵 Received POST /api/appointments");
-    console.log("📩 Incoming Request Body:", req.body); // ✅ Log received data
+    console.log("📩 Incoming Request Body:", req.body);
 
     const { title, date, location, contactName, contactPhone, contactEmail, scheduledBy, notes } = req.body;
 
@@ -88,12 +86,10 @@ app.post(`${API_BASE_URL}/appointments`, async (req, res) => {
         return res.status(201).json({ message: "Appointment added successfully!", appointment: result.rows[0] });
 
     } catch (error) {
-        console.error("🔴 Database Error:", error); // ✅ Log full DB error
+        console.error("🔴 Database Error:", error);
         return res.status(500).json({ message: "Database error adding appointment", error: error.message });
     }
 });
-
-
 
 // ----------------------------------
 // ✅ EVENTS API ROUTES
@@ -101,19 +97,19 @@ app.post(`${API_BASE_URL}/appointments`, async (req, res) => {
 
 // ✅ Fetch All Events
 app.get("/api/events", async (req, res) => {
-    console.log("Received GET /api/events");
+    console.log("🔵 Received GET /api/events");
     try {
         const result = await pool.query("SELECT * FROM events ORDER BY date ASC");
         res.json(result.rows);
     } catch (error) {
-        console.error("Error fetching events:", error);
+        console.error("🔴 Error fetching events:", error);
         res.status(500).json({ message: "Database error fetching events" });
     }
 });
 
 // ✅ Fetch Event by ID
 app.get("/api/events/:id", async (req, res) => {
-    console.log(`Received GET /api/events/${req.params.id}`);
+    console.log(`🔵 Received GET /api/events/${req.params.id}`);
     try {
         const result = await pool.query("SELECT * FROM events WHERE id = $1", [req.params.id]);
 
@@ -123,7 +119,7 @@ app.get("/api/events/:id", async (req, res) => {
 
         res.json(result.rows[0]);
     } catch (error) {
-        console.error("Error fetching event:", error);
+        console.error("🔴 Error fetching event:", error);
         res.status(500).json({ message: "Database error fetching event" });
     }
 });
