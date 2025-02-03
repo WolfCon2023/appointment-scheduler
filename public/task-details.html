@@ -157,7 +157,7 @@
 <div class="footer">Powered by Vital iNet</div>
 
 <script>
-    const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api";
+    const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app";
     const urlParams = new URLSearchParams(window.location.search);
     const taskId = urlParams.get("id");
 
@@ -168,7 +168,8 @@
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`);
+        const response = await fetch(`${API_BASE_URL}/api/tasks/${taskId}`);
+
 
         if (!response.ok) {
             const errorMessage = await response.text(); // ✅ Capture actual error
