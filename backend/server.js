@@ -6,7 +6,7 @@ const { Pool } = require("pg");
 
 const app = express();
 const port = process.env.PORT || 3000;
-const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api"; // ✅ Keep for frontend use
+const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api"; // ✅ Kept for frontend use
 
 // Middleware
 app.use(cors());
@@ -25,82 +25,7 @@ app.get("/", (req, res) => {
 });
 
 // ----------------------------------
-// ✅ TASKS API ROUTES (Corrected)
-// ----------------------------------
-
-// ✅ Fetch All Tasks
-app.get("/api/tasks", async (req, res) => {
-    console.log("Received GET /api/tasks");
-
-    try {
-        const result = await pool.query("SELECT * FROM tasks ORDER BY deadline ASC");
-        res.json(result.rows);
-    } catch (error) {
-        console.error("Error fetching tasks:", error);
-        res.status(500).json({ message: "Database error fetching tasks" });
-    }
-});
-
-// ✅ Fetch Task by ID
-app.get("/api/tasks/:id", async (req, res) => {
-    console.log(`Received GET /api/tasks/${req.params.id}`);
-
-    try {
-        const result = await pool.query("SELECT * FROM tasks WHERE id = $1", [req.params.id]);
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ message: "Task not found" });
-        }
-
-        let task = result.rows[0];
-        task.deadline = task.deadline ? task.deadline.toISOString().split("T")[0] : "";
-
-        res.json(task);
-    } catch (error) {
-        console.error("Error fetching task:", error);
-        res.status(500).json({ message: "Database error fetching task" });
-    }
-});
-
-// ✅ Update Task by ID
-app.put("/api/tasks/:id", async (req, res) => {
-    console.log(`Received PUT /api/tasks/${req.params.id}`);
-
-    const { task_name, task_description, priority, deadline, assignee, status, category, progress } = req.body;
-
-    if (!task_name || !task_description || !priority || !status || !category) {
-        return res.status(400).json({ message: "Missing required fields." });
-    }
-
-    try {
-        const result = await pool.query(
-            `UPDATE tasks 
-             SET task_name = $1, 
-                 task_description = $2, 
-                 priority = $3, 
-                 deadline = CASE WHEN $4 = '' THEN NULL ELSE $4::DATE END, 
-                 assignee = $5, 
-                 status = $6, 
-                 category = $7, 
-                 progress = $8 
-             WHERE id = $9 RETURNING *`,
-            [task_name, task_description, priority, deadline || null, assignee, status, category, progress, req.params.id]
-        );
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ message: "Task not found" });
-        }
-
-        res.json({ message: "Task updated successfully!", task: result.rows[0] });
-
-    } catch (error) {
-        console.error("Error updating task:", error);
-        res.status(500).json({ message: `Database error updating task: ${error.message}` });
-    }
-});
-
-// ----------------------------------
-// ✅ APPOINTMENTS & EVENTS API ROUTES (Corrected)
+// ✅ APPOINTMENTS API ROUTES
 // ----------------------------------
 
 // ✅ Fetch All Appointments
@@ -115,6 +40,55 @@ app.get("/api/appointments", async (req, res) => {
     }
 });
 
+// ✅ Fetch Appointment by ID
+app.get("/api/appointments/:id", async (req, res) => {
+    console.log(`Received GET /api/appointments/${req.params.id}`);
+    try {
+        const result = await pool.query("SELECT * FROM appointments WHERE id = $1", [req.params.id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Appointment not found" });
+        }
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error fetching appointment:", error);
+        res.status(500).json({ message: "Database error fetching appointment" });
+    }
+});
+
+// ✅ Create a New Appointment (POST)
+app.post("/api/appointments", async (req, res) => {
+    console.log("Received POST /api/appointments");
+
+    const { title, date, location, notes, scheduledBy } = req.body;
+
+    if (!title || !date || !scheduledBy) {
+        return res.status(400).json({ message: "Missing required fields: title, date, scheduledBy" });
+    }
+
+    try {
+        const result = await pool.query(
+            `INSERT INTO appointments (title, date, location, notes, scheduledBy) 
+             VALUES ($1, $2, $3, $4, $5) RETURNING id, title, date`,
+            [title, date, location, notes, scheduledBy]
+        );
+
+        res.status(201).json({ 
+            message: "Appointment created successfully!", 
+            appointment: result.rows[0] 
+        });
+
+    } catch (error) {
+        console.error("Error adding appointment:", error);
+        res.status(500).json({ message: "Database error adding appointment" });
+    }
+});
+
+// ----------------------------------
+// ✅ EVENTS API ROUTES
+// ----------------------------------
+
 // ✅ Fetch All Events
 app.get("/api/events", async (req, res) => {
     console.log("Received GET /api/events");
@@ -124,6 +98,23 @@ app.get("/api/events", async (req, res) => {
     } catch (error) {
         console.error("Error fetching events:", error);
         res.status(500).json({ message: "Database error fetching events" });
+    }
+});
+
+// ✅ Fetch Event by ID
+app.get("/api/events/:id", async (req, res) => {
+    console.log(`Received GET /api/events/${req.params.id}`);
+    try {
+        const result = await pool.query("SELECT * FROM events WHERE id = $1", [req.params.id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Event not found" });
+        }
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error fetching event:", error);
+        res.status(500).json({ message: "Database error fetching event" });
     }
 });
 
