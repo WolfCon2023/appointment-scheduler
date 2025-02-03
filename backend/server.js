@@ -302,28 +302,32 @@ app.get("/api/customers/:id/interactions", async (req, res) => {
     }
 });
 
-// ✅ Add a new customer
 app.post("/api/customers", async (req, res) => {
-    console.log("🔵 Adding new customer...");
+    console.log("🔵 Received POST /api/customers", req.body);
 
-    const { customer_name, business_email, phone_number, product_lines } = req.body;
+    const { first_name, last_name, business_email, phone_number, product_lines, notes } = req.body;
 
-    if (!customer_name || !business_email) {
-        return res.status(400).json({ message: "Customer name and business email are required." });
+    if (!first_name || !last_name || !business_email) {
+        console.warn("⚠️ Missing required fields:", { first_name, last_name, business_email });
+        return res.status(400).json({ message: "First name, last name, and business email are required." });
     }
 
     try {
         const result = await pool.query(
-            "INSERT INTO customers (customer_name, business_email, phone_number, product_lines) VALUES ($1, $2, $3, $4) RETURNING *",
-            [customer_name, business_email, phone_number, product_lines]
+            `INSERT INTO customers (first_name, last_name, business_email, phone_number, product_lines, notes) 
+             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+            [first_name, last_name, business_email, phone_number, product_lines, notes || ""]
         );
-        res.status(201).json({ message: "Customer added successfully!", customer: result.rows[0] });
+
+        console.log("🟢 Customer Added:", result.rows[0]);
+        return res.status(201).json({ message: "Customer added successfully!", customer: result.rows[0] });
 
     } catch (error) {
-        console.error("🔴 Database Error Adding Customer:", error);
-        res.status(500).json({ message: "Database error adding customer" });
+        console.error("🔴 Database Error:", error);
+        return res.status(500).json({ message: "Database error adding customer", error: error.message });
     }
 });
+
 
 // Search Customers by Name, Email, or Product Line (Partial Match)
 app.get("/api/customers", async (req, res) => {
