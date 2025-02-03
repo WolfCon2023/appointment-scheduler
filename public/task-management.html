@@ -249,6 +249,8 @@ document.getElementById("addTaskButton").addEventListener("click", async functio
             field.style.border = "2px solid red";
             missingFields.push(field.getAttribute("id"));
             valid = false;
+            } else {
+            field.style.border = ""; // Reset border color if filled
         }
     });
 
@@ -264,6 +266,16 @@ document.getElementById("addTaskButton").addEventListener("click", async functio
         alert("Please fill out all required fields: " + missingFields.join(", "));
         return;
     }
+    const newTask = {
+        task_name: taskName.value.trim(),
+        task_description: taskDescription.value.trim(),
+        priority: taskPriority,
+        deadline: taskDeadline.value,
+        assignee: taskAssignee.value.trim(),
+        status: taskStatus,
+        category: taskCategory.value.trim(),
+        progress: taskProgress.value || 0
+    };
 
     // Send Data to API
     try {
