@@ -79,6 +79,25 @@
             background-color: #0056b3;
         }
 
+        /* Search Bar Styling */
+        .search-bar-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            gap: 5px;
+        }
+
+        .search-bar {
+            width: 70%;
+            padding: 10px;
+        }
+
+        .search-button {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
         /* Success Message */
         .success-message {
             background-color: #28a745;
@@ -159,6 +178,12 @@
     <div id="successMessage" class="success-message">Customer has been successfully added.</div>
     <div id="errorMessage" class="error-message"></div>
 
+    <h2>Search Customers</h2>
+    <div class="search-bar-container">
+        <input type="text" id="searchCustomer" class="search-bar" placeholder="Search customers">
+        <button id="searchButton" class="search-button">Search</button>
+    </div>
+
     <h2>Customers</h2>
     <div id="customerList">
         <!-- Customer records will be displayed here -->
@@ -171,9 +196,9 @@
 <script>
     const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/customers";
 
-    async function fetchCustomers() {
+    async function fetchCustomers(query = "") {
         try {
-            const response = await fetch(API_URL);
+            const response = await fetch(`${API_URL}?search=${query}`);
             if (!response.ok) throw new Error("Failed to fetch customers");
             const customers = await response.json();
             displayCustomers(customers);
@@ -199,6 +224,10 @@
         });
     }
 
+    document.getElementById("searchButton").addEventListener("click", () => {
+        fetchCustomers(document.getElementById("searchCustomer").value);
+    });
+
     document.getElementById("customerForm").addEventListener("submit", async (event) => {
         event.preventDefault();
 
@@ -210,7 +239,7 @@
             notes: document.getElementById("customerNotes").value
         };
 
-        console.log("📤 Sending Request:", customerData); // ✅ Debugging
+        console.log("📤 Sending Request:", customerData);
 
         try {
             const response = await fetch(API_URL, {
