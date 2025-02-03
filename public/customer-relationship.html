@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Tool - Customer Interactions</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Customer Relationship Management (CRM) Tool</h1>
+
+        <form id="customerForm">
+            <h2>Add Customer</h2>
+            <label for="customerName">Customer Name*</label>
+            <input type="text" id="customerName" required>
+
+            <label for="customerBusinessEmail">Business Email*</label>
+            <input type="email" id="customerBusinessEmail" required>
+
+            <label for="customerPhoneNumber">Phone Number</label>
+            <input type="text" id="customerPhoneNumber">
+
+            <label for="customerProductLines">Product Lines</label>
+            <input type="text" id="customerProductLines">
+
+            <button type="submit">Add Customer</button>
+        </form>
+
+        <h2>Customers</h2>
+        <div id="customerList">
+            <!-- Customer records will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/customers";
+
+        async function fetchCustomers() {
+            const response = await fetch(API_URL);
+            const customers = await response.json();
+            displayCustomers(customers);
+        }
+
+        function displayCustomers(customers) {
+            const customerList = document.getElementById('customerList');
+            customerList.innerHTML = "";
+
+            customers.forEach(customer => {
+                const card = document.createElement('div');
+                card.classList.add('customer-card');
+                card.innerHTML = `
+                    <h3>${customer.customer_name}</h3>
+                    <p><strong>Email:</strong> ${customer.business_email}</p>
+                    <p><strong>Phone:</strong> ${customer.phone_number || "N/A"}</p>
+                    <p><strong>Product Lines:</strong> ${customer.product_lines || "N/A"}</p>
+                    <button onclick="viewCustomerHistory(${customer.id})">View History</button>
+                `;
+                customerList.appendChild(card);
+            });
+        }
+
+        function viewCustomerHistory(customerId) {
+            window.location.href = `history.html?customer_id=${customerId}`;
+        }
+
+        document.getElementById("customerForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const customerData = {
+                customer_name: document.getElementById("customerName").value,
+                business_email: document.getElementById("customerBusinessEmail").value,
+                phone_number: document.getElementById("customerPhoneNumber").value,
+                product_lines: document.getElementById("customerProductLines").value
+            };
+
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(customerData)
+            });
+
+            if (response.ok) {
+                fetchCustomers();
+                document.getElementById("customerForm").reset();
+            } else {
+                alert("Failed to add customer.");
+            }
+        });
+
+        fetchCustomers();
+    </script>
+</body>
+</html>
