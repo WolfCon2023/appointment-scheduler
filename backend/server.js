@@ -236,6 +236,44 @@ app.put("/api/tasks/:id", async (req, res) => {
     }
 });
 
+app.post("/api/tasks", async (req, res) => {
+    console.log("🔵 Received POST /api/tasks");
+    console.log("📩 Incoming Request Body:", req.body);
+
+    const { task_name, task_description, priority, deadline, assignee, status, category, progress } = req.body;
+
+    // ✅ Validate Required Fields
+    let missingFields = [];
+    if (!task_name) missingFields.push("task_name");
+    if (!task_description) missingFields.push("task_description");
+    if (!priority) missingFields.push("priority");
+    if (!status) missingFields.push("status");
+    if (!category) missingFields.push("category");
+
+    if (missingFields.length > 0) {
+        console.warn("⚠️ Missing required fields:", missingFields);
+        return res.status(400).json({ message: `Missing required fields: ${missingFields.join(", ")}` });
+    }
+
+    try {
+        // ✅ Insert New Task into Database
+        const result = await pool.query(
+            `INSERT INTO tasks (task_name, task_description, priority, deadline, assignee, status, category, progress) 
+             VALUES ($1, $2, $3, CASE WHEN $4 = '' THEN NULL ELSE $4::DATE END, $5, $6, $7, $8) 
+             RETURNING id`,
+            [task_name, task_description, priority, deadline || null, assignee, status, category, progress || 0]
+        );
+
+        console.log("🟢 Task Added Successfully:", result.rows[0]); // ✅ Log Inserted Data
+        res.status(201).json({ message: "Task added successfully!", task_id: result.rows[0].id });
+
+    } catch (error) {
+        console.error("🔴 Database Error Adding Task:", error);
+        res.status(500).json({ message: "Database error adding task", error: error.message });
+    }
+});
+
+
 
 // ----------------------------------
 // ✅ Catch-All Route for Invalid API Requests
