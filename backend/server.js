@@ -124,6 +124,7 @@ app.get("/api/events/:id", async (req, res) => {
     }
 });
 
+// ✅ Fetch All Tasks (Supports Filters)
 app.get("/api/tasks", async (req, res) => {
     console.log("🔵 Received GET /api/tasks");
 
