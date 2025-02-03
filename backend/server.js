@@ -358,6 +358,7 @@ app.get("/api/customers", async (req, res) => {
     }
 });
 
+
 // Fetch a Customer by ID
 app.get("/api/customers/:id", async (req, res) => {
     console.log(`🔵 Received GET /api/customers/${req.params.id}`);
