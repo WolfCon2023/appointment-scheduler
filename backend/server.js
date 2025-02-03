@@ -329,6 +329,7 @@ app.post("/api/customers", async (req, res) => {
 });
 
 
+
 // Search Customers by Name, Email, or Product Line (Partial Match)
 app.get("/api/customers", async (req, res) => {
     console.log("🔵 Received GET /api/customers with search query:", req.query.search);
