@@ -229,9 +229,10 @@
 
 <div class="footer">Powered by Vital iNet</div>
 
-<script>
+    <script>
     const API_URL = "https://vital-backoffice-apps-production-8f97.up.railway.app/api/customers";
 
+    // ✅ CUSTOMER ADDITION FUNCTIONALITY (POST)
     document.getElementById("customerForm").addEventListener("submit", async (event) => {
         event.preventDefault();
 
@@ -276,7 +277,53 @@
             document.getElementById("errorMessage").style.display = "block";
         }
     });
+
+    // ✅ CUSTOMER SEARCH FUNCTIONALITY (GET)
+    document.getElementById("searchButton").addEventListener("click", async () => {
+        const query = document.getElementById("searchCustomer").value.trim();
+        if (!query) {
+            alert("Please enter a search term.");
+            return;
+        }
+
+        try {
+            console.log("🔵 Searching for:", query);
+            const response = await fetch(`${API_URL}?search=${encodeURIComponent(query)}`);
+            const result = await response.json();
+
+            const resultsContainer = document.getElementById("customerResults");
+            resultsContainer.innerHTML = "";
+
+            if (!result || result.message || result.length === 0) {
+                alert("No customers found.");
+                return;
+            }
+
+            result.forEach(customer => {
+                const customerDiv = document.createElement("div");
+                customerDiv.innerHTML = `
+                    <p>
+                        <strong>ID:</strong> 
+                        <span class="customer-id" onclick="fetchCustomer(${customer.id})">
+                            ${customer.id}
+                        </span> 
+                        - <strong>${customer.first_name} ${customer.last_name}</strong>
+                    </p>
+                `;
+                resultsContainer.appendChild(customerDiv);
+            });
+        } catch (error) {
+            console.error("🔴 Error searching customers:", error);
+            alert("An error occurred while searching. Please try again.");
+        }
+    });
+
+    // ✅ FUNCTION TO OPEN CUSTOMER DETAILS IN A NEW TAB
+    function fetchCustomer(customerId) {
+        window.open(`${API_URL}/${customerId}`, "_blank");
+    }
 </script>
+
 
 </body>
 </html>
