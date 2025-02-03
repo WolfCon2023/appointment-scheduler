@@ -252,71 +252,77 @@
         closeCalendarBtn.addEventListener('click', () => modal.style.display = 'none');
 
         // **Fix Add Appointment Not Appearing in Calendar**
-        addAppointmentButton.addEventListener('click', async () => {
-            const title = document.getElementById('appointmentTitle');
-            const date = document.getElementById('appointmentDate');
-            const location = document.getElementById('appointmentLocation');
-            const contactName = document.getElementById('contactName');
-            const contactPhone = document.getElementById('contactPhoneNumber');
-            const contactEmail = document.getElementById('contactEmail');
-            const scheduledBy = document.getElementById('scheduledBy');
-            const notes = document.getElementById('appointmentNotes');
+addAppointmentButton.addEventListener('click', async () => {
+    const title = document.getElementById('appointmentTitle');
+    const date = document.getElementById('appointmentDate');
+    const location = document.getElementById('appointmentLocation');
+    const contactName = document.getElementById('contactName');
+    const contactPhone = document.getElementById('contactPhoneNumber');
+    const contactEmail = document.getElementById('contactEmail');
+    const scheduledBy = document.getElementById('scheduledBy');
+    const notes = document.getElementById('appointmentNotes');
 
-            // **Check Required Fields**
-            const requiredFields = [title, date, location, contactName, contactPhone, contactEmail, scheduledBy];
-            let valid = true;
+    // **Check Required Fields**
+    const requiredFields = [title, date, location, contactName, contactPhone, contactEmail, scheduledBy];
+    let valid = true;
 
-            requiredFields.forEach(field => {
-                if (!field.value.trim()) {
-                    field.style.border = "2px solid red";
-                    valid = false;
-                } else {
-                    field.style.border = ""; // Reset border color if filled
-                }
-            });
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            field.style.border = "2px solid red";
+            valid = false;
+        } else {
+            field.style.border = ""; // Reset border color if filled
+        }
+    });
 
-            if (!valid) {
-                alert("Please fill out all required fields.");
-                return;
-            }
+    if (!valid) {
+        alert("Please fill out all required fields.");
+        return;
+    }
 
-            // **Create Appointment Object**
-            const newAppointment = {
-                title: title.value.trim(),
-                date: date.value,
-                location: location.value.trim(),
-                contactName: contactName.value.trim(),
-                contactPhone: contactPhone.value.trim(),
-                contactEmail: contactEmail.value.trim(),
-                scheduledBy: scheduledBy.value.trim(),
-                notes: notes.value.trim()
-            };
+    // **Create Appointment Object**
+    const newAppointment = {
+        title: title.value.trim(),
+        date: date.value,
+        location: location.value.trim(),
+        contactName: contactName.value.trim(),
+        contactPhone: contactPhone.value.trim(),
+        contactEmail: contactEmail.value.trim(),
+        scheduledBy: scheduledBy.value.trim(),
+        notes: notes.value.trim()
+    };
 
-            try {
-                const response = await fetch(`${API_BASE_URL}/appointments`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newAppointment)
-                });
+    console.log("🔵 Sending appointment data:", newAppointment); // ✅ Log the data before sending
 
-                if (response.ok) {
-                    alert("Appointment added successfully!");
-                    
-                    // **Refetch and update calendar with new data**
-                    await updateCalendarEvents();
-
-                    // **Clear Form Fields After Successful Submission**
-                    requiredFields.forEach(field => field.value = "");
-                    notes.value = "";
-
-                } else {
-                    alert("Failed to add appointment. Please try again.");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Error adding appointment. Please check your internet connection.");
-            }
+    try {
+        const response = await fetch(`${API_BASE_URL}/appointments`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newAppointment)
         });
+
+        const result = await response.json();
+        console.log("🟢 Server Response:", result); // ✅ Log server response
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to add appointment");
+        }
+
+        alert("✅ Appointment added successfully!");
+
+        // **Refetch and update calendar with new data**
+        await updateCalendarEvents();
+
+        // **Clear Form Fields After Successful Submission**
+        requiredFields.forEach(field => field.value = "");
+        notes.value = "";
+
+    } catch (error) {
+        console.error("🔴 Error adding appointment:", error);
+        alert(`🚨 Error adding appointment: ${error.message}`);
+    }
+});
+
     });
 </script>
 </body>
