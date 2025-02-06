@@ -14,6 +14,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 const mongo = new MongoClient('mongodb://mongo:ZcWRJuhejLSgxnNuMKQtoyJmRNiwbUFA@mongodb.railway.internal:27017')
+const database = mongo.db('VitalDB')
 
 // ✅ Health Check Route
 app.get("/", (req, res) => {
@@ -28,6 +29,10 @@ app.get("/", (req, res) => {
 app.get("/api/appointments", async (req, res) => {
     console.log("🔵 Received GET /api/appointments");
     try {
+        // Get all appointments
+        const appointments = database.collection('appointments')
+
+        res.send(appointments.find())
     } catch (error) {
         console.error("🔴 Error fetching appointments:", error);
         res.status(500).json({ message: "Database error fetching appointments" });
