@@ -5,24 +5,151 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HR Employee Directory</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f9f9f9; }
-        .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
-        h1 { text-align: center; color: #004080; }
-        .employee-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .employee-card { background-color: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; text-align: center; }
+        /* Full Page Layout */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f7f9;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #004080;
+        }
+
+        .form {
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .employee-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        .employee-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Footer Styling */
+        .footer {
+            width: 100%;
+            height: 40px;
+            background-color: #004080;
+            color: white;
+            text-align: center;
+            line-height: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>HR Employee Directory</h1>
+
+    <!-- Employee Input Form -->
+    <form id="employeeForm">
+        <h2>Add Employee</h2>
+        <div class="form">
+            <div class="form-container">
+                <label for="name">Name:</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-container">
+                <label for="employee_id">Employee ID:</label>
+                <input type="text" id="employee_id" required>
+            </div>
+            <div class="form-container">
+                <label for="department">Department:</label>
+                <select id="department" required></select>
+            </div>
+            <div class="form-container">
+                <label for="role">Role:</label>
+                <select id="role" required></select>
+            </div>
+            <div class="form-container">
+                <label for="work_location">Work Location:</label>
+                <input type="text" id="work_location" required>
+            </div>
+            <div class="form-container">
+                <label for="contact_info">Contact Info:</label>
+                <input type="email" id="contact_info" required>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button type="submit">Add Employee</button>
+        </div>
+    </form>
+
+    <!-- Employee Display Grid -->
+    <h2>Employee List</h2>
     <div class="employee-grid" id="employeeGrid"></div>
 </div>
 
+<!-- Footer -->
+<div class="footer">Powered by Vital iNet</div>
+
 <script>
+    const API_URL = "https://your-api-url.com/api"; // Adjust to match your actual API endpoint
+
+    // Fetch and display employees
     async function fetchEmployees() {
         try {
-            let response = await fetch("https://your-api-url.com/api/employees");
+            let response = await fetch(`${API_URL}/employees`);
             let employees = await response.json();
             const grid = document.getElementById('employeeGrid');
             grid.innerHTML = '';
@@ -43,7 +170,61 @@
             console.error("Error fetching employees:", error);
         }
     }
-    fetchEmployees();
+
+    // Fetch departments & roles for dropdowns
+    async function fetchDropdownData() {
+        try {
+            let deptResponse = await fetch(`${API_URL}/departments`);
+            let roleResponse = await fetch(`${API_URL}/roles`);
+            let departments = await deptResponse.json();
+            let roles = await roleResponse.json();
+
+            const deptSelect = document.getElementById('department');
+            const roleSelect = document.getElementById('role');
+
+            deptSelect.innerHTML = departments.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+            roleSelect.innerHTML = roles.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+        } catch (error) {
+            console.error("Error fetching dropdown data:", error);
+        }
+    }
+
+    // Handle Employee Form Submission
+    document.getElementById('employeeForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        let newEmployee = {
+            name: document.getElementById('name').value,
+            employee_id: document.getElementById('employee_id').value,
+            department_id: document.getElementById('department').value,
+            role_id: document.getElementById('role').value,
+            work_location: document.getElementById('work_location').value,
+            contact_info: document.getElementById('contact_info').value
+        };
+
+        try {
+            let response = await fetch(`${API_URL}/employees`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newEmployee)
+            });
+
+            if (response.ok) {
+                alert('Employee added successfully!');
+                document.getElementById('employeeForm').reset();
+                fetchEmployees(); // Refresh employee list
+            } else {
+                alert('Error adding employee.');
+            }
+        } catch (error) {
+            console.error("Error adding employee:", error);
+        }
+    });
+
+    // Load data when page loads
+    document.addEventListener("DOMContentLoaded", () => {
+        fetchEmployees();
+        fetchDropdownData();
+    });
 </script>
 
 </body>
