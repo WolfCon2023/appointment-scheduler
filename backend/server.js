@@ -12,6 +12,11 @@ const API_BASE_URL = "https://vital-backoffice-apps-production-8f97.up.railway.a
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
+app.use((req, res, next) => {
+    res.setHeader("Content-Security-Policy", "connect-src 'self' https://vital-backoffice-apps-production-8f97.up.railway.app/api");
+    next();
+});
+
 
 // PostgreSQL Connection
 const pool = new Pool({
