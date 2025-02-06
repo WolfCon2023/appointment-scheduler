@@ -415,6 +415,17 @@ app.all("*", (req, res) => {
   res.status(404).json({ error: "Invalid API route" });
 });
 
+app.get('/api/roles', async (req, res) => {
+    try {
+        const result = await db.query("SELECT id, name FROM roles ORDER BY name ASC");
+        res.json(result.rows);
+    } catch (error) {
+        console.error("Error fetching roles:", error);
+        res.status(500).json({ error: "Server error fetching roles" });
+    }
+});
+
+
 // ✅ Start Server
 app.listen(port, () => {
   console.log(`Backend running at http://localhost:${port}`);
