@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-const mongo = new MongoClient('mongodb://mongo:ZcWRJuhejLSgxnNuMKQtoyJmRNiwbUFA@roundhouse.proxy.rlwy.net:10087')
+const mongo = new MongoClient(process.env.MONGO_URL)
 const db = mongo.db('VitalDB')
 
 // ✅ Health Check Route
