@@ -173,21 +173,26 @@
 
     // Fetch departments & roles for dropdowns
     async function fetchDropdownData() {
-        try {
-            let deptResponse = await fetch(`${API_URL}/departments`);
-            let roleResponse = await fetch(`${API_URL}/roles`);
-            let departments = await deptResponse.json();
-            let roles = await roleResponse.json();
+    console.log("Fetching dropdown data...");
 
-            const deptSelect = document.getElementById('department');
-            const roleSelect = document.getElementById('role');
+    try {
+        let roleResponse = await fetch(`${API_URL}/roles`);
+        let roles = await roleResponse.json();
 
-            deptSelect.innerHTML = departments.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
-            roleSelect.innerHTML = roles.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
-        } catch (error) {
-            console.error("Error fetching dropdown data:", error);
-        }
+        console.log("Roles fetched:", roles); // Log to see response
+
+        const roleSelect = document.getElementById('role');
+        roleSelect.innerHTML = roles.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+
+        console.log("Dropdown populated successfully.");
+    } catch (error) {
+        console.error("Error fetching dropdown data:", error);
     }
+}
+
+// Run when the page loads
+document.addEventListener("DOMContentLoaded", fetchDropdownData);
+
 
     // Handle Employee Form Submission
     document.getElementById('employeeForm').addEventListener('submit', async (event) => {
