@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Employee Directory</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f9f9f9; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
+        h1 { text-align: center; color: #004080; }
+        .employee-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .employee-card { background-color: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>HR Employee Directory</h1>
+    <div class="employee-grid" id="employeeGrid"></div>
+</div>
+
+<script>
+    async function fetchEmployees() {
+        try {
+            let response = await fetch("https://your-api-url.com/api/employees");
+            let employees = await response.json();
+            const grid = document.getElementById('employeeGrid');
+            grid.innerHTML = '';
+
+            employees.forEach(emp => {
+                let card = document.createElement('div');
+                card.className = 'employee-card';
+                card.innerHTML = `
+                    <h3>${emp.name} (ID: ${emp.employee_id})</h3>
+                    <p><strong>Department:</strong> ${emp.department}</p>
+                    <p><strong>Role:</strong> ${emp.role}</p>
+                    <p><strong>Location:</strong> ${emp.work_location}</p>
+                    <p><strong>Contact:</strong> <a href="mailto:${emp.contact_info}">${emp.contact_info}</a></p>
+                `;
+                grid.appendChild(card);
+            });
+        } catch (error) {
+            console.error("Error fetching employees:", error);
+        }
+    }
+    fetchEmployees();
+</script>
+
+</body>
+</html>
