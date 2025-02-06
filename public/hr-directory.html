@@ -190,8 +190,14 @@
     }
 }
 
+    console.log("Checking if role select exists:", document.getElementById('role'));
 // Run when the page loads
 document.addEventListener("DOMContentLoaded", fetchDropdownData);
+
+document.getElementById('role').innerHTML = `
+    <option value="1">Test Role 1</option>
+    <option value="2">Test Role 2</option>
+`;
 
 
     // Handle Employee Form Submission
