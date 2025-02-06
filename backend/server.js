@@ -13,8 +13,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-const mongo = new MongoClient(process.env.MONGO_URL)
-const database = mongo.db('VitalDB')
+const mongo = new MongoClient('mongodb://mongo:ZcWRJuhejLSgxnNuMKQtoyJmRNiwbUFA@roundhouse.proxy.rlwy.net:10087')
+const db = mongo.db('VitalDB')
 
 // ✅ Health Check Route
 app.get("/", (req, res) => {
@@ -28,16 +28,14 @@ app.get("/", (req, res) => {
 // ✅ Fetch All Appointments
 app.get("/api/appointments", async (req, res) => {
     console.log("🔵 Received GET /api/appointments");
-    // try {
+    try {
         // Get all appointments
-        const appointments = database.collection('appointments')
-        res.json(appointments.findOne({id: 55}))
-        // res.send('ok')
-        // res.json(appointments.find())
-    // } catch (error) {
-    //     console.error("🔴 Error fetching appointments:", error);
-    //     res.status(500).json({ message: "Database error fetching appointments" });
-    // }
+        const data = await db.collection('appointments').find().toArray()
+        res.json(data)
+    } catch (error) {
+        console.error("🔴 Error fetching appointments:", error);
+        res.status(500).json({ message: "Database error fetching appointments" });
+    }
 });
 
 // ✅ Fetch Appointment by ID
