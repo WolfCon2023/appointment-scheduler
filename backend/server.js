@@ -166,7 +166,7 @@ app.post("/api/customers", async (req, res) => {
 
 
     try {
-        await db.collection('customers').insertMany(req.body)
+        await db.collection('customers').insert(req.body)
         res.json({code: 200, message: 'SUCCESS'})
     } catch (error) {
         console.error("🔴 Database Error:", error);
