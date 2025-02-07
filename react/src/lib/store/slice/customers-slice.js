@@ -8,7 +8,7 @@ const initialState = {
 export const getCustomers = createAsyncThunk(
   'customers/getCustomers',
   async () => {
-    const res = await axios.get('vital-backoffice-apps-7a0e798b/api/customers')
+    const res = await axios.get('https://vital-backoffice-apps-7a0e798b/api/customers')
     return res.data
   }
 )
@@ -18,7 +18,7 @@ export const addCustomer = createAsyncThunk(
   async data => {
     console.log('add customer')
     console.log(data)
-    const res = await axios.post('vital-backoffice-apps-7a0e798b/api/customers', data)
+    const res = await axios.post('https://vital-backoffice-apps-7a0e798b/api/customers', data)
     return res.data
   }
 )
