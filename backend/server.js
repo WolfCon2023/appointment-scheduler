@@ -138,6 +138,9 @@ app.post("/api/tasks", async (req, res) => {
 app.get("/api/customers", async (req, res) => {
     console.log("🔵 Fetching customers...");
     try {
+        // Get all appointments
+        const data = await db.collection('customers').find().toArray()
+        res.json(data)
     } catch (error) {
         console.error("🔴 Error fetching customers:", error);
         res.status(500).json({ message: "Database error fetching customers" });
